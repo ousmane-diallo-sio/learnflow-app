@@ -7,4 +7,10 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="baby_blue">#FFE7F2F8</color>
+    <color name="aquamarine">#FF74BDCB</color>
+    <color name="salmon">#FFFFA384</color>
+    <color name="freesia">#FFEFE7BC</color>
+    <color name="topaz">#FFFFD27A</color>
+    <color name="bright_gray">#FFE7F2F8</color>
 </resources>
