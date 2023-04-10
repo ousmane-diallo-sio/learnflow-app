@@ -19,14 +19,28 @@
         android:paddingHorizontal="35dp"
         android:paddingVertical="15dp">
 
-        <TextView
-            android:id="@+id/tvCustomBtn"
+        <LinearLayout
+            android:id="@+id/llContentCustomBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Learn Flow"
-            android:textAlignment="center"
-            android:textColor="@color/salmon"
-            android:textStyle="bold" />
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvCustomBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Learn Flow"
+                android:textAlignment="center"
+                android:textColor="@color/salmon"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/pbCustomBtn"
+            android:visibility="gone"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"/>
 
     </FrameLayout>
 </androidx.cardview.widget.CardView>

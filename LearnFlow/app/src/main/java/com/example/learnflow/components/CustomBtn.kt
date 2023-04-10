@@ -1,28 +1,41 @@
 package com.example.learnflow.components
 
 import android.content.Context
-import android.graphics.Color
 import android.util.AttributeSet
 import android.util.Log
-import android.util.TypedValue
 import android.view.LayoutInflater
-import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.res.ResourcesCompat
 import com.example.learnflow.R
 
 class CustomBtn(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs) {
 
-    private val mLl: FrameLayout
+    private val ll: FrameLayout
     private val tv: TextView
+    private val pb: ProgressBar
+    private val llContent: LinearLayout
+
+    private var isLoading: Boolean = false
+        set(value) {
+            field = value
+            if (value) {
+                pb.visibility = VISIBLE
+                llContent.visibility = INVISIBLE
+                return
+            }
+            pb.visibility = GONE
+            llContent.visibility = VISIBLE
+        }
 
     init {
         LayoutInflater.from(context).inflate(R.layout.custom_btn, this)
-        mLl = findViewById(R.id.flCustomBtn)
+        ll = findViewById(R.id.flCustomBtn)
         tv = findViewById(R.id.tvCustomBtn)
+        pb = findViewById(R.id.pbCustomBtn)
+        llContent = findViewById(R.id.llContentCustomBtn)
 
         handleAttrs(attrs)
         setOnCLickListeners()
@@ -40,9 +53,6 @@ class CustomBtn(context: Context, attrs: AttributeSet?) : LinearLayout(context, 
     }
 
     private fun setOnCLickListeners() {
-        mLl.setOnClickListener {
-            Toast.makeText(context, "test", Toast.LENGTH_LONG).show()
-        }
-
+        ll.setOnClickListener { isLoading = !isLoading }
     }
 }
