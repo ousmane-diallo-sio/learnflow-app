@@ -12,6 +12,7 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimary</item>
         <!-- Customize your theme here. -->
-        <item name="android:textViewStyle">@style/tvNormalText</item>
+        <item name="android:textViewStyle">@style/tvNormalTextStyle</item>
+        <item name="editTextStyle">@style/etNormalTextStyle</item>
     </style>
 </resources>

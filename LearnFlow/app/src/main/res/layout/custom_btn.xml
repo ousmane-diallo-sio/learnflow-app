@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView
+    android:id="@+id/cvCustomBtn"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="@dimen/default_btn_height"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     card_view:cardUseCompatPadding="true"
     app:cardCornerRadius="6dp"
@@ -12,24 +13,24 @@
     <FrameLayout
         android:id="@+id/flCustomBtn"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
         android:background="@drawable/ripple_selector"
         android:orientation="horizontal"
-        android:paddingHorizontal="35dp"
-        android:paddingVertical="15dp">
+        android:paddingHorizontal="10dp">
 
         <LinearLayout
             android:id="@+id/llContentCustomBtn"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/tvCustomBtn"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Learn Flow"
+                android:layout_height="match_parent"
+                android:text="@string/app_name"
+                android:gravity="center"
                 android:textAlignment="center"
                 android:textColor="@color/salmon"
                 android:textStyle="bold" />

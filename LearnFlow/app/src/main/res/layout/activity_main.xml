@@ -24,19 +24,61 @@
             android:textSize="40sp"
             android:textStyle="bold" />
 
-        <androidx.cardview.widget.CardView
-            xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="4"
-            card_view:cardUseCompatPadding="true"
+            android:layout_weight="1"
             app:cardCornerRadius="15dp"
-            app:cardElevation="10dp">
+            app:cardElevation="10dp"
+            card_view:cardUseCompatPadding="true">
 
-            <com.example.learnflow.components.CustomInput
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/white" />
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginVertical="20dp"
+                android:orientation="vertical">
+
+                <com.example.learnflow.components.CustomInput
+                    android:id="@+id/ciEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    card_view:hint="@string/email"
+                    card_view:icon="@drawable/baseline_person_24"
+                    card_view:inputType="textEmailAddress" />
+
+                <com.example.learnflow.components.CustomInput
+                    android:id="@+id/ciPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    card_view:hint="@string/password"
+                    card_view:icon="@drawable/baseline_lock_24"
+                    card_view:inputType="textPassword" />
+
+                <LinearLayout
+                    android:id="@+id/cbWrapperMain"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:background="@drawable/ripple_selector">
+
+                    <CheckBox
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="10dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/save_credentials" />
+                </LinearLayout>
+            </LinearLayout>
         </androidx.cardview.widget.CardView>
 
         <com.example.learnflow.components.CustomBtn
@@ -51,20 +93,32 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             android:layout_weight="0.5"
-            android:gravity="bottom"
+            android:gravity="bottom|center"
             android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Vous n'avez pas de compte ?"
-                android:textAlignment="center"
-                android:textColor="@color/white" />
+                android:orientation="horizontal"
+                android:gravity="center">
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="S'inscrire" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/create_account_cta"
+                    android:textAlignment="center"
+                    android:textColor="@color/white" />
+
+                <com.example.learnflow.components.CustomBtn
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    app:customHeight="30dp"
+                    app:elevation="0dp"
+                    app:btnBackgroundColor="@color/black"
+                    app:textColor="@color/white"
+                    app:text="S'inscrire" />
+            </LinearLayout>
 
         </LinearLayout>
     </LinearLayout>

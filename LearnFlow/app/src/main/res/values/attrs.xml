@@ -2,5 +2,19 @@
 <resources>
     <declare-styleable name="CustomBtn">
         <attr name="text" format="string" />
+        <attr name="textColor" format="reference" />
+        <attr name="btnBackgroundColor" format="reference" />
+        <attr name="textSize" format="dimension" />
+        <attr name="customHeight" format="dimension" />
+        <attr name="elevation" format="dimension" />
+    </declare-styleable>
+    <declare-styleable name="CustomInput">
+        <attr name="icon" format="reference" />
+        <attr name="hint" format="reference" />
+        <attr name="inputType" format="enum">
+            <enum name="text" value="1" />
+            <enum name="textEmailAddress" value="32" />
+            <enum name="textPassword" value="128" />
+        </attr>
     </declare-styleable>
 </resources>

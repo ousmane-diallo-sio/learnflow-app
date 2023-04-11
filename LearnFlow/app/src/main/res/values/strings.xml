@@ -1,4 +1,9 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Learn Flow</string>
     <string name="connect_cta">Se connecter</string>
+    <string name="icon">icon</string>
+    <string name="save_credentials">Se souvenir de moi</string>
+    <string name="email" tools:ignore="ExtraTranslation">Email</string>
+    <string name="password" tools:ignore="ExtraTranslation">Mot de passe</string>
+    <string name="create_account_cta">Vous n\'avez pas de compte ?</string>
 </resources>

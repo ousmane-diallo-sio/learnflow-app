@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="tvNormalText">
+    <style name="tvNormalTextStyle">
         <item name="fontWeight">400</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">@dimen/text_size_md</item>
+    </style>
+    <style name="etNormalTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="fontWeight">400</item>
+        <item name="android:textSize">@dimen/text_size_md</item>
+        <item name="android:textColor">@color/aquamarine</item>
+        <item name="android:textColorHint">@color/aquamarine</item>
+        <item name="android:background">@android:color/transparent</item>
     </style>
 </resources>
