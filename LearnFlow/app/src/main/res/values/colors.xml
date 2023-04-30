@@ -14,4 +14,5 @@
     <color name="topaz">#FFFFD27A</color>
     <color name="bright_gray">#FFE7F2F8</color>
     <color name="gray">#FF808080</color>
+    <color name="black_alpha_1">#10000000</color>
 </resources>

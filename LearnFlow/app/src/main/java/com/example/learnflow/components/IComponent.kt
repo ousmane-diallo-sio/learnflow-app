@@ -4,5 +4,5 @@ import android.util.AttributeSet
 
 interface IComponent {
     fun handleAttrs(attrs: AttributeSet?)
-    fun setOnClickListeners()
+    fun setListeners()
 }

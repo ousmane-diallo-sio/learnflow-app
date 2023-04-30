@@ -14,28 +14,47 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/bright_gray"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="center">
 
             <ImageView
                 android:id="@+id/ivCustomInput"
                 android:layout_width="23dp"
                 android:layout_height="match_parent"
                 android:layout_marginStart="15dp"
+                android:contentDescription="@string/icon"
                 android:src="@drawable/ic_launcher_background"
-                app:tint="@color/aquamarine"
-                android:contentDescription="@string/icon" />
+                app:tint="@color/aquamarine" />
 
             <EditText
                 android:id="@+id/etCustomInput"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:layout_marginHorizontal="10dp"
+                android:layout_weight="1"
+                android:autofillHints="name"
                 android:gravity="center_vertical"
                 android:hint="@string/app_name"
-                android:autofillHints="name"
                 android:inputType="text" />
 
+            <LinearLayout
+                android:id="@+id/llActionCustomInput"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3"
+                android:background="@color/black_alpha_1"
+                android:foreground="@drawable/ripple_selector"
+                android:visibility="invisible">
+
+                <ImageView
+                    android:layout_width="23dp"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitCenter"
+                    android:layout_marginStart="15dp"
+                    android:contentDescription="@string/icon"
+                    android:src="@drawable/ic_launcher_background"
+                    app:tint="@color/aquamarine" />
+            </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 

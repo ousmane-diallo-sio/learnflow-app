@@ -40,7 +40,7 @@
                 android:orientation="vertical">
 
                 <com.example.learnflow.components.CustomInput
-                    android:id="@+id/ciEmail"
+                    android:id="@+id/ciEmailMain"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -50,7 +50,7 @@
                     card_view:inputType="textEmailAddress" />
 
                 <com.example.learnflow.components.CustomInput
-                    android:id="@+id/ciPassword"
+                    android:id="@+id/ciPasswordMain"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -83,9 +83,11 @@
         </androidx.cardview.widget.CardView>
 
         <com.example.learnflow.components.CustomBtn
+            android:id="@+id/btnLoginMain"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1.5"
+            app:textSize="16sp"
             android:gravity="center"
             app:text="@string/connect_cta" />
 
@@ -111,6 +113,7 @@
                     android:textColor="@color/white" />
 
                 <com.example.learnflow.components.CustomBtn
+                    android:id="@+id/btnRegisterMain"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
@@ -118,6 +121,7 @@
                     app:elevation="0dp"
                     app:btnBackgroundColor="@color/black"
                     app:textColor="@color/white"
+                    app:textSize="13sp"
                     app:text="S'inscrire" />
             </LinearLayout>
 

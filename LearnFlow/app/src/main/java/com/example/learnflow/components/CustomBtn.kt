@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -19,7 +20,7 @@ class CustomBtn(context: Context, attrs: AttributeSet?) : LinearLayout(context, 
     private val pb: ProgressBar
     private val llContent: LinearLayout
 
-    private var isLoading: Boolean = false
+    var isLoading: Boolean = false
         set(value) {
             field = value
             if (value) {
@@ -31,6 +32,16 @@ class CustomBtn(context: Context, attrs: AttributeSet?) : LinearLayout(context, 
             llContent.visibility = VISIBLE
         }
 
+    var disabled: Boolean = false
+        set(value) {
+            field = value
+            if (value) {
+                alpha = 0.5f
+                return
+            }
+            alpha = 1f
+        }
+
     init {
         LayoutInflater.from(context).inflate(R.layout.custom_btn, this)
         cv = findViewById(R.id.cvCustomBtn)
@@ -40,13 +51,14 @@ class CustomBtn(context: Context, attrs: AttributeSet?) : LinearLayout(context, 
         llContent = findViewById(R.id.llContentCustomBtn)
 
         handleAttrs(attrs)
-        setOnClickListeners()
+        setListeners()
     }
 
     override fun handleAttrs(attrs: AttributeSet?) {
         val styledAttributes = context.obtainStyledAttributes(attrs, R.styleable.CustomBtn, 0, 0)
         try {
             tv.text = styledAttributes.getString(R.styleable.CustomBtn_text)
+            tv.textSize = Utils.textSizeToSp(context, styledAttributes.getDimension(R.styleable.CustomBtn_textSize, tv.textSize))
             ll.setBackgroundColor(context.getColor(styledAttributes.getResourceId(R.styleable.CustomBtn_btnBackgroundColor, R.color.white)))
             tv.setTextColor(context.getColor(styledAttributes.getResourceId(R.styleable.CustomBtn_textColor, R.color.salmon)))
             val customHeight = styledAttributes.getDimension(R.styleable.CustomBtn_customHeight, 0f)
@@ -67,7 +79,17 @@ class CustomBtn(context: Context, attrs: AttributeSet?) : LinearLayout(context, 
         }
     }
 
-    override fun setOnClickListeners() {
-        ll.setOnClickListener { isLoading = !isLoading }
+    override fun setListeners() {
+
+    }
+
+    override fun setOnClickListener(l: OnClickListener?) {
+        val onClickWrapper: (View) -> Unit = { view ->
+            if (!disabled) {
+                l?.onClick(view)
+                isLoading = true
+            }
+        }
+        super.setOnClickListener(onClickWrapper)
     }
 }

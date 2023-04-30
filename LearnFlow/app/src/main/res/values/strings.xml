@@ -6,4 +6,8 @@
     <string name="email" tools:ignore="ExtraTranslation">Email</string>
     <string name="password" tools:ignore="ExtraTranslation">Mot de passe</string>
     <string name="create_account_cta">Vous n\'avez pas de compte ?</string>
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
 </resources>
