@@ -5,29 +5,31 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.FrameLayout
+import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
+import android.widget.Toast
 import com.example.learnflow.R
 
 class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, attrs), IComponent {
 
-    private val flItems: FrameLayout
+    private val llWrapper: LinearLayout
+    private val rlItems: RelativeLayout
     private val btnPrev: CustomBtn
     private val btnNext: CustomBtn
-    private val items: ArrayList<View> = ArrayList()
+    private var items: ArrayList<View> = ArrayList()
     private var currentIndex = 0
-    private var animationDurationMS: Long = 1000
+    private var animationDurationMS: Long = 300
 
     init {
         LayoutInflater.from(context).inflate(R.layout.slider, this)
+        orientation = VERTICAL
 
-        flItems = findViewById(R.id.flItemsSlider)
+        llWrapper = findViewById(R.id.llWrapperSlider)
+        rlItems = findViewById(R.id.llItemsSlider)
         btnPrev = findViewById(R.id.btnPrevSlider)
         btnNext = findViewById(R.id.btnNextSlider)
 
-        items.filter { v -> v != items.first() }.forEach { v ->
-            animateItem(v, true)
-        }
         setListeners()
     }
 
@@ -46,34 +48,53 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
         }
     }
 
-    override fun addView(child: View?) {
-        Log.i("Components", String.format("test : %s", child.toString()))
+    override fun addView(child: View?, index: Int, params: ViewGroup.LayoutParams?) {
+        super.addView(child, index, params)
         if (child != null) {
-            flItems.addView(child)
             items.add(child)
         }
     }
 
+    override fun onFinishInflate() {
+        super.onFinishInflate()
+        items = items.filter { it.parent === this && it.id != llWrapper.id } as ArrayList<View>
+        items.forEachIndexed { index, view ->
+            removeView(view)
+            rlItems.addView(view)
+            animateItem(view, index,true)
+        }
+    }
+
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+        super.onLayout(changed, l, t, r, b)
+        items.forEachIndexed { index, view ->
+            animateItem(view, index,true)
+        }
+    }
+
     private fun slideForward() {
-        if (items.size > 0) {
+        if (items.size > 1) {
             val nextIndex = (currentIndex + 1) % items.size
-            animateItem(items[currentIndex], false)
-            animateItem(items[nextIndex], false)
+            animateItem(items[currentIndex], currentIndex, false)
+            animateItem(items[nextIndex], nextIndex, false)
             currentIndex = nextIndex
+            Log.d("Components", "index : $currentIndex")
+
         }
     }
 
     private fun slideBackwards() {
-        if (items.size > 0) {
-            val prevIndex = (currentIndex - 1) % items.size
-            animateItem(items[currentIndex], true)
-            animateItem(items[prevIndex], true)
+        if (items.size > 1) {
+            val prevIndex = if (currentIndex == 0) items.size - 1 else currentIndex - 1
+            animateItem(items[currentIndex], currentIndex, true)
+            animateItem(items[prevIndex], prevIndex, true)
             currentIndex = prevIndex
+            Log.d("Components", "index : $currentIndex")
         }
     }
 
-    private fun animateItem(v: View, backwards: Boolean) {
-        val translationX = if (backwards) -width.toFloat() else width.toFloat()
+    private fun animateItem(v: View, index: Int, backwards: Boolean) {
+        val translationX = if (index == currentIndex) 0f else if (backwards) width.toFloat() else -width.toFloat()
         v.animate().translationX(translationX).duration = animationDurationMS
     }
 }
