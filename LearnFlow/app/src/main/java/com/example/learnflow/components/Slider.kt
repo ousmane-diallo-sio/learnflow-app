@@ -38,14 +38,8 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
     }
 
     override fun setListeners() {
-        btnPrev.setOnClickListener {
-            slideBackwards()
-            btnPrev.isLoading = false
-        }
-        btnNext.setOnClickListener {
-            slideForward()
-            btnNext.isLoading = false
-        }
+        btnPrev.setOnClickListener { slideBackwards() }
+        btnNext.setOnClickListener { slideForward() }
     }
 
     override fun addView(child: View?, index: Int, params: ViewGroup.LayoutParams?) {

@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import android.view.View.*
 import android.widget.CheckBox
 import android.widget.LinearLayout
 import androidx.core.view.children
@@ -14,28 +14,46 @@ import com.example.learnflow.webservices.Api
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var loginPart: LinearLayout
+    private lateinit var registerPart: LinearLayout
     private lateinit var cbWrapper: LinearLayout
     private lateinit var ciEmail: CustomInput
     private lateinit var ciPassword: CustomInput
     private lateinit var cb: CheckBox
     private lateinit var btnLogin: CustomBtn
-    private lateinit var btnRegister: CustomBtn
+    private lateinit var btnRegisterCTA: CustomBtn
+    private lateinit var btnLoginCTA: CustomBtn
 
     private val SP_CB_KEY = "cbCredentialsChecked"
     private val SP_EMAIL_KEY = "credentialEmail"
     private val SP_PASSWORD_KEY = "credentialPassword"
     private lateinit var sharedPreferences: SharedPreferences
 
+    private var isLoginView = true
+    set(value) {
+        field = value
+        val visibilityLogin = if (value) VISIBLE else GONE
+        val visibilityRegister = if (value) GONE else VISIBLE
+        btnRegisterCTA.visibility = visibilityLogin
+        loginPart.visibility = visibilityLogin
+
+        btnLoginCTA.visibility = visibilityRegister
+        registerPart.visibility = visibilityRegister
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        loginPart = findViewById(R.id.loginPartMain)
+        registerPart = findViewById(R.id.registerPartMain)
         cbWrapper = findViewById(R.id.cbWrapperMain)
         cb = cbWrapper.children.elementAt(0) as CheckBox
         ciEmail = findViewById(R.id.ciEmailMain)
         ciPassword = findViewById(R.id.ciPasswordMain)
         btnLogin = findViewById(R.id.btnLoginMain)
-        btnRegister = findViewById(R.id.btnRegisterMain)
+        btnRegisterCTA = findViewById(R.id.btnRegisterCTAMain)
+        btnLoginCTA = findViewById(R.id.btnLoginCTAMain)
 
         sharedPreferences = getSharedPreferences(
             getString(R.string.app_name),
@@ -50,6 +68,7 @@ class MainActivity : AppCompatActivity() {
         ciEmail.et.setText(sharedPreferences.getString(SP_EMAIL_KEY, null))
         ciPassword.et.setText(sharedPreferences.getString(SP_PASSWORD_KEY, null))
         cb.isChecked = sharedPreferences.getBoolean(SP_CB_KEY, false)
+        btnLogin.isLoading = false
         handleLoginBtn()
     }
 
@@ -65,6 +84,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnLogin.setOnClickListener {
+            btnLogin.isLoading = true
             if (cb.isChecked) {
                 saveCredentials()
             } else {
@@ -72,6 +92,9 @@ class MainActivity : AppCompatActivity() {
             }
             Api.login(this, ciEmail.et.text.toString(), ciPassword.et.text.toString())
         }
+
+        btnRegisterCTA.setOnClickListener { isLoginView = !isLoginView }
+        btnLoginCTA.setOnClickListener { isLoginView = !isLoginView }
     }
 
     private fun saveCredentials() {

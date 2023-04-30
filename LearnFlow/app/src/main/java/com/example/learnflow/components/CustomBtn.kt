@@ -85,7 +85,6 @@ class CustomBtn(context: Context, attrs: AttributeSet?) : LinearLayout(context, 
     override fun setOnClickListener(l: OnClickListener?) {
         val onClickWrapper: (View) -> Unit = { view ->
             if (!disabled) {
-                isLoading = true
                 l?.onClick(view)
             }
         }
