@@ -71,7 +71,6 @@ class CustomBtn(context: Context, attrs: AttributeSet?) : LinearLayout(context, 
             } else if (elevation.toInt() > 0) {
                 cv.elevation = elevation
             }
-            Log.i(null, elevation.toString())
         } catch (e: Exception) {
             Log.e("Components", e.toString())
         } finally {
@@ -86,8 +85,8 @@ class CustomBtn(context: Context, attrs: AttributeSet?) : LinearLayout(context, 
     override fun setOnClickListener(l: OnClickListener?) {
         val onClickWrapper: (View) -> Unit = { view ->
             if (!disabled) {
-                l?.onClick(view)
                 isLoading = true
+                l?.onClick(view)
             }
         }
         super.setOnClickListener(onClickWrapper)

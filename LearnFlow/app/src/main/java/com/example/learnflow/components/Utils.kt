@@ -10,5 +10,6 @@ class Utils {
             val scale = context.resources.displayMetrics.density
             return textSize / scale
         }
+
     }
 }
