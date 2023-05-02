@@ -36,10 +36,10 @@ class CustomBtn(context: Context, attrs: AttributeSet?) : LinearLayout(context, 
         set(value) {
             field = value
             if (value) {
-                alpha = 0.5f
+                animate().alpha(0f).duration = 200
                 return
             }
-            alpha = 1f
+            animate().alpha(1f).duration = 200
         }
 
     init {

@@ -55,40 +55,51 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
         items.forEachIndexed { index, view ->
             removeView(view)
             rlItems.addView(view)
-            animateItem(view, index,true)
+            if (index != 0) {
+                view.animate().translationX(width.toFloat()).duration = 0
+            }
         }
-    }
-
-    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        super.onLayout(changed, l, t, r, b)
-        items.forEachIndexed { index, view ->
-            animateItem(view, index,true)
-        }
+        items[0].bringToFront()
+        if (!isMovableLeft()) btnPrev.disabled = true
+        if (!isMovableRight()) btnNext.disabled = true
     }
 
     private fun slideForward() {
         if (items.size > 1) {
-            val nextIndex = (currentIndex + 1) % items.size
-            animateItem(items[currentIndex], currentIndex, false)
-            animateItem(items[nextIndex], nextIndex, false)
-            currentIndex = nextIndex
-            Log.d("Components", "index : $currentIndex")
-
+            animateItem(false)
+            btnPrev.disabled = !isMovableLeft()
+            btnNext.disabled = !isMovableRight()
         }
     }
 
     private fun slideBackwards() {
         if (items.size > 1) {
-            val prevIndex = if (currentIndex == 0) items.size - 1 else currentIndex - 1
-            animateItem(items[currentIndex], currentIndex, true)
-            animateItem(items[prevIndex], prevIndex, true)
-            currentIndex = prevIndex
-            Log.d("Components", "index : $currentIndex")
+            animateItem( true)
+            btnPrev.disabled = !isMovableLeft()
+            btnNext.disabled = !isMovableRight()
         }
     }
 
-    private fun animateItem(v: View, index: Int, backwards: Boolean) {
-        val translationX = if (index == currentIndex) 0f else if (backwards) width.toFloat() else -width.toFloat()
+    private fun isMovableLeft(): Boolean {
+        return currentIndex > 0
+    }
+
+    private fun isMovableRight(): Boolean {
+        return currentIndex < items.size -1
+    }
+
+    private fun animateItem(backwards: Boolean) {
+        if (backwards && !isMovableLeft()) return
+        if (!backwards && !isMovableRight()) return
+
+        val v = items[currentIndex]
+        currentIndex = if (backwards) currentIndex - 1 else currentIndex + 1
+        val newItem = items[currentIndex]
+        val translationX = if (backwards) width.toFloat() else -width.toFloat()
+
         v.animate().translationX(translationX).duration = animationDurationMS
+        newItem.bringToFront()
+        newItem.animate().translationX(translationX * -1).duration = animationDurationMS
+        newItem.animate().translationX(0f).duration = animationDurationMS
     }
 }
