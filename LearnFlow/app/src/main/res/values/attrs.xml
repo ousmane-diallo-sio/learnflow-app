@@ -7,6 +7,9 @@
         <attr name="textSize" format="dimension" />
         <attr name="customHeight" format="dimension" />
         <attr name="elevation" format="dimension" />
+        <attr name="iconBefore" format="reference" />
+        <attr name="iconAfter" format="reference" />
+        <attr name="iconsSize" format="dimension" />
     </declare-styleable>
     <declare-styleable name="CustomInput">
         <attr name="icon" format="reference" />

@@ -88,7 +88,7 @@ class CustomInput(context: Context, attrs: AttributeSet?) : LinearLayout(context
     }
 
     fun setIvActionTint(color: Int) {
-        ivAction.setColorFilter(color, android.graphics.PorterDuff.Mode.MULTIPLY)
+        ivAction.setColorFilter(color)
     }
 
     fun setIvActionDrawable(drawable: Drawable) {

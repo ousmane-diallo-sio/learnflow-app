@@ -204,6 +204,13 @@
                                 card_view:icon="@drawable/baseline_person_24"
                                 card_view:inputType="textEmailAddress" />
 
+                            <com.example.learnflow.components.CustomInput
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                card_view:icon="@drawable/baseline_person_24"
+                                card_view:inputType="textEmailAddress" />
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
                 </com.example.learnflow.components.Slider>

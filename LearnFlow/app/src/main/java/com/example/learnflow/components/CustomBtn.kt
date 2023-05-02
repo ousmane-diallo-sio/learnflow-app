@@ -6,17 +6,21 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.core.view.setPadding
 import com.example.learnflow.R
 
 class CustomBtn(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs), IComponent {
 
     private val cv: CardView
     private val ll: FrameLayout
+    private val iconBefore: ImageView
     private val tv: TextView
+    private val iconAfter: ImageView
     private val pb: ProgressBar
     private val llContent: LinearLayout
 
@@ -46,7 +50,9 @@ class CustomBtn(context: Context, attrs: AttributeSet?) : LinearLayout(context, 
         LayoutInflater.from(context).inflate(R.layout.custom_btn, this)
         cv = findViewById(R.id.cvCustomBtn)
         ll = findViewById(R.id.flCustomBtn)
+        iconBefore = findViewById(R.id.iconBeforeCustomBtn)
         tv = findViewById(R.id.tvCustomBtn)
+        iconAfter = findViewById(R.id.iconAfterCustomBtn)
         pb = findViewById(R.id.pbCustomBtn)
         llContent = findViewById(R.id.llContentCustomBtn)
 
@@ -71,6 +77,24 @@ class CustomBtn(context: Context, attrs: AttributeSet?) : LinearLayout(context, 
             } else if (elevation.toInt() > 0) {
                 cv.elevation = elevation
             }
+            iconBefore.setImageResource(styledAttributes.getResourceId(R.styleable.CustomBtn_iconBefore, 0))
+            iconAfter.setImageResource(styledAttributes.getResourceId(R.styleable.CustomBtn_iconAfter, 0))
+            val iconsSize = styledAttributes.getDimension(R.styleable.CustomBtn_iconsSize, 0f)
+            if (iconsSize > 0) {
+                if (iconBefore.drawable != null) {
+                    iconBefore.layoutParams.width = iconsSize.toInt()
+                    iconBefore.layoutParams.height = iconsSize.toInt()
+                    iconBefore.requestLayout()
+                }
+                if (iconAfter.drawable != null) {
+                    iconAfter.layoutParams.width = iconsSize.toInt()
+                    iconAfter.layoutParams.height = iconsSize.toInt()
+                    iconAfter.requestLayout()
+                }
+            }
+            iconBefore.setColorFilter(tv.currentTextColor)
+            iconAfter.setColorFilter(tv.currentTextColor)
+
         } catch (e: Exception) {
             Log.e("Components", e.toString())
         } finally {

@@ -59,8 +59,8 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.app_name),
             Context.MODE_PRIVATE
         )
-
         setListeners()
+        btnRegisterCTA.performClick()
     }
 
     override fun onStart() {

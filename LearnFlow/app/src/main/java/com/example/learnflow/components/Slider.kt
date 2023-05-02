@@ -19,7 +19,9 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
     private val btnNext: CustomBtn
     private var items: ArrayList<View> = ArrayList()
     private var currentIndex = 0
-    private var animationDurationMS: Long = 300
+    private var animationDurationMS: Long = 200
+
+    // TODO Add new attrs on CustomBtn --> iconBefore && iconAfter
 
     init {
         LayoutInflater.from(context).inflate(R.layout.slider, this)
@@ -62,6 +64,15 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
         items[0].bringToFront()
         if (!isMovableLeft()) btnPrev.disabled = true
         if (!isMovableRight()) btnNext.disabled = true
+    }
+
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+        super.onLayout(changed, l, t, r, b)
+        items.forEachIndexed { index, view ->
+            if (index != 0) {
+                view.translationX = width.toFloat()
+            }
+        }
     }
 
     private fun slideForward() {
