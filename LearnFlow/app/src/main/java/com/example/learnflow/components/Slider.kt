@@ -15,13 +15,11 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
 
     private val llWrapper: LinearLayout
     private val rlItems: RelativeLayout
-    private val btnPrev: CustomBtn
-    private val btnNext: CustomBtn
-    private var items: ArrayList<View> = ArrayList()
+    val btnPrev: CustomBtn
+    val btnNext: CustomBtn
+    private var items: ArrayList<SliderItem> = ArrayList()
     private var currentIndex = 0
     private var animationDurationMS: Long = 200
-
-    // TODO Add new attrs on CustomBtn --> iconBefore && iconAfter
 
     init {
         LayoutInflater.from(context).inflate(R.layout.slider, this)
@@ -32,11 +30,21 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
         btnPrev = findViewById(R.id.btnPrevSlider)
         btnNext = findViewById(R.id.btnNextSlider)
 
+        handleAttrs(attrs)
         setListeners()
     }
 
     override fun handleAttrs(attrs: AttributeSet?) {
-        TODO("Not yet implemented")
+        val styledAttributes = context.obtainStyledAttributes(attrs, R.styleable.Slider, 0, 0)
+
+        try {
+            btnPrev.disabled = styledAttributes.getBoolean(R.styleable.Slider_disableBtnPrev, false)
+            btnNext.disabled = styledAttributes.getBoolean(R.styleable.Slider_disableBtnNext, false)
+        } catch (e: Exception) {
+            Log.e("Components", e.toString())
+        } finally {
+            styledAttributes.recycle()
+        }
     }
 
     override fun setListeners() {
@@ -46,14 +54,13 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
 
     override fun addView(child: View?, index: Int, params: ViewGroup.LayoutParams?) {
         super.addView(child, index, params)
-        if (child != null) {
+        if (child != null && child is SliderItem) {
             items.add(child)
         }
     }
 
     override fun onFinishInflate() {
         super.onFinishInflate()
-        items = items.filter { it.parent === this && it.id != llWrapper.id } as ArrayList<View>
         items.forEachIndexed { index, view ->
             removeView(view)
             rlItems.addView(view)

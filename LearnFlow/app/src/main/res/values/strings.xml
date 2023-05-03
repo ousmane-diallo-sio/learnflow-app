@@ -11,4 +11,10 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="register_user_type_title" tools:ignore="ExtraTranslation">Vous êtes un...</string>
+    <string name="student">Élève</string>
+    <string name="teacher">Professeur</string>
+    <string name="name">Nom</string>
+    <string name="last_name">Nom</string>
+    <string name="first_name">Prénom</string>
+    <string name="birthdate">Date de naissance</string>
 </resources>

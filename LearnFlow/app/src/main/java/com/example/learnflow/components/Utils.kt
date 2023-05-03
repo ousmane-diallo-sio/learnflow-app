@@ -7,20 +7,16 @@ import android.content.Context
 import android.view.View
 
 
-class Utils {
-    companion object {
+object Utils {
+    fun textSizeToSp(context: Context, textSize: Float): Float {
+        val scale = context.resources.displayMetrics.density
+        return textSize / scale
+    }
 
-        fun textSizeToSp(context: Context, textSize: Float): Float {
-            val scale = context.resources.displayMetrics.density
-            return textSize / scale
-        }
-
-        fun animateBackgroundColor(view: View, colorFrom: Int, colorTo: Int, updateListener: AnimatorUpdateListener ) {
-            val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
-            colorAnimation.duration = 150
-            colorAnimation.addUpdateListener(updateListener)
-            colorAnimation.start()
-        }
-
+    fun animateBackgroundColor(view: View, colorFrom: Int, colorTo: Int, updateListener: AnimatorUpdateListener ) {
+        val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
+        colorAnimation.duration = 150
+        colorAnimation.addUpdateListener(updateListener)
+        colorAnimation.start()
     }
 }

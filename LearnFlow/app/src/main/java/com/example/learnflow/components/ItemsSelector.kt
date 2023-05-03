@@ -14,6 +14,8 @@ class ItemsSelector(context: Context, attrs: AttributeSet): LinearLayout(context
 
     private val fblItemsContainer: FlexboxLayout
     private var items = ArrayList<SelectorItem>()
+    private var multiSelection = false
+    private var onElementSelected: ((SelectorItem) -> Unit)? = null
 
     init {
         LayoutInflater.from(context).inflate(R.layout.items_selector, this)
@@ -22,7 +24,15 @@ class ItemsSelector(context: Context, attrs: AttributeSet): LinearLayout(context
     }
 
     override fun handleAttrs(attrs: AttributeSet?) {
-        TODO("Not yet implemented")
+        val styledAttributes = context.obtainStyledAttributes(attrs, R.styleable.ItemsSelector, 0, 0)
+
+        try {
+            multiSelection = styledAttributes.getBoolean(R.styleable.ItemsSelector_multiSelection, multiSelection)
+        } catch (e: Exception) {
+            Log.e("Components", e.toString())
+        } finally {
+            styledAttributes.recycle()
+        }
     }
 
     override fun setListeners() {
@@ -33,7 +43,6 @@ class ItemsSelector(context: Context, attrs: AttributeSet): LinearLayout(context
         super.addView(child, index, params)
         if (child != null && child is SelectorItem) {
             items.add(child)
-            Log.d("Components", "item size : ${items.size}")
         }
     }
 
@@ -43,9 +52,19 @@ class ItemsSelector(context: Context, attrs: AttributeSet): LinearLayout(context
             removeView(item)
             fblItemsContainer.addView(item)
             item.setOnClickListener {
+                if (!multiSelection) unselectAll()
                 item.isItemSelected = !item.isItemSelected
+                onElementSelected?.invoke(item)
             }
         }
+    }
+
+    fun unselectAll() {
+        items.forEach { it.isItemSelected = false }
+    }
+
+    fun setOnElementSelected(eventListener: (SelectorItem) -> Unit) {
+        onElementSelected = eventListener
     }
 
 }

@@ -3,6 +3,7 @@ package com.example.learnflow.components
 import android.content.Context
 import android.content.res.ColorStateList
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -38,10 +39,25 @@ class SelectorItem(context: Context, attrs: AttributeSet): LinearLayout(context,
 
         defaultColors["cvItemWrapper"] = cvItemWrapper.cardBackgroundColor
         defaultColors["tvItem"] = tvItem.textColors
+
+        handleAttrs(attrs)
     }
 
     override fun handleAttrs(attrs: AttributeSet?) {
-        TODO("Not yet implemented")
+        val styledAttributes = context.obtainStyledAttributes(attrs, R.styleable.SelectorItem, 0, 0)
+
+        try {
+            val textResId = styledAttributes.getResourceId(R.styleable.SelectorItem_itemText, 0)
+            if (textResId != 0) {
+                tvItem.setText(textResId)
+            } else {
+                tvItem.text = styledAttributes.getString(R.styleable.SelectorItem_itemText)
+            }
+        } catch (e: Exception) {
+            Log.e("Components", e.toString())
+        } finally {
+            styledAttributes.recycle()
+        }
     }
 
     override fun setListeners() {

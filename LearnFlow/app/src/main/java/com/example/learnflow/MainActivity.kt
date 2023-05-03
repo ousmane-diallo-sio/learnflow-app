@@ -10,9 +10,29 @@ import android.widget.LinearLayout
 import androidx.core.view.children
 import com.example.learnflow.components.CustomBtn
 import com.example.learnflow.components.CustomInput
+import com.example.learnflow.components.ItemsSelector
+import com.example.learnflow.components.Slider
+import com.example.learnflow.model.User
 import com.example.learnflow.webservices.Api
 
 class MainActivity : AppCompatActivity() {
+
+    private val SP_CB_KEY = "cbCredentialsChecked"
+    private val SP_EMAIL_KEY = "credentialEmail"
+    private val SP_PASSWORD_KEY = "credentialPassword"
+    private lateinit var sharedPreferences: SharedPreferences
+
+    private var isLoginView = true
+        set(value) {
+            field = value
+            val visibilityLogin = if (value) VISIBLE else GONE
+            val visibilityRegister = if (value) GONE else VISIBLE
+            btnRegisterCTA.visibility = visibilityLogin
+            loginPart.visibility = visibilityLogin
+
+            btnLoginCTA.visibility = visibilityRegister
+            registerPart.visibility = visibilityRegister
+        }
 
     private lateinit var loginPart: LinearLayout
     private lateinit var registerPart: LinearLayout
@@ -23,23 +43,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnLogin: CustomBtn
     private lateinit var btnRegisterCTA: CustomBtn
     private lateinit var btnLoginCTA: CustomBtn
+    private lateinit var sliderRegisterProcess: Slider
+    private lateinit var itemsSelectorUserType: ItemsSelector
 
-    private val SP_CB_KEY = "cbCredentialsChecked"
-    private val SP_EMAIL_KEY = "credentialEmail"
-    private val SP_PASSWORD_KEY = "credentialPassword"
-    private lateinit var sharedPreferences: SharedPreferences
-
-    private var isLoginView = true
-    set(value) {
-        field = value
-        val visibilityLogin = if (value) VISIBLE else GONE
-        val visibilityRegister = if (value) GONE else VISIBLE
-        btnRegisterCTA.visibility = visibilityLogin
-        loginPart.visibility = visibilityLogin
-
-        btnLoginCTA.visibility = visibilityRegister
-        registerPart.visibility = visibilityRegister
-    }
+    private var currentUser: User = User()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +61,8 @@ class MainActivity : AppCompatActivity() {
         btnLogin = findViewById(R.id.btnLoginMain)
         btnRegisterCTA = findViewById(R.id.btnRegisterCTAMain)
         btnLoginCTA = findViewById(R.id.btnLoginCTAMain)
+        sliderRegisterProcess = findViewById(R.id.sliderRegisterProcessMain)
+        itemsSelectorUserType = findViewById(R.id.itemsSelectorUserTypeMain)
 
         sharedPreferences = getSharedPreferences(
             getString(R.string.app_name),
@@ -94,6 +103,11 @@ class MainActivity : AppCompatActivity() {
 
         btnRegisterCTA.setOnClickListener { isLoginView = !isLoginView }
         btnLoginCTA.setOnClickListener { isLoginView = !isLoginView }
+
+        itemsSelectorUserType.setOnElementSelected {
+            sliderRegisterProcess.btnNext.disabled = false
+            // set currentUser type to selected type
+        }
     }
 
     private fun saveCredentials() {

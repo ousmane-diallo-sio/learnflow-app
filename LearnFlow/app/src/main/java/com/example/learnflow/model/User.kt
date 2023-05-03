@@ -3,12 +3,14 @@ package com.example.learnflow.model
 import java.time.LocalDate
 
 open class User {
-    val firstName: String
-    val lastName: String
-    val birthDay: LocalDate
-    val email: String
-    val address: Address
-    val phoneNumber: String
+    var firstName: String? = null
+    var lastName: String? = null
+    var birthDay: LocalDate? = null
+    var email: String? = null
+    var address: Address? = null
+    var phoneNumber: String? = null
+
+    constructor() {}
 
     constructor(firstName: String, lastName: String, birthDay: LocalDate, email: String, address: Address, phoneNumber: String) {
         this.firstName = firstName

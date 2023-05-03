@@ -20,4 +20,14 @@
             <enum name="textPassword" value="128" />
         </attr>
     </declare-styleable>
+    <declare-styleable name="ItemsSelector">
+        <attr name="multiSelection" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="Slider">
+        <attr name="disableBtnPrev" format="boolean" />
+        <attr name="disableBtnNext" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="SelectorItem">
+        <attr name="itemText" format="string|reference" />
+    </declare-styleable>
 </resources>
