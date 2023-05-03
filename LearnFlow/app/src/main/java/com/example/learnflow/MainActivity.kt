@@ -60,7 +60,6 @@ class MainActivity : AppCompatActivity() {
             Context.MODE_PRIVATE
         )
         setListeners()
-        btnRegisterCTA.performClick()
     }
 
     override fun onStart() {
