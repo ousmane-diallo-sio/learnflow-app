@@ -2,6 +2,7 @@ package com.example.learnflow.components
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,25 +26,25 @@ class ItemsSelector(context: Context, attrs: AttributeSet): LinearLayout(context
     }
 
     override fun setListeners() {
-        items.forEach{ item ->
-            item.setOnClickListener {
-                item.isSelected = !item.isSelected
-            }
-        }
+
     }
 
     override fun addView(child: View?, index: Int, params: ViewGroup.LayoutParams?) {
         super.addView(child, index, params)
         if (child != null && child is SelectorItem) {
             items.add(child)
+            Log.d("Components", "item size : ${items.size}")
         }
     }
 
     override fun onFinishInflate() {
         super.onFinishInflate()
-        items.forEachIndexed { index, view ->
-            removeView(view)
-            fblItemsContainer.addView(view)
+        items.forEachIndexed { _, item ->
+            removeView(item)
+            fblItemsContainer.addView(item)
+            item.setOnClickListener {
+                item.isItemSelected = !item.isItemSelected
+            }
         }
     }
 

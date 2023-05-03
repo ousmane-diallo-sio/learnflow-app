@@ -14,16 +14,21 @@ class SelectorItem(context: Context, attrs: AttributeSet): LinearLayout(context,
     private val cvItemWrapper: CardView
     private val tvItem: TextView
     private val defaultColors = HashMap<String, ColorStateList>()
-    private var isItemSelected = false
+    var isItemSelected = false
     set(value) {
         field = value
-        if (value) {
-            cvItemWrapper.setCardBackgroundColor(context.getColor(R.color.aquamarine))
-            tvItem.setTextColor(context.getColor(R.color.bright_gray))
-        } else {
-            cvItemWrapper.setCardBackgroundColor(defaultColors["cvItemWrapper"])
-            tvItem.setTextColor(defaultColors["tvItem"])
-        }
+        val cvColorTo = context.getColor(if (value) R.color.aquamarine else R.color.bright_gray)
+        val tvColorTo = context.getColor(if (value) R.color.bright_gray else R.color.aquamarine)
+        Utils.animateBackgroundColor(
+            cvItemWrapper,
+            cvItemWrapper.cardBackgroundColor.defaultColor,
+            cvColorTo
+        ) { animator -> cvItemWrapper.setCardBackgroundColor(animator.animatedValue as Int) }
+        Utils.animateBackgroundColor(
+            tvItem,
+            tvItem.currentTextColor,
+            tvColorTo
+        ) { animator -> tvItem.setTextColor(animator.animatedValue as Int) }
     }
 
     init {
