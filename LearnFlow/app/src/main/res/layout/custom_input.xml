@@ -36,7 +36,8 @@
                 android:autofillHints="name"
                 android:gravity="center_vertical"
                 android:hint="@string/app_name"
-                android:inputType="text" />
+                android:inputType="text"
+                style="@style/tvNormalTextStyle" />
 
             <LinearLayout
                 android:id="@+id/llActionCustomInput"

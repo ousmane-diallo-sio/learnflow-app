@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View.*
 import android.widget.CheckBox
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.view.children
 import com.example.learnflow.components.CustomBtn
 import com.example.learnflow.components.CustomInput
@@ -25,13 +26,15 @@ class MainActivity : AppCompatActivity() {
     private var isLoginView = true
         set(value) {
             field = value
-            val visibilityLogin = if (value) VISIBLE else GONE
-            val visibilityRegister = if (value) GONE else VISIBLE
-            btnRegisterCTA.visibility = visibilityLogin
-            loginPart.visibility = visibilityLogin
+            val loginVisibility = if (value) VISIBLE else GONE
+            val registerVisibility = if (value) GONE else VISIBLE
 
-            btnLoginCTA.visibility = visibilityRegister
-            registerPart.visibility = visibilityRegister
+            tvBottomCTA.setText(if (loginVisibility == VISIBLE) R.string.create_account_cta else R.string.login_cta)
+
+            btnRegisterCTA.visibility = loginVisibility
+            loginPart.visibility = loginVisibility
+            btnLoginCTA.visibility = registerVisibility
+            registerPart.visibility = registerVisibility
         }
 
     private lateinit var loginPart: LinearLayout
@@ -40,6 +43,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var ciEmail: CustomInput
     private lateinit var ciPassword: CustomInput
     private lateinit var cb: CheckBox
+    private lateinit var tvBottomCTA: TextView
     private lateinit var btnLogin: CustomBtn
     private lateinit var btnRegisterCTA: CustomBtn
     private lateinit var btnLoginCTA: CustomBtn
@@ -58,6 +62,7 @@ class MainActivity : AppCompatActivity() {
         cb = cbWrapper.children.elementAt(0) as CheckBox
         ciEmail = findViewById(R.id.ciEmailMain)
         ciPassword = findViewById(R.id.ciPasswordMain)
+        tvBottomCTA = findViewById(R.id.tvBottomCTAMain)
         btnLogin = findViewById(R.id.btnLoginMain)
         btnRegisterCTA = findViewById(R.id.btnRegisterCTAMain)
         btnLoginCTA = findViewById(R.id.btnLoginCTAMain)

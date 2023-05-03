@@ -1,6 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Learn Flow</string>
-    <string name="connect_cta">Se connecter</string>
     <string name="icon">icon</string>
     <string name="save_credentials">Se souvenir de moi</string>
     <string name="email" tools:ignore="ExtraTranslation">Email</string>
@@ -17,4 +16,6 @@
     <string name="last_name">Nom</string>
     <string name="first_name">Prénom</string>
     <string name="birthdate">Date de naissance</string>
+    <string name="login">Se connecter</string>
+    <string name="login_cta">Vous avez déjà un compte ?</string>
 </resources>
