@@ -19,7 +19,6 @@ class ItemsSelector(context: Context, attrs: AttributeSet): LinearLayout(context
 
     init {
         LayoutInflater.from(context).inflate(R.layout.items_selector, this)
-
         fblItemsContainer = findViewById(R.id.fblItemsContainerItemSelector)
     }
 
@@ -35,9 +34,7 @@ class ItemsSelector(context: Context, attrs: AttributeSet): LinearLayout(context
         }
     }
 
-    override fun setListeners() {
-
-    }
+    override fun setListeners() {}
 
     override fun addView(child: View?, index: Int, params: ViewGroup.LayoutParams?) {
         super.addView(child, index, params)
@@ -46,17 +43,14 @@ class ItemsSelector(context: Context, attrs: AttributeSet): LinearLayout(context
         }
     }
 
+    fun addItem(item: SelectorItem) {
+        items.add(item)
+        setupItem(item)
+    }
+
     override fun onFinishInflate() {
         super.onFinishInflate()
-        items.forEachIndexed { _, item ->
-            removeView(item)
-            fblItemsContainer.addView(item)
-            item.setOnClickListener {
-                if (!multiSelection) unselectAll()
-                item.isItemSelected = !item.isItemSelected
-                onElementSelected?.invoke(item)
-            }
-        }
+        items.forEach { setupItem(it) }
     }
 
     fun unselectAll() {
@@ -65,6 +59,16 @@ class ItemsSelector(context: Context, attrs: AttributeSet): LinearLayout(context
 
     fun setOnElementSelected(eventListener: (SelectorItem) -> Unit) {
         onElementSelected = eventListener
+    }
+
+    private fun setupItem(item: SelectorItem) {
+        removeView(item)
+        fblItemsContainer.addView(item)
+        item.setOnClickListener {
+            if (!multiSelection) unselectAll()
+            item.isItemSelected = !item.isItemSelected
+            onElementSelected?.invoke(item)
+        }
     }
 
 }

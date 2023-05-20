@@ -7,12 +7,11 @@ import android.os.Bundle
 import android.view.View.*
 import android.widget.CheckBox
 import android.widget.LinearLayout
+import android.widget.LinearLayout.LayoutParams
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.view.children
-import com.example.learnflow.components.CustomBtn
-import com.example.learnflow.components.CustomInput
-import com.example.learnflow.components.ItemsSelector
-import com.example.learnflow.components.Slider
+import com.example.learnflow.components.*
 import com.example.learnflow.model.User
 import com.example.learnflow.webservices.Api
 
@@ -48,7 +47,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnRegisterCTA: CustomBtn
     private lateinit var btnLoginCTA: CustomBtn
     private lateinit var sliderRegisterProcess: Slider
-    private lateinit var itemsSelectorUserType: ItemsSelector
+    private lateinit var iSelectUserType: ItemsSelector
+
+
+    // Student specific form
+    private lateinit var iSelectStudentSchoolLevel: ItemsSelector
 
     private var currentUser: User = User()
 
@@ -67,13 +70,15 @@ class MainActivity : AppCompatActivity() {
         btnRegisterCTA = findViewById(R.id.btnRegisterCTAMain)
         btnLoginCTA = findViewById(R.id.btnLoginCTAMain)
         sliderRegisterProcess = findViewById(R.id.sliderRegisterProcessMain)
-        itemsSelectorUserType = findViewById(R.id.itemsSelectorUserTypeMain)
+        iSelectUserType = findViewById(R.id.iSelectUserTypeMain)
+        iSelectStudentSchoolLevel = findViewById(R.id.iSelectStudentSchoolLevelMain)
 
         sharedPreferences = getSharedPreferences(
             getString(R.string.app_name),
             Context.MODE_PRIVATE
         )
         setListeners()
+        setupSchoolLevels()
     }
 
     override fun onStart() {
@@ -109,7 +114,7 @@ class MainActivity : AppCompatActivity() {
         btnRegisterCTA.setOnClickListener { isLoginView = !isLoginView }
         btnLoginCTA.setOnClickListener { isLoginView = !isLoginView }
 
-        itemsSelectorUserType.setOnElementSelected {
+        iSelectUserType.setOnElementSelected {
             sliderRegisterProcess.btnNext.disabled = false
             // set currentUser type to selected type
         }
@@ -138,6 +143,17 @@ class MainActivity : AppCompatActivity() {
             return
         }
         btnLogin.disabled = false
+    }
+
+    private fun setupSchoolLevels() {
+        val schoolLevels = arrayOf("CP", "CE1", "CE2", "CM1", "CM2", "6ème", "5ème", "4ème", "3ème", "2nde", "1ère", "Terminale", "Bac +1", "Bac +2", "Bac +3", "Bac +4", "Bac +5")
+        val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+        schoolLevels.forEach {
+            val selectorItem = SelectorItem(this, null)
+            selectorItem.layoutParams = layoutParams
+            selectorItem.setText(it)
+            iSelectStudentSchoolLevel.addItem(selectorItem)
+        }
     }
 
 }

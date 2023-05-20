@@ -6,7 +6,7 @@ object EnvUtils {
 
     private val dotenv = dotenv {
         directory = "/assets"
-        filename = "env" // instead of '.env', use 'env'
+        filename = "env"
     }
 
     private const val placeholder = "value-not-found"

@@ -17,7 +17,7 @@ object Api {
 
     fun login(context: Context, email: String, password: String) {
         ContextCompat.startActivity(context, Intent(context, HomeActivity::class.java), null)
-        Log.d("Components", EnvUtils.API_BASE_URL)
+        Log.d("Components", "${EnvUtils.API_BASE_URL}${Endpoints.loginStudent}")
     }
 
     fun register(user: User) {

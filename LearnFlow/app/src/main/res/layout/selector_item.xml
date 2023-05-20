@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginVertical="10dp"
+        android:layout_marginHorizontal="10dp"
         app:cardBackgroundColor="@color/bright_gray"
         app:layout_constraintTop_toTopOf="parent"
         app:cardCornerRadius="@dimen/radius_20"

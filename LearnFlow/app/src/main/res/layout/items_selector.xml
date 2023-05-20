@@ -3,14 +3,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:maxHeight="300dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:ignore="MissingDefaultResource">
 
-    <com.google.android.flexbox.FlexboxLayout
-        android:id="@+id/fblItemsContainerItemSelector"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:flexDirection="column"
-        app:justifyContent="space_evenly"/>
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/fblItemsContainerItemSelector"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:flexDirection="column"
+            app:justifyContent="space_evenly"/>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

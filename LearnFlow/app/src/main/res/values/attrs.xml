@@ -16,6 +16,8 @@
         <attr name="hint" format="reference" />
         <attr name="inputType" format="enum">
             <enum name="text" value="1" />
+            <enum name="number" value="2" />
+            <enum name="date" value="16" />
             <enum name="textEmailAddress" value="32" />
             <enum name="textPassword" value="128" />
         </attr>

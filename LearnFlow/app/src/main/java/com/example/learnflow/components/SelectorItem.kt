@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import com.example.learnflow.R
 
-class SelectorItem(context: Context, attrs: AttributeSet): LinearLayout(context, attrs), IComponent {
+class SelectorItem(context: Context, attrs: AttributeSet?): LinearLayout(context, attrs), IComponent {
 
     private val cvItemWrapper: CardView
     private val tvItem: TextView
@@ -58,6 +58,10 @@ class SelectorItem(context: Context, attrs: AttributeSet): LinearLayout(context,
         } finally {
             styledAttributes.recycle()
         }
+    }
+
+    fun setText(text: String) {
+        tvItem.text = text
     }
 
     override fun setListeners() {

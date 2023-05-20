@@ -18,4 +18,10 @@
     <string name="birthdate">Date de naissance</string>
     <string name="login">Se connecter</string>
     <string name="login_cta">Vous avez déjà un compte ?</string>
+    <string name="phone_number">Numéro de téléphone</string>
+    <string name="home_city">Ville de résidence</string>
+    <string name="street">Rue</string>
+    <string name="zip_code">Code postal</string>
+    <string name="further_address">Complément d\'adresse</string>
+    <string name="select_school_level">Sélectionnez votre niveau scolaire</string>
 </resources>
