@@ -31,5 +31,6 @@
     </declare-styleable>
     <declare-styleable name="SelectorItem">
         <attr name="itemText" format="string|reference" />
+        <attr name="selectorId" format="string" />
     </declare-styleable>
 </resources>

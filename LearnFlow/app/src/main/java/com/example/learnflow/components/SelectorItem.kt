@@ -12,6 +12,7 @@ import com.example.learnflow.R
 
 class SelectorItem(context: Context, attrs: AttributeSet?): LinearLayout(context, attrs), IComponent {
 
+    var selectorId: String? = null
     private val cvItemWrapper: CardView
     private val tvItem: TextView
     private val defaultColors = HashMap<String, ColorStateList>()
@@ -53,6 +54,7 @@ class SelectorItem(context: Context, attrs: AttributeSet?): LinearLayout(context
             } else {
                 tvItem.text = styledAttributes.getString(R.styleable.SelectorItem_itemText)
             }
+            selectorId = styledAttributes.getString(R.styleable.SelectorItem_selectorId)
         } catch (e: Exception) {
             Log.e("Components", e.toString())
         } finally {

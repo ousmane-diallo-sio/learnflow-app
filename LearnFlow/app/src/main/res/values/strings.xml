@@ -24,4 +24,5 @@
     <string name="zip_code">Code postal</string>
     <string name="further_address">Complément d\'adresse</string>
     <string name="select_school_level">Sélectionnez votre niveau scolaire</string>
+    <string name="upload_identity_card_cta">Veuillez insérer une pièce d’identité</string>
 </resources>

@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import android.widget.Toast
 import com.example.learnflow.R
 
 class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, attrs), IComponent {
@@ -17,7 +16,8 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
     private val rlItems: RelativeLayout
     val btnPrev: CustomBtn
     val btnNext: CustomBtn
-    private var items: ArrayList<SliderItem> = ArrayList()
+    var items: ArrayList<SliderItem> = ArrayList()
+    private set
     private var currentIndex = 0
     private var animationDurationMS: Long = 200
 
@@ -59,11 +59,34 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
         }
     }
 
+    fun addItems(vararg _items: SliderItem) {
+        for (item in _items) {
+            if (items.contains(item)) continue
+            if (item.parent != null) {
+                (item.parent as ViewGroup).removeView(item)
+            }
+            items.add(item)
+            setupItem(item)
+        }
+    }
+
+    fun removeItems(vararg _items: SliderItem) {
+        for (item in _items) {
+            if (!items.contains(item)) continue
+            items.remove(item)
+            rlItems.removeView(item)
+        }
+    }
+
+    private fun setupItem(item: SliderItem) {
+        removeView(item)
+        rlItems.addView(item)
+    }
+
     override fun onFinishInflate() {
         super.onFinishInflate()
         items.forEachIndexed { index, view ->
-            removeView(view)
-            rlItems.addView(view)
+            setupItem(view)
             if (index != 0) {
                 view.animate().translationX(width.toFloat()).duration = 0
             }

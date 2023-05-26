@@ -43,9 +43,23 @@ class ItemsSelector(context: Context, attrs: AttributeSet): LinearLayout(context
         }
     }
 
-    fun addItem(item: SelectorItem) {
-        items.add(item)
-        setupItem(item)
+    fun addItems(vararg _items: SelectorItem) {
+        for (item in _items) {
+            if (items.contains(item)) continue
+            if (item.parent != null) {
+                (item.parent as ViewGroup).removeView(item)
+            }
+            items.add(item)
+            setupItem(item)
+        }
+    }
+
+    fun removeItems(vararg _items: SelectorItem) {
+        for (item in _items) {
+            if (!items.contains(item)) continue
+            items.remove(item)
+            fblItemsContainer.removeView(item)
+        }
     }
 
     override fun onFinishInflate() {

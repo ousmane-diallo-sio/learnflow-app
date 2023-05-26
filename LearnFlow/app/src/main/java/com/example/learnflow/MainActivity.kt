@@ -9,7 +9,6 @@ import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.LinearLayout.LayoutParams
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.view.children
 import com.example.learnflow.components.*
 import com.example.learnflow.model.User
@@ -51,7 +50,11 @@ class MainActivity : AppCompatActivity() {
 
 
     // Student specific form
+    private lateinit var siStudentSchoolLevel: SliderItem
     private lateinit var iSelectStudentSchoolLevel: ItemsSelector
+
+    // Teacher specific form
+    private lateinit var siTeacherIdentityCard: SliderItem
 
     private var currentUser: User = User()
 
@@ -72,6 +75,8 @@ class MainActivity : AppCompatActivity() {
         sliderRegisterProcess = findViewById(R.id.sliderRegisterProcessMain)
         iSelectUserType = findViewById(R.id.iSelectUserTypeMain)
         iSelectStudentSchoolLevel = findViewById(R.id.iSelectStudentSchoolLevelMain)
+        siStudentSchoolLevel = findViewById(R.id.siStudentSchoolLevelMain)
+        siTeacherIdentityCard = findViewById(R.id.siTeacherIdentityCardMain)
 
         sharedPreferences = getSharedPreferences(
             getString(R.string.app_name),
@@ -116,6 +121,13 @@ class MainActivity : AppCompatActivity() {
 
         iSelectUserType.setOnElementSelected {
             sliderRegisterProcess.btnNext.disabled = false
+            if (it.selectorId == "studentSelector") {
+                sliderRegisterProcess.addItems(siStudentSchoolLevel)
+                sliderRegisterProcess.removeItems(siTeacherIdentityCard)
+            } else {
+                sliderRegisterProcess.addItems(siTeacherIdentityCard)
+                sliderRegisterProcess.removeItems(siStudentSchoolLevel)
+            }
             // set currentUser type to selected type
         }
     }
@@ -152,7 +164,8 @@ class MainActivity : AppCompatActivity() {
             val selectorItem = SelectorItem(this, null)
             selectorItem.layoutParams = layoutParams
             selectorItem.setText(it)
-            iSelectStudentSchoolLevel.addItem(selectorItem)
+            selectorItem.selectorId = "selector$it"
+            iSelectStudentSchoolLevel.addItems(selectorItem)
         }
     }
 
