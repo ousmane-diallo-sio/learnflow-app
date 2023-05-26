@@ -354,7 +354,27 @@
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:orientation="vertical">
+                                android:orientation="vertical"
+                                android:padding="10dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="160dp"
+                                    android:orientation="vertical"
+                                    android:gravity="center"
+                                    android:background="@color/bright_gray"
+                                    android:clipChildren="true"
+                                    >
+
+                                    <ImageView
+                                        android:id="@+id/ivTeacherIdentityCardPickerMain"
+                                        android:layout_width="60dp"
+                                        android:layout_height="60dp"
+                                        android:scaleType="fitCenter"
+                                        android:layout_gravity="center"
+                                        android:src="@drawable/baseline_add_circle_outline_24"
+                                        card_view:tint="@color/aquamarine" />
+                                </LinearLayout>
 
                                 <TextView
                                     android:layout_width="match_parent"

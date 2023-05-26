@@ -2,17 +2,17 @@ package com.example.learnflow
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View.*
-import android.widget.CheckBox
-import android.widget.LinearLayout
+import android.widget.*
 import android.widget.LinearLayout.LayoutParams
-import android.widget.TextView
 import androidx.core.view.children
 import com.example.learnflow.components.*
 import com.example.learnflow.model.User
 import com.example.learnflow.webservices.Api
+import fr.kameouss.instamemeeditor.components.ImagePickerFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -55,8 +55,10 @@ class MainActivity : AppCompatActivity() {
 
     // Teacher specific form
     private lateinit var siTeacherIdentityCard: SliderItem
+    private lateinit var ivTeacherIdentityCardPicker: ImageView
 
     private var currentUser: User = User()
+    private lateinit var imgPickerFragment: ImagePickerFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,6 +79,10 @@ class MainActivity : AppCompatActivity() {
         iSelectStudentSchoolLevel = findViewById(R.id.iSelectStudentSchoolLevelMain)
         siStudentSchoolLevel = findViewById(R.id.siStudentSchoolLevelMain)
         siTeacherIdentityCard = findViewById(R.id.siTeacherIdentityCardMain)
+        ivTeacherIdentityCardPicker = findViewById(R.id.ivTeacherIdentityCardPickerMain)
+
+        imgPickerFragment = ImagePickerFragment()
+        supportFragmentManager.beginTransaction().add(imgPickerFragment, "imgPickerFragmentMain").commit()
 
         sharedPreferences = getSharedPreferences(
             getString(R.string.app_name),
@@ -118,6 +124,17 @@ class MainActivity : AppCompatActivity() {
 
         btnRegisterCTA.setOnClickListener { isLoginView = !isLoginView }
         btnLoginCTA.setOnClickListener { isLoginView = !isLoginView }
+
+        ivTeacherIdentityCardPicker.setOnClickListener {
+            imgPickerFragment.pickImage { uri: Uri? ->
+                Toast.makeText(this, uri.toString(), Toast.LENGTH_SHORT).show()
+                ivTeacherIdentityCardPicker.setImageURI(uri)
+                ivTeacherIdentityCardPicker.imageTintList = null
+                ivTeacherIdentityCardPicker.layoutParams.width = LayoutParams.MATCH_PARENT
+                ivTeacherIdentityCardPicker.layoutParams.height = LayoutParams.MATCH_PARENT
+                ivTeacherIdentityCardPicker.scaleType = ImageView.ScaleType.CENTER_CROP
+            }
+        }
 
         iSelectUserType.setOnElementSelected {
             sliderRegisterProcess.btnNext.disabled = false
