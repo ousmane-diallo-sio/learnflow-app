@@ -2,6 +2,7 @@ package com.example.learnflow.components
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
@@ -17,7 +18,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.children
 import com.example.learnflow.R
 
-class CustomInput(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs), IComponent {
+class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context, attrs), IComponent {
 
     val et: EditText
     private val iv: ImageView
@@ -40,7 +41,7 @@ class CustomInput(context: Context, attrs: AttributeSet?) : LinearLayout(context
             iv.setImageResource(
                 styledAttributes.getResourceId(
                     R.styleable.CustomInput_icon,
-                    R.drawable.ic_launcher_background
+                    0
                 )
             )
             et.setHint(styledAttributes.getResourceId(R.styleable.CustomInput_hint, R.string.app_name))
@@ -83,6 +84,13 @@ class CustomInput(context: Context, attrs: AttributeSet?) : LinearLayout(context
 
     fun setAction(onClick: OnClickListener, drawable: Drawable) {
         ivAction.setImageDrawable(drawable)
+        llAction.setOnClickListener(onClick)
+        llAction.visibility = VISIBLE
+    }
+
+    fun setAction(onClick: OnClickListener, uri: Uri) {
+        ivAction.setImageURI(uri)
+        ivAction.imageTintList = null
         llAction.setOnClickListener(onClick)
         llAction.visibility = VISIBLE
     }

@@ -1,14 +1,19 @@
 package com.example.learnflow
 
+import android.app.ProgressDialog.show
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.InputType
 import android.view.View.*
+import android.view.ViewGroup
 import android.widget.*
 import android.widget.LinearLayout.LayoutParams
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.children
+import androidx.core.view.setPadding
 import com.example.learnflow.components.*
 import com.example.learnflow.model.User
 import com.example.learnflow.webservices.Api
@@ -56,6 +61,9 @@ class MainActivity : AppCompatActivity() {
     // Teacher specific form
     private lateinit var siTeacherIdentityCard: SliderItem
     private lateinit var ivTeacherIdentityCardPicker: ImageView
+    private lateinit var siTeacherDocumentsMain: SliderItem
+    private lateinit var llTeacherDocumentsMain: LinearLayout
+    private lateinit var btnTeacherPickDocumentMain: CustomBtn
 
     private var currentUser: User = User()
     private lateinit var imgPickerFragment: ImagePickerFragment
@@ -80,6 +88,9 @@ class MainActivity : AppCompatActivity() {
         siStudentSchoolLevel = findViewById(R.id.siStudentSchoolLevelMain)
         siTeacherIdentityCard = findViewById(R.id.siTeacherIdentityCardMain)
         ivTeacherIdentityCardPicker = findViewById(R.id.ivTeacherIdentityCardPickerMain)
+        siTeacherDocumentsMain = findViewById(R.id.siTeacherDocumentsMain)
+        llTeacherDocumentsMain = findViewById(R.id.llTeacherDocumentsMain)
+        btnTeacherPickDocumentMain = findViewById(R.id.btnTeacherPickDocumentMain)
 
         imgPickerFragment = ImagePickerFragment()
         supportFragmentManager.beginTransaction().add(imgPickerFragment, "imgPickerFragmentMain").commit()
@@ -125,9 +136,24 @@ class MainActivity : AppCompatActivity() {
         btnRegisterCTA.setOnClickListener { isLoginView = !isLoginView }
         btnLoginCTA.setOnClickListener { isLoginView = !isLoginView }
 
+        iSelectUserType.setOnElementSelected {
+            sliderRegisterProcess.btnNext.disabled = false
+            if (it.selectorId == "studentSelector") {
+                sliderRegisterProcess.addItems(siStudentSchoolLevel)
+
+                sliderRegisterProcess.removeItems(siTeacherIdentityCard)
+                sliderRegisterProcess.removeItems(siTeacherDocumentsMain)
+            } else {
+                sliderRegisterProcess.addItems(siTeacherIdentityCard)
+                sliderRegisterProcess.addItems(siTeacherDocumentsMain)
+
+                sliderRegisterProcess.removeItems(siStudentSchoolLevel)
+            }
+            // set currentUser type to selected type
+        }
+
         ivTeacherIdentityCardPicker.setOnClickListener {
             imgPickerFragment.pickImage { uri: Uri? ->
-                Toast.makeText(this, uri.toString(), Toast.LENGTH_SHORT).show()
                 ivTeacherIdentityCardPicker.setImageURI(uri)
                 ivTeacherIdentityCardPicker.imageTintList = null
                 ivTeacherIdentityCardPicker.layoutParams.width = LayoutParams.MATCH_PARENT
@@ -136,16 +162,54 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        iSelectUserType.setOnElementSelected {
-            sliderRegisterProcess.btnNext.disabled = false
-            if (it.selectorId == "studentSelector") {
-                sliderRegisterProcess.addItems(siStudentSchoolLevel)
-                sliderRegisterProcess.removeItems(siTeacherIdentityCard)
+        btnTeacherPickDocumentMain.setOnClickListener {
+            if (llTeacherDocumentsMain.childCount >= 4) {
+                AlertDialog.Builder(this)
+                    .setTitle("Vous ne pouvez pas ajouter plus de 4 documents")
+                    .setMessage("Veuillez supprimer au moins un document avant d'en ajouter un nouveau")
+                    .setPositiveButton("Je comprends") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+                return@setOnClickListener
             } else {
-                sliderRegisterProcess.addItems(siTeacherIdentityCard)
-                sliderRegisterProcess.removeItems(siStudentSchoolLevel)
+                imgPickerFragment.pickImage { uri: Uri? ->
+                    if (uri == null) return@pickImage
+
+                    val customInput = CustomInput(this, null)
+                    customInput.et.hint = "Nom du document"
+                    customInput.et.inputType = InputType.TYPE_CLASS_TEXT
+                    customInput.layoutParams = LayoutParams(
+                        LayoutParams.MATCH_PARENT,
+                        LayoutParams.WRAP_CONTENT
+                    )
+
+
+                    val ivOverview = ImageView(this).apply {
+                        setImageURI(uri)
+                        layoutParams = LayoutParams(
+                            LayoutParams.MATCH_PARENT,
+                            LayoutParams.WRAP_CONTENT
+                        )
+                        scaleType = ImageView.ScaleType.FIT_CENTER
+                        setPadding(20)
+                    }
+                    val alertDialog = AlertDialog.Builder(this)
+                    alertDialog
+                        .setPositiveButton(getText(R.string.close)) { dialog, _ ->
+                            dialog.dismiss()
+                            ivOverview.parent?.let { (it as ViewGroup).removeView(ivOverview) }
+                        }
+                        .setNegativeButton(getText(R.string.delete)) { dialog, _ -> dialog.dismiss()
+                            llTeacherDocumentsMain.removeView(customInput)
+                        }
+                        .setView(ivOverview)
+                        .create()
+                    customInput.setAction({ alertDialog.show() }, uri)
+                    llTeacherDocumentsMain.addView(customInput)
+
+                }
             }
-            // set currentUser type to selected type
         }
     }
 
