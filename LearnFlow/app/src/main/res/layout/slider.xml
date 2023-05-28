@@ -26,6 +26,7 @@
         </ScrollView>
 
         <LinearLayout
+            android:id="@+id/llBtnsWrapperSlider"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"

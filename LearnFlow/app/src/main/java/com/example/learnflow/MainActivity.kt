@@ -101,6 +101,14 @@ class MainActivity : AppCompatActivity() {
         )
         setListeners()
         setupSchoolLevels()
+
+        sliderRegisterProcess.btnLastSlide = CustomBtn(this, null).apply {
+            tv.text = getString(R.string.validate)
+            setOnClickListener {
+                // Api.register(currentUser)
+                btnLoginCTA.performClick()
+            }
+        }
     }
 
     override fun onStart() {

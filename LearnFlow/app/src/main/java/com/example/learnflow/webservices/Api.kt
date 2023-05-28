@@ -20,7 +20,7 @@ object Api {
         Log.d("Components", "${EnvUtils.API_BASE_URL}${Endpoints.loginStudent}")
     }
 
-    fun register(user: User) {
+    fun register(user: User, callback: (User) -> Unit) {
         TODO("Register not implemented yet")
     }
 

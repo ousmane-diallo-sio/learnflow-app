@@ -7,26 +7,36 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.learnflow.R
 
 class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, attrs), IComponent {
 
     private val llWrapper: LinearLayout
     private val rlItems: RelativeLayout
+    private val llBtnsWrapperSlider: LinearLayout
     val btnPrev: CustomBtn
     val btnNext: CustomBtn
     var items: ArrayList<SliderItem> = ArrayList()
     private set
+
     private var currentIndex = 0
     private var animationDurationMS: Long = 200
-
     private var onGlobalLayoutListener: OnGlobalLayoutListener? = null
+    var btnLastSlide: CustomBtn? = null
+    set (value) {
+        field = value
+        field?.visibility = GONE
+        val layoutParams = LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        layoutParams.weight = 1.0f
+        field?.layoutParams = layoutParams
+        llBtnsWrapperSlider.addView(field)
+    }
 
     init {
         LayoutInflater.from(context).inflate(R.layout.slider, this)
@@ -34,6 +44,7 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
 
         llWrapper = findViewById(R.id.llWrapperSlider)
         rlItems = findViewById(R.id.llItemsSlider)
+        llBtnsWrapperSlider = findViewById(R.id.llBtnsWrapperSlider)
         btnPrev = findViewById(R.id.btnPrevSlider)
         btnNext = findViewById(R.id.btnNextSlider)
 
@@ -46,7 +57,6 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
             llWrapper.getWindowVisibleDisplayFrame(rect)
             items[currentIndex].animate().translationX(0f).duration = animationDurationMS
         }
-
         llWrapper.viewTreeObserver.addOnGlobalLayoutListener(onGlobalLayoutListener)
     }
 
@@ -75,30 +85,6 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
         }
     }
 
-    fun addItems(vararg _items: SliderItem) {
-        for (item in _items) {
-            if (items.contains(item)) continue
-            if (item.parent != null) {
-                (item.parent as ViewGroup).removeView(item)
-            }
-            items.add(item)
-            setupItem(item)
-        }
-    }
-
-    fun removeItems(vararg _items: SliderItem) {
-        for (item in _items) {
-            if (!items.contains(item)) continue
-            items.remove(item)
-            rlItems.removeView(item)
-        }
-    }
-
-    private fun setupItem(item: SliderItem) {
-        removeView(item)
-        rlItems.addView(item)
-    }
-
     override fun onFinishInflate() {
         super.onFinishInflate()
         items.forEachIndexed { index, view ->
@@ -121,11 +107,39 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
         }
     }
 
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        llWrapper.viewTreeObserver.removeOnGlobalLayoutListener(onGlobalLayoutListener)
+    }
+
+    fun addItems(vararg _items: SliderItem) {
+        for (item in _items) {
+            if (items.contains(item)) continue
+            if (item.parent != null) {
+                (item.parent as ViewGroup).removeView(item)
+            }
+            items.add(item)
+            setupItem(item)
+        }
+    }
+
+    fun removeItems(vararg _items: SliderItem) {
+        for (item in _items) {
+            if (!items.contains(item)) continue
+            items.remove(item)
+            rlItems.removeView(item)
+        }
+    }
+
     private fun slideForward() {
         if (items.size > 1) {
             animateItem(false)
             btnPrev.disabled = !isMovableLeft()
             btnNext.disabled = !isMovableRight()
+            if (!isMovableRight() && btnLastSlide != null) {
+                btnNext.visibility = View.GONE
+                btnLastSlide?.visibility = View.VISIBLE
+            }
         }
     }
 
@@ -134,7 +148,16 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
             animateItem( true)
             btnPrev.disabled = !isMovableLeft()
             btnNext.disabled = !isMovableRight()
+            if (isMovableRight() && btnLastSlide != null) {
+                btnNext.visibility = View.VISIBLE
+                btnLastSlide?.visibility = View.GONE
+            }
         }
+    }
+
+    private fun setupItem(item: SliderItem) {
+        removeView(item)
+        rlItems.addView(item)
     }
 
     private fun isMovableLeft(): Boolean {
@@ -160,8 +183,4 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
         newItem.animate().translationX(0f).duration = animationDurationMS
     }
 
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        llWrapper.viewTreeObserver.removeOnGlobalLayoutListener(onGlobalLayoutListener)
-    }
 }

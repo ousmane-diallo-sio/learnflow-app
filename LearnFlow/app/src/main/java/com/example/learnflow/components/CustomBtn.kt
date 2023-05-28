@@ -19,7 +19,7 @@ class CustomBtn(context: Context, attrs: AttributeSet?) : LinearLayout(context, 
     private val cv: CardView
     private val ll: FrameLayout
     private val iconBefore: ImageView
-    private val tv: TextView
+    val tv: TextView
     private val iconAfter: ImageView
     private val pb: ProgressBar
     private val llContent: LinearLayout
