@@ -7,8 +7,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.learnflow.R
 
@@ -23,6 +26,8 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
     private var currentIndex = 0
     private var animationDurationMS: Long = 200
 
+    private var onGlobalLayoutListener: OnGlobalLayoutListener? = null
+
     init {
         LayoutInflater.from(context).inflate(R.layout.slider, this)
         orientation = VERTICAL
@@ -35,10 +40,14 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
         handleAttrs(attrs)
         setListeners()
 
-        llWrapper.viewTreeObserver.addOnGlobalLayoutListener {
+        onGlobalLayoutListener = OnGlobalLayoutListener {
             // prevents Slider items from disappearing when keyboard opens/closes
-            items[currentIndex].animate().translationX(0f).duration = 0
+            val rect = Rect()
+            llWrapper.getWindowVisibleDisplayFrame(rect)
+            items[currentIndex].animate().translationX(0f).duration = animationDurationMS
         }
+
+        llWrapper.viewTreeObserver.addOnGlobalLayoutListener(onGlobalLayoutListener)
     }
 
     override fun handleAttrs(attrs: AttributeSet?) {
@@ -149,5 +158,10 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
         newItem.bringToFront()
         newItem.animate().translationX(translationX * -1).duration = animationDurationMS
         newItem.animate().translationX(0f).duration = animationDurationMS
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        llWrapper.viewTreeObserver.removeOnGlobalLayoutListener(onGlobalLayoutListener)
     }
 }
