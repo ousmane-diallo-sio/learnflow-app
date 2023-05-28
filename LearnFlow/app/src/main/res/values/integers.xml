@@ -4,6 +4,6 @@
     <dimen name="radius_5">5dp</dimen>
     <dimen name="radius_20">20dp</dimen>
     <dimen name="text_size_md">15sp</dimen>
-    <dimen name="text_size_xl">18sp</dimen>
+    <dimen name="text_size_xl">17sp</dimen>
     <dimen name="default_btn_height">70dp</dimen>
 </resources>

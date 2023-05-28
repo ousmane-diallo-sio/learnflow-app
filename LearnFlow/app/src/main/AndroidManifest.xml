@@ -17,7 +17,7 @@
             android:label="@string/title_activity_home" />
         <activity
             android:name=".MainActivity"
-            android:windowSoftInputMode="adjustPan"
+            android:windowSoftInputMode="adjustResize"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,6 +27,7 @@
         </activity>
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
+            android:windowSoftInputMode="adjustNothing"
             android:screenOrientation="fullSensor"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
     </application>

@@ -1,6 +1,7 @@
 package com.example.learnflow.components
 
 import android.content.Context
+import android.graphics.Rect
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.learnflow.R
 
 class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, attrs), IComponent {
@@ -32,6 +34,11 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
 
         handleAttrs(attrs)
         setListeners()
+
+        llWrapper.viewTreeObserver.addOnGlobalLayoutListener {
+            // prevents Slider items from disappearing when keyboard opens/closes
+            items[currentIndex].animate().translationX(0f).duration = 0
+        }
     }
 
     override fun handleAttrs(attrs: AttributeSet?) {
