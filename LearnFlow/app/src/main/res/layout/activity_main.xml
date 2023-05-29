@@ -61,7 +61,8 @@
                             android:gravity="center"
                             card_view:hint="@string/email"
                             card_view:icon="@drawable/baseline_person_24"
-                            card_view:inputType="textEmailAddress" />
+                            card_view:inputType="textEmailAddress"
+                            card_view:isRequired="true"/>
 
                         <com.example.learnflow.components.CustomInput
                             android:id="@+id/ciPasswordMain"
@@ -71,7 +72,8 @@
                             android:gravity="center"
                             card_view:hint="@string/password"
                             card_view:icon="@drawable/baseline_lock_24"
-                            card_view:inputType="textPassword" />
+                            card_view:inputType="textPassword"
+                            card_view:isRequired="true"/>
 
                         <LinearLayout
                             android:id="@+id/cbWrapperMain"
@@ -364,8 +366,9 @@
 
                                     <ImageView
                                         android:id="@+id/ivTeacherIdentityCardPickerMain"
-                                        android:layout_width="60dp"
-                                        android:layout_height="60dp"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:padding="40dp"
                                         android:scaleType="fitCenter"
                                         android:layout_gravity="center"
                                         android:src="@drawable/baseline_add_circle_outline_24"

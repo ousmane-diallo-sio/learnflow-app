@@ -37,6 +37,8 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
         field?.layoutParams = layoutParams
         llBtnsWrapperSlider.addView(field)
     }
+    // Lambda to check weather we allow the user to go to the next slide or not
+    var validateForm: (SliderItem) -> Boolean = { true }
 
     init {
         LayoutInflater.from(context).inflate(R.layout.slider, this)
@@ -131,7 +133,7 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
         }
     }
 
-    private fun slideForward() {
+    fun slideForward() {
         if (items.size > 1) {
             animateItem(false)
             btnPrev.disabled = !isMovableLeft()
@@ -143,7 +145,7 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
         }
     }
 
-    private fun slideBackwards() {
+    fun slideBackwards() {
         if (items.size > 1) {
             animateItem( true)
             btnPrev.disabled = !isMovableLeft()
@@ -153,6 +155,16 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
                 btnLastSlide?.visibility = View.GONE
             }
         }
+    }
+
+    fun slideTo(index: Int) {
+        if (index == currentIndex) return
+
+        if (index < currentIndex) {
+            while (isMovableLeft()) { slideBackwards() }
+            return
+        }
+        while (isMovableRight()) { slideForward() }
     }
 
     private fun setupItem(item: SliderItem) {

@@ -21,6 +21,7 @@
             <enum name="textEmailAddress" value="32" />
             <enum name="textPassword" value="128" />
         </attr>
+        <attr name="isRequired" format="boolean" />
     </declare-styleable>
     <declare-styleable name="ItemsSelector">
         <attr name="multiSelection" format="boolean" />

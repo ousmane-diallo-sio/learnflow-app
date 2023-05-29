@@ -14,6 +14,7 @@ import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.children
 import com.example.learnflow.R
@@ -21,14 +22,18 @@ import com.example.learnflow.R
 class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context, attrs), IComponent {
 
     val et: EditText
-    private val iv: ImageView
+    val tvError: TextView
+    private val ivBefore: ImageView
     private val llAction: LinearLayout
     val ivAction: ImageView
+
+    private var isRequired: Boolean = false
 
     init {
         LayoutInflater.from(context).inflate(R.layout.custom_input, this)
         et = findViewById(R.id.etCustomInput)
-        iv = findViewById(R.id.ivCustomInput)
+        tvError = findViewById(R.id.tvErrorCustomInput)
+        ivBefore = findViewById(R.id.ivCustomInput)
         llAction = findViewById(R.id.llActionCustomInput)
         ivAction = llAction.children.elementAt(0) as ImageView
 
@@ -38,7 +43,7 @@ class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context,
     override fun handleAttrs(attrs: AttributeSet?) {
         val styledAttributes = context.obtainStyledAttributes(attrs, R.styleable.CustomInput, 0, 0)
         try {
-            iv.setImageResource(
+            ivBefore.setImageResource(
                 styledAttributes.getResourceId(
                     R.styleable.CustomInput_icon,
                     0
@@ -46,6 +51,7 @@ class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context,
             )
             et.setHint(styledAttributes.getResourceId(R.styleable.CustomInput_hint, R.string.app_name))
             et.inputType = styledAttributes.getInt(R.styleable.CustomInput_inputType, InputType.TYPE_CLASS_TEXT)
+            isRequired = styledAttributes.getBoolean(R.styleable.CustomInput_isRequired, false)
             if (et.inputType == InputType.TYPE_TEXT_VARIATION_PASSWORD) {
                 setTextTypePassword()
             }
@@ -111,8 +117,27 @@ class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context,
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 onTextChanged(s, start, before, count)
+                validate()
             }
         })
+    }
+
+    fun triggerError(error: String) {
+        tvError.text = error
+        tvError.visibility = VISIBLE
+    }
+
+    fun hideError() {
+        tvError.visibility = GONE
+    }
+
+    fun validate(): Boolean {
+        if (isRequired && et.text.isEmpty()) {
+            triggerError(context.getString(R.string.required_field))
+            return false
+        }
+        hideError()
+        return true
     }
 
 }

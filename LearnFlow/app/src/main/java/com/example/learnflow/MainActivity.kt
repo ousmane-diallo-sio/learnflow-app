@@ -113,8 +113,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        ciEmail.et.setText(sharedPreferences.getString(SP_EMAIL_KEY, null))
-        ciPassword.et.setText(sharedPreferences.getString(SP_PASSWORD_KEY, null))
+        val email = sharedPreferences.getString(SP_EMAIL_KEY, null) ?: ""
+        val password = sharedPreferences.getString(SP_PASSWORD_KEY, null) ?: ""
+        if (email.isNotEmpty()) {
+            ciEmail.et.setText(email)
+        }
+        if (password.isNotEmpty()) {
+            ciPassword.et.setText(password)
+        }
         cb.isChecked = sharedPreferences.getBoolean(SP_CB_KEY, false)
         btnLogin.isLoading = false
         handleLoginBtn()
@@ -141,7 +147,11 @@ class MainActivity : AppCompatActivity() {
             Api.login(this, ciEmail.et.text.toString(), ciPassword.et.text.toString())
         }
 
-        btnRegisterCTA.setOnClickListener { isLoginView = !isLoginView }
+        btnRegisterCTA.setOnClickListener {
+            (it as CustomBtn).isLoading = true
+            isLoginView = !isLoginView
+            sliderRegisterProcess.slideTo(0)
+        }
         btnLoginCTA.setOnClickListener { isLoginView = !isLoginView }
 
         iSelectUserType.setOnElementSelected {
@@ -163,6 +173,7 @@ class MainActivity : AppCompatActivity() {
         ivTeacherIdentityCardPicker.setOnClickListener {
             imgPickerFragment.pickImage { uri: Uri? ->
                 ivTeacherIdentityCardPicker.setImageURI(uri)
+                ivTeacherIdentityCardPicker.setPadding(0)
                 ivTeacherIdentityCardPicker.imageTintList = null
                 ivTeacherIdentityCardPicker.layoutParams.width = LayoutParams.MATCH_PARENT
                 ivTeacherIdentityCardPicker.layoutParams.height = LayoutParams.MATCH_PARENT
@@ -185,7 +196,7 @@ class MainActivity : AppCompatActivity() {
                     if (uri == null) return@pickImage
 
                     val customInput = CustomInput(this, null)
-                    customInput.et.hint = "Nom du document"
+                    customInput.et.hint = "Saisissez une description"
                     customInput.et.inputType = InputType.TYPE_CLASS_TEXT
                     customInput.layoutParams = LayoutParams(
                         LayoutParams.MATCH_PARENT,
