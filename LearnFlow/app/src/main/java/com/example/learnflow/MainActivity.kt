@@ -130,10 +130,7 @@ class MainActivity : AppCompatActivity() {
         sliderRegisterProcess.validateForm = { sliderItem ->
             Utils.getAllNestedChildren(sliderItem)
                 .filter { it is IValidator }
-                .all {
-                    Toast.makeText(this, "Validating ${it.javaClass.simpleName}", Toast.LENGTH_SHORT).show()
-                    (it as IValidator).validate()
-                }
+                .all { (it as IValidator).validate() }
         }
     }
 

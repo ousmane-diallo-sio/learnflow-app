@@ -1,5 +1,7 @@
 package com.example.learnflow.components
 
+import android.annotation.SuppressLint
+import android.app.DatePickerDialog
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -10,11 +12,13 @@ import android.text.method.PasswordTransformationMethod
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.children
 import com.example.learnflow.R
@@ -61,7 +65,7 @@ class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context,
         ivAction = llAction.children.elementAt(0) as ImageView
 
         handleAttrs(attrs)
-        et.addTextChangedListener(textWatcher)
+        setListeners()
     }
 
     override fun handleAttrs(attrs: AttributeSet?) {
@@ -89,7 +93,25 @@ class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context,
         }
     }
 
-    override fun setListeners() {}
+    @SuppressLint("SetTextI18n", "ClickableViewAccessibility")
+    override fun setListeners() {
+        et.addTextChangedListener(textWatcher)
+
+        if (et.inputType == TYPE_DATE) {
+            val datePicker = DatePickerDialog(context)
+            datePicker.setOnDateSetListener { _, year, month, dayOfMonth ->
+                val beforeMonth = if (month < 10) "0" else ""
+                et.setText("$dayOfMonth/${beforeMonth}${month + 1}/$year")
+            }
+
+            et.setOnTouchListener { _, motionEvent ->
+                if (motionEvent.action == MotionEvent.ACTION_DOWN) {
+                    datePicker.show()
+                }
+                true
+            }
+        }
+    }
 
     private fun setTextTypePassword() {
         val passwordTransformationMethod = PasswordTransformationMethod()
@@ -156,6 +178,10 @@ class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context,
         }
         if (et.inputType == TYPE_EMAIL && !StringValidator.email(et.text.toString())) {
             triggerError(context.getString(R.string.invalid_email))
+            return false
+        }
+        if (et.inputType == TYPE_DATE && !StringValidator.date(et.text.toString())) {
+            triggerError(context.getString(R.string.invalid_date))
             return false
         }
         hideError()
