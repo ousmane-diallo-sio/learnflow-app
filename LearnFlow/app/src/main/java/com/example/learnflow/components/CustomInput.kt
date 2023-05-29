@@ -18,8 +18,17 @@ import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.children
 import com.example.learnflow.R
+import com.example.learnflow.utils.StringValidator
 
-class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context, attrs), IComponent {
+class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context, attrs), IComponent, IValidator {
+
+    companion object {
+        const val TYPE_TEXT = 1
+        const val TYPE_NUMBER = 2
+        const val TYPE_DATE = 16
+        const val TYPE_EMAIL = 32
+        const val TYPE_PASSWORD = 128
+    }
 
     val et: EditText
     val tvError: TextView
@@ -27,6 +36,20 @@ class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context,
     private val llAction: LinearLayout
     val ivAction: ImageView
 
+    var textWatcher: TextWatcher? = object:TextWatcher{
+        override fun afterTextChanged(s: Editable?) { }
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            onInputValidation(validate())
+        }
+    }
+        set(value) {
+            field = value
+            et.removeTextChangedListener(field)
+            et.addTextChangedListener(value)
+        }
+
+    var onInputValidation: ((isValid: Boolean) -> Unit) = {  }
     private var isRequired: Boolean = false
 
     init {
@@ -38,17 +61,21 @@ class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context,
         ivAction = llAction.children.elementAt(0) as ImageView
 
         handleAttrs(attrs)
+        et.addTextChangedListener(textWatcher)
     }
 
     override fun handleAttrs(attrs: AttributeSet?) {
         val styledAttributes = context.obtainStyledAttributes(attrs, R.styleable.CustomInput, 0, 0)
         try {
-            ivBefore.setImageResource(
-                styledAttributes.getResourceId(
-                    R.styleable.CustomInput_icon,
-                    0
-                )
+            val resIconBefore = styledAttributes.getResourceId(
+                R.styleable.CustomInput_icon,
+                0
             )
+            if (resIconBefore != 0) {
+                ivBefore.setImageResource(resIconBefore)
+            } else {
+                ivBefore.visibility = GONE
+            }
             et.setHint(styledAttributes.getResourceId(R.styleable.CustomInput_hint, R.string.app_name))
             et.inputType = styledAttributes.getInt(R.styleable.CustomInput_inputType, InputType.TYPE_CLASS_TEXT)
             isRequired = styledAttributes.getBoolean(R.styleable.CustomInput_isRequired, false)
@@ -109,31 +136,26 @@ class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context,
         ivAction.setImageDrawable(drawable)
     }
 
-    fun setOnTextChanged(onTextChanged: (s: CharSequence?, start: Int, before: Int, count: Int) -> Unit) {
-        et.addTextChangedListener(object:TextWatcher{
-            override fun afterTextChanged(s: Editable?) { }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                onTextChanged(s, start, before, count)
-                validate()
-            }
-        })
-    }
-
-    fun triggerError(error: String) {
+    override fun triggerError(error: String) {
         tvError.text = error
         tvError.visibility = VISIBLE
     }
 
-    fun hideError() {
+    override fun hideError() {
         tvError.visibility = GONE
     }
 
-    fun validate(): Boolean {
-        if (isRequired && et.text.isEmpty()) {
+    override fun validate(): Boolean {
+        if (!isRequired) {
+            hideError()
+            return true
+        }
+        if (et.text.isBlank()) {
             triggerError(context.getString(R.string.required_field))
+            return false
+        }
+        if (et.inputType == TYPE_EMAIL && !StringValidator.email(et.text.toString())) {
+            triggerError(context.getString(R.string.invalid_email))
             return false
         }
         hideError()

@@ -7,26 +7,33 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.TextView
 import com.example.learnflow.R
 import com.google.android.flexbox.FlexboxLayout
 
-class ItemsSelector(context: Context, attrs: AttributeSet): LinearLayout(context, attrs), IComponent {
+class ItemsSelector(context: Context, attrs: AttributeSet): LinearLayout(context, attrs), IComponent, IValidator {
 
     private val fblItemsContainer: FlexboxLayout
+    private val tvError: TextView
     private var items = ArrayList<SelectorItem>()
     private var multiSelection = false
     private var onElementSelected: ((SelectorItem) -> Unit)? = null
 
     init {
         LayoutInflater.from(context).inflate(R.layout.items_selector, this)
-        fblItemsContainer = findViewById(R.id.fblItemsContainerItemSelector)
+        fblItemsContainer = findViewById(R.id.fblItemsContainerItemsSelector)
+        tvError = findViewById(R.id.tvErrorItemsSelector)
     }
 
     override fun handleAttrs(attrs: AttributeSet?) {
-        val styledAttributes = context.obtainStyledAttributes(attrs, R.styleable.ItemsSelector, 0, 0)
+        val styledAttributes =
+            context.obtainStyledAttributes(attrs, R.styleable.ItemsSelector, 0, 0)
 
         try {
-            multiSelection = styledAttributes.getBoolean(R.styleable.ItemsSelector_multiSelection, multiSelection)
+            multiSelection = styledAttributes.getBoolean(
+                R.styleable.ItemsSelector_multiSelection,
+                multiSelection
+            )
         } catch (e: Exception) {
             Log.e("Components", e.toString())
         } finally {
@@ -85,4 +92,21 @@ class ItemsSelector(context: Context, attrs: AttributeSet): LinearLayout(context
         }
     }
 
+    override fun triggerError(error: String) {
+        tvError.text = error
+        tvError.visibility = VISIBLE
+    }
+
+    override fun hideError() {
+        tvError.visibility = GONE
+    }
+
+    override fun validate(): Boolean {
+        if (items.any { it.isItemSelected }) {
+            return true
+        }
+        val tmp = if (multiSelection) " au moins" else ""
+        triggerError("Veuiilez sélectionner${tmp} un élément")
+        return false
+    }
 }

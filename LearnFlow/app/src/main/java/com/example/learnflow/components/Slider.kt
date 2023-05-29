@@ -134,7 +134,8 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
     }
 
     fun slideForward() {
-        if (items.size > 1) {
+        if (items.size < 2) return
+        if (validateForm(items[currentIndex])) {
             animateItem(false)
             btnPrev.disabled = !isMovableLeft()
             btnNext.disabled = !isMovableRight()
@@ -146,14 +147,13 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
     }
 
     fun slideBackwards() {
-        if (items.size > 1) {
-            animateItem( true)
-            btnPrev.disabled = !isMovableLeft()
-            btnNext.disabled = !isMovableRight()
-            if (isMovableRight() && btnLastSlide != null) {
-                btnNext.visibility = View.VISIBLE
-                btnLastSlide?.visibility = View.GONE
-            }
+        if (items.size < 2) return
+        animateItem( true)
+        btnPrev.disabled = !isMovableLeft()
+        btnNext.disabled = !isMovableRight()
+        if (isMovableRight() && btnLastSlide != null) {
+            btnNext.visibility = View.VISIBLE
+            btnLastSlide?.visibility = View.GONE
         }
     }
 

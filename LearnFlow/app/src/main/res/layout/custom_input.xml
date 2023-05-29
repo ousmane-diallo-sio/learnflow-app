@@ -43,6 +43,7 @@
                         android:autofillHints="name"
                         android:gravity="center_vertical"
                         android:hint="@string/app_name"
+                        android:textColorHint="@color/aquamarine_50_pc"
                         android:inputType="text" />
 
                     <LinearLayout

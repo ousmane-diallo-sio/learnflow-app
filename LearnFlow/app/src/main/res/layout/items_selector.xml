@@ -7,20 +7,35 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:ignore="MissingDefaultResource">
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:orientation="vertical"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:paddingBottom="10dp">
 
-        <com.google.android.flexbox.FlexboxLayout
-            android:id="@+id/fblItemsContainerItemSelector"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:flexDirection="column"
-            app:justifyContent="space_evenly"/>
-    </ScrollView>
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/fblItemsContainerItemsSelector"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:flexDirection="column"
+                app:justifyContent="space_evenly"/>
+        </ScrollView>
+
+        <TextView
+            android:id="@+id/tvErrorItemsSelector"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/tvErrorStyle" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -11,8 +11,8 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.core.view.setPadding
 import com.example.learnflow.R
+import com.example.learnflow.utils.Utils
 
 class CustomBtn(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs), IComponent {
 

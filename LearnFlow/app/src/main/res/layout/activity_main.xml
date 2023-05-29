@@ -200,7 +200,8 @@
                                     android:gravity="center"
                                     card_view:hint="@string/last_name"
                                     card_view:icon="@drawable/baseline_person_24"
-                                    card_view:inputType="text" />
+                                    card_view:inputType="text"
+                                    card_view:isRequired="true" />
 
                                 <com.example.learnflow.components.CustomInput
                                     android:layout_width="match_parent"
@@ -209,7 +210,8 @@
                                     android:gravity="center"
                                     card_view:hint="@string/first_name"
                                     card_view:icon="@drawable/baseline_person_24"
-                                    card_view:inputType="text" />
+                                    card_view:inputType="text"
+                                    card_view:isRequired="true"/>
 
                                 <com.example.learnflow.components.CustomInput
                                     android:layout_width="match_parent"
@@ -218,7 +220,8 @@
                                     android:gravity="center"
                                     card_view:hint="@string/email"
                                     card_view:icon="@drawable/baseline_person_24"
-                                    card_view:inputType="textEmailAddress" />
+                                    card_view:inputType="textEmailAddress"
+                                    card_view:isRequired="true"/>
 
                                 <com.example.learnflow.components.CustomInput
                                     android:layout_width="match_parent"
@@ -227,7 +230,8 @@
                                     android:gravity="center"
                                     card_view:hint="@string/birthdate"
                                     card_view:icon="@drawable/baseline_person_24"
-                                    card_view:inputType="date" />
+                                    card_view:inputType="date"
+                                    card_view:isRequired="true"/>
 
                                 <com.example.learnflow.components.CustomInput
                                     android:layout_width="match_parent"
@@ -236,7 +240,8 @@
                                     android:gravity="center"
                                     card_view:hint="@string/phone_number"
                                     card_view:icon="@drawable/baseline_person_24"
-                                    card_view:inputType="number" />
+                                    card_view:inputType="number"
+                                    card_view:isRequired="true"/>
 
                             </LinearLayout>
                         </androidx.cardview.widget.CardView>
@@ -268,7 +273,8 @@
                                     android:gravity="center"
                                     card_view:hint="@string/home_city"
                                     card_view:icon="@drawable/baseline_person_24"
-                                    card_view:inputType="text" />
+                                    card_view:inputType="text"
+                                    card_view:isRequired="true"/>
 
                                 <com.example.learnflow.components.CustomInput
                                     android:layout_width="match_parent"
@@ -277,7 +283,8 @@
                                     android:gravity="center"
                                     card_view:hint="@string/street"
                                     card_view:icon="@drawable/baseline_person_24"
-                                    card_view:inputType="text" />
+                                    card_view:inputType="text"
+                                    card_view:isRequired="true"/>
 
                                 <com.example.learnflow.components.CustomInput
                                     android:layout_width="match_parent"
@@ -286,7 +293,8 @@
                                     android:gravity="center"
                                     card_view:hint="@string/zip_code"
                                     card_view:icon="@drawable/baseline_person_24"
-                                    card_view:inputType="number" />
+                                    card_view:inputType="number"
+                                    card_view:isRequired="true"/>
 
                                 <com.example.learnflow.components.CustomInput
                                     android:layout_width="match_parent"
@@ -295,7 +303,8 @@
                                     android:gravity="center"
                                     card_view:hint="@string/further_address"
                                     card_view:icon="@drawable/baseline_person_24"
-                                    card_view:inputType="text" />
+                                    card_view:inputType="text"
+                                    card_view:isRequired="true"/>
 
                             </LinearLayout>
                         </androidx.cardview.widget.CardView>

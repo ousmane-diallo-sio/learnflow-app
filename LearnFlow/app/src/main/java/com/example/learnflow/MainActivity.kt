@@ -7,6 +7,8 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
+import android.util.Patterns
+import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
 import android.widget.*
@@ -16,8 +18,10 @@ import androidx.core.view.children
 import androidx.core.view.setPadding
 import com.example.learnflow.components.*
 import com.example.learnflow.model.User
+import com.example.learnflow.utils.Utils
 import com.example.learnflow.webservices.Api
 import fr.kameouss.instamemeeditor.components.ImagePickerFragment
+import kotlinx.coroutines.NonCancellable.children
 
 class MainActivity : AppCompatActivity() {
 
@@ -101,14 +105,6 @@ class MainActivity : AppCompatActivity() {
         )
         setListeners()
         setupSchoolLevels()
-
-        sliderRegisterProcess.btnLastSlide = CustomBtn(this, null).apply {
-            tv.text = getString(R.string.validate)
-            setOnClickListener {
-                // Api.register(currentUser)
-                btnLoginCTA.performClick()
-            }
-        }
     }
 
     override fun onStart() {
@@ -123,19 +119,31 @@ class MainActivity : AppCompatActivity() {
         }
         cb.isChecked = sharedPreferences.getBoolean(SP_CB_KEY, false)
         btnLogin.isLoading = false
-        handleLoginBtn()
+
+        sliderRegisterProcess.btnLastSlide = CustomBtn(this, null).apply {
+            tv.text = getString(R.string.validate)
+            setOnClickListener {
+                // Api.register(currentUser)
+                btnLoginCTA.performClick()
+            }
+        }
+        sliderRegisterProcess.validateForm = { sliderItem ->
+            Utils.getAllNestedChildren(sliderItem)
+                .filter { it is IValidator }
+                .all {
+                    Toast.makeText(this, "Validating ${it.javaClass.simpleName}", Toast.LENGTH_SHORT).show()
+                    (it as IValidator).validate()
+                }
+        }
     }
 
     private fun setListeners() {
         cbWrapper.setOnClickListener {
             cb.isChecked = !cb.isChecked
         }
-        ciEmail.setOnTextChanged { s: CharSequence?, start: Int, before: Int, count: Int ->
-            handleLoginBtn()
-        }
-        ciPassword.setOnTextChanged { s: CharSequence?, start: Int, before: Int, count: Int ->
-            handleLoginBtn()
-        }
+
+        ciEmail.onInputValidation = { btnLogin.disabled = !it }
+        ciPassword.onInputValidation = { btnLogin.disabled = !it }
 
         btnLogin.setOnClickListener {
             btnLogin.isLoading = true
@@ -247,14 +255,6 @@ class MainActivity : AppCompatActivity() {
             .remove(SP_PASSWORD_KEY)
             .remove(SP_CB_KEY)
             .apply()
-    }
-
-    private fun handleLoginBtn() {
-        if (ciEmail.et.text.isEmpty() || ciPassword.et.text.isEmpty()) {
-            btnLogin.disabled = true
-            return
-        }
-        btnLogin.disabled = false
     }
 
     private fun setupSchoolLevels() {

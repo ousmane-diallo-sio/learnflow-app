@@ -8,6 +8,11 @@
         <item name="android:textSize">@dimen/text_size_xl</item>
         <item name="fontFamily">@font/inter_bold</item>
     </style>
+    <style name="tvErrorStyle">
+        <item name="android:textSize">@dimen/text_size_md</item>
+        <item name="fontFamily">@font/inter_regular</item>
+        <item name="color">@color/carmine_red</item>
+    </style>
     <style name="etNormalTextStyle" parent="Widget.AppCompat.EditText">
         <item name="fontWeight">400</item>
         <item name="android:textSize">@dimen/text_size_md</item>

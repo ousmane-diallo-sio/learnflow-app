@@ -9,6 +9,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import com.example.learnflow.R
+import com.example.learnflow.utils.Utils
 
 class SelectorItem(context: Context, attrs: AttributeSet?): LinearLayout(context, attrs), IComponent {
 
