@@ -14,10 +14,12 @@ import com.google.android.flexbox.FlexboxLayout
 class ItemsSelector(context: Context, attrs: AttributeSet): LinearLayout(context, attrs), IComponent, IValidator {
 
     private val fblItemsContainer: FlexboxLayout
-    private val tvError: TextView
+    override lateinit var tvError: TextView
     private var items = ArrayList<SelectorItem>()
     private var multiSelection = false
     private var onElementSelected: ((SelectorItem) -> Unit)? = null
+    override var isRequired: Boolean = false
+    override var customValidator: CustomValidator? = null
 
     init {
         LayoutInflater.from(context).inflate(R.layout.items_selector, this)

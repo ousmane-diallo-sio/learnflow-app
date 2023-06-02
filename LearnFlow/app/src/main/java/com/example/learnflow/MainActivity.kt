@@ -1,14 +1,13 @@
 package com.example.learnflow
 
-import android.app.ProgressDialog.show
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
-import android.util.Patterns
-import android.view.View
+import android.util.Log
 import android.view.View.*
 import android.view.ViewGroup
 import android.widget.*
@@ -17,11 +16,19 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.children
 import androidx.core.view.setPadding
 import com.example.learnflow.components.*
+import com.example.learnflow.model.Address
 import com.example.learnflow.model.User
+import com.example.learnflow.model.UserType
+import com.example.learnflow.utils.FieldValidator
 import com.example.learnflow.utils.Utils
 import com.example.learnflow.webservices.Api
+import com.example.learnflow.webservices.Api.userType
 import fr.kameouss.instamemeeditor.components.ImagePickerFragment
-import kotlinx.coroutines.NonCancellable.children
+import java.io.IOException
+import java.net.URLDecoder
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,6 +36,19 @@ class MainActivity : AppCompatActivity() {
     private val SP_EMAIL_KEY = "credentialEmail"
     private val SP_PASSWORD_KEY = "credentialPassword"
     private lateinit var sharedPreferences: SharedPreferences
+
+    //private var user: User = User()
+    private var user: User = User(
+        "Caillou",
+        "pierre",
+        LocalDate.of(1998, 1, 1).format(DateTimeFormatter.ISO_DATE),
+        "ouaia@ouai.com",
+        Address("1 rue de la paix", "Paris", "75000"),
+        "0602030405",
+        "https://d38b044pevnwc9.cloudfront.net/cutout-nuxt/enhancer/2.jpg",
+        "azertyuiop"
+    )
+    private lateinit var imgPickerFragment: ImagePickerFragment
 
     private var isLoginView = true
         set(value) {
@@ -54,9 +74,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnLogin: CustomBtn
     private lateinit var btnRegisterCTA: CustomBtn
     private lateinit var btnLoginCTA: CustomBtn
+
+    // Register form
     private lateinit var sliderRegisterProcess: Slider
     private lateinit var iSelectUserType: ItemsSelector
-
+    private lateinit var ciBirthdateMain: CustomInput
 
     // Student specific form
     private lateinit var siStudentSchoolLevel: SliderItem
@@ -64,13 +86,11 @@ class MainActivity : AppCompatActivity() {
 
     // Teacher specific form
     private lateinit var siTeacherIdentityCard: SliderItem
-    private lateinit var ivTeacherIdentityCardPicker: ImageView
+    private lateinit var ivTeacherIdentityCardPicker: ImagePickerFragment
     private lateinit var siTeacherDocumentsMain: SliderItem
     private lateinit var llTeacherDocumentsMain: LinearLayout
     private lateinit var btnTeacherPickDocumentMain: CustomBtn
 
-    private var currentUser: User = User()
-    private lateinit var imgPickerFragment: ImagePickerFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,10 +111,11 @@ class MainActivity : AppCompatActivity() {
         iSelectStudentSchoolLevel = findViewById(R.id.iSelectStudentSchoolLevelMain)
         siStudentSchoolLevel = findViewById(R.id.siStudentSchoolLevelMain)
         siTeacherIdentityCard = findViewById(R.id.siTeacherIdentityCardMain)
-        ivTeacherIdentityCardPicker = findViewById(R.id.ivTeacherIdentityCardPickerMain)
+        ivTeacherIdentityCardPicker = supportFragmentManager.findFragmentById(R.id.fragImgPickerTeacherIdentityCardMain) as ImagePickerFragment
         siTeacherDocumentsMain = findViewById(R.id.siTeacherDocumentsMain)
         llTeacherDocumentsMain = findViewById(R.id.llTeacherDocumentsMain)
         btnTeacherPickDocumentMain = findViewById(R.id.btnTeacherPickDocumentMain)
+        ciBirthdateMain = findViewById(R.id.ciBirthdateMain)
 
         imgPickerFragment = ImagePickerFragment()
         supportFragmentManager.beginTransaction().add(imgPickerFragment, "imgPickerFragmentMain").commit()
@@ -123,14 +144,44 @@ class MainActivity : AppCompatActivity() {
         sliderRegisterProcess.btnLastSlide = CustomBtn(this, null).apply {
             tv.text = getString(R.string.validate)
             setOnClickListener {
-                // Api.register(currentUser)
-                btnLoginCTA.performClick()
+                Api.register(user) {response ->
+                    runOnUiThread {
+                        try {
+                            val responseMsg = URLDecoder.decode(response.message, "UTF-8")
+                            if (response.code !in 200..299) {
+                                Log.e("MainActivity", "Error while registering user : $responseMsg")
+                                Toast.makeText(this@MainActivity, responseMsg, Toast.LENGTH_SHORT).show()
+                                throw IOException("Unexpected code $responseMsg")
+                            }
+                            Api.currentUser = User.fromJson(response.body!!.string())
+                            Toast.makeText(this@MainActivity, "Bonjour ${user.firstName}", Toast.LENGTH_SHORT).show()
+                            startActivity(Intent(this@MainActivity, HomeActivity::class.java))
+                        } catch (e: Exception) {
+                            Log.e("MainActivity", e.toString())
+                        }
+                    }
+                }
             }
         }
+        // TODO("Investigate how to make the validator detect the ImagePickerFragment")
         sliderRegisterProcess.validateForm = { sliderItem ->
             Utils.getAllNestedChildren(sliderItem)
                 .filter { it is IValidator }
                 .all { (it as IValidator).validate() }
+        }
+        val calendar = Calendar.getInstance()
+        ciBirthdateMain.customValidator = object : CustomValidator {
+            override var errorMessage: String = "Vous devez avoir au moins 6 ans pour vous inscrire"
+            override var validate: (String) -> Boolean = { string ->
+                FieldValidator.date(
+                    string,
+                    Date(
+                        calendar.get(Calendar.YEAR) - 6,
+                        calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH)
+                    )
+                )
+            }
         }
     }
 
@@ -162,28 +213,19 @@ class MainActivity : AppCompatActivity() {
         iSelectUserType.setOnElementSelected {
             sliderRegisterProcess.btnNext.disabled = false
             if (it.selectorId == "studentSelector") {
-                sliderRegisterProcess.addItems(siStudentSchoolLevel)
+                userType = UserType.STUDENT
 
+                sliderRegisterProcess.addItems(siStudentSchoolLevel)
                 sliderRegisterProcess.removeItems(siTeacherIdentityCard)
                 sliderRegisterProcess.removeItems(siTeacherDocumentsMain)
             } else {
+                userType = UserType.TEACHER
+
                 sliderRegisterProcess.addItems(siTeacherIdentityCard)
                 sliderRegisterProcess.addItems(siTeacherDocumentsMain)
-
                 sliderRegisterProcess.removeItems(siStudentSchoolLevel)
             }
             // set currentUser type to selected type
-        }
-
-        ivTeacherIdentityCardPicker.setOnClickListener {
-            imgPickerFragment.pickImage { uri: Uri? ->
-                ivTeacherIdentityCardPicker.setImageURI(uri)
-                ivTeacherIdentityCardPicker.setPadding(0)
-                ivTeacherIdentityCardPicker.imageTintList = null
-                ivTeacherIdentityCardPicker.layoutParams.width = LayoutParams.MATCH_PARENT
-                ivTeacherIdentityCardPicker.layoutParams.height = LayoutParams.MATCH_PARENT
-                ivTeacherIdentityCardPicker.scaleType = ImageView.ScaleType.CENTER_CROP
-            }
         }
 
         btnTeacherPickDocumentMain.setOnClickListener {

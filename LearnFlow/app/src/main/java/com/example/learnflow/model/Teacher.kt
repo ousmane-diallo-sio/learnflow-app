@@ -13,4 +13,4 @@ class Teacher(
     degrees: ArrayList<Degree>,
     identityCard: File,
     isValidated: Boolean
-) : User(firstName, lastName, birthDay, email, address, phoneNumber)
+)
