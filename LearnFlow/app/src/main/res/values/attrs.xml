@@ -17,6 +17,8 @@
         <attr name="inputType" format="enum">
             <enum name="text" value="1" />
             <enum name="number" value="2" />
+            <enum name="phoneNumber" value="3" />
+            <enum name="zipCode" value="3" />
             <enum name="date" value="16" />
             <enum name="textEmailAddress" value="32" />
             <enum name="textPassword" value="128" />
@@ -33,5 +35,8 @@
     <declare-styleable name="SelectorItem">
         <attr name="itemText" format="string|reference" />
         <attr name="selectorId" format="string" />
+    </declare-styleable>
+    <declare-styleable name="ImagePickerFragment">
+        <attr name="isRequired">boolean</attr>
     </declare-styleable>
 </resources>
