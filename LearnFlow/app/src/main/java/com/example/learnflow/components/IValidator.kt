@@ -1,15 +1,19 @@
 package com.example.learnflow.components
 
-import android.widget.LinearLayout
-import com.example.learnflow.R
-import com.example.learnflow.utils.StringValidator
+import android.widget.TextView
 
 interface IValidator {
 
+    var isRequired: Boolean
+    var tvError: TextView
+    var customValidator: CustomValidator?
+
     fun triggerError(error: String)
-
     fun hideError()
-
     fun validate(): Boolean
+}
 
+interface CustomValidator {
+    var errorMessage: String
+    var validate: (String) -> Boolean
 }

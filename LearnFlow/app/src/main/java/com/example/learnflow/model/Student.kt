@@ -9,4 +9,4 @@ class Student(
     email: String,
     address: Address,
     phoneNumber: String,
-) : User(firstName, lastName, birthDay, email, address, phoneNumber)
+)

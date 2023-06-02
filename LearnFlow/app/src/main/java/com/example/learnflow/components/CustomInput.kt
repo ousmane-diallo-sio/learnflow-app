@@ -18,24 +18,23 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.children
 import com.example.learnflow.R
-import com.example.learnflow.utils.StringValidator
+import com.example.learnflow.utils.FieldValidator
 
 class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context, attrs), IComponent, IValidator {
 
     companion object {
         const val TYPE_TEXT = 1
-        const val TYPE_NUMBER = 2
+        const val TYPE_PHONE_NUMBER = 3
         const val TYPE_DATE = 16
         const val TYPE_EMAIL = 32
         const val TYPE_PASSWORD = 128
     }
 
     val et: EditText
-    val tvError: TextView
+    override lateinit var tvError: TextView
     private val ivBefore: ImageView
     private val llAction: LinearLayout
     val ivAction: ImageView
@@ -54,7 +53,11 @@ class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context,
         }
 
     var onInputValidation: ((isValid: Boolean) -> Unit) = {  }
-    private var isRequired: Boolean = false
+    override var customValidator: CustomValidator? = object: CustomValidator {
+        override var errorMessage: String = ""
+        override var validate: (String) -> Boolean = { true }
+    }
+    override var isRequired: Boolean = false
 
     init {
         LayoutInflater.from(context).inflate(R.layout.custom_input, this)
@@ -100,8 +103,9 @@ class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context,
         if (et.inputType == TYPE_DATE) {
             val datePicker = DatePickerDialog(context)
             datePicker.setOnDateSetListener { _, year, month, dayOfMonth ->
+                val beforeDay = if (dayOfMonth < 10) "0" else ""
                 val beforeMonth = if (month < 10) "0" else ""
-                et.setText("$dayOfMonth/${beforeMonth}${month + 1}/$year")
+                et.setText("$beforeDay$dayOfMonth/$beforeMonth${month + 1}/$year")
             }
 
             et.setOnTouchListener { _, motionEvent ->
@@ -168,20 +172,35 @@ class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context,
     }
 
     override fun validate(): Boolean {
-        if (!isRequired) {
-            hideError()
-            return true
-        }
+        // invert condition
+        if (!isRequired) return true
+
         if (et.text.isBlank()) {
             triggerError(context.getString(R.string.required_field))
             return false
         }
-        if (et.inputType == TYPE_EMAIL && !StringValidator.email(et.text.toString())) {
-            triggerError(context.getString(R.string.invalid_email))
-            return false
+        when (et.inputType) {
+            TYPE_EMAIL -> {
+                if (!FieldValidator.email(et.text.toString())) {
+                    triggerError(context.getString(R.string.invalid_email))
+                    return false
+                }
+            }
+            TYPE_DATE -> {
+                if (!FieldValidator.date(et.text.toString())) {
+                    triggerError(context.getString(R.string.invalid_date))
+                    return false
+                }
+            }
+            TYPE_PHONE_NUMBER -> {
+                if (!FieldValidator.phoneNumber(et.text.toString())) {
+                    triggerError(context.getString(R.string.invalid_phone_number))
+                    return false
+                }
+            }
         }
-        if (et.inputType == TYPE_DATE && !StringValidator.date(et.text.toString())) {
-            triggerError(context.getString(R.string.invalid_date))
+        if (customValidator?.validate?.invoke(et.text.toString()) == false) {
+            triggerError(customValidator?.errorMessage ?: "")
             return false
         }
         hideError()
