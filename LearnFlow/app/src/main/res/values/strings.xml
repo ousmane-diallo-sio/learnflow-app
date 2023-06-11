@@ -38,4 +38,7 @@
     <string name="invalid_phone_number">Numéro de téléphone invalide</string>
     <string name="choose_password">Choisissez un mot de passe</string>
     <string name="invalid_password">Au moins 8 caractères sont requis (dont une majuscule, une minuscule et un chiffre)</string>
+    <string name="register_success">Votre demande d’inscription a bien été prise en compte !</string>
+    <string name="validate_register">Veuillez valider votre inscription</string>
+    <string name="insert_profile_picture">Insérez une photo de profil qui apparaîtra sur l’application</string>
 </resources>

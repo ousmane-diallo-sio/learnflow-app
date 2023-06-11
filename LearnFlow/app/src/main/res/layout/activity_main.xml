@@ -62,7 +62,7 @@
                             card_view:hint="@string/email"
                             card_view:icon="@drawable/baseline_alternate_email_24"
                             card_view:inputType="textEmailAddress"
-                            card_view:isRequired="true"/>
+                            card_view:isRequired="true" />
 
                         <com.example.learnflow.components.CustomInput
                             android:id="@+id/ciPasswordMain"
@@ -73,7 +73,7 @@
                             card_view:hint="@string/password"
                             card_view:icon="@drawable/baseline_lock_24"
                             card_view:inputType="textPassword"
-                            card_view:isRequired="true"/>
+                            card_view:isRequired="true" />
 
                         <LinearLayout
                             android:id="@+id/cbWrapperMain"
@@ -159,20 +159,21 @@
                                     <com.example.learnflow.components.SelectorItem
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        card_view:selectorId="studentSelector"
-                                        card_view:itemText="@string/student" />
+                                        card_view:itemText="@string/student"
+                                        card_view:selectorId="studentSelector" />
 
                                     <com.example.learnflow.components.SelectorItem
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        card_view:selectorId="teacherSelector"
-                                        card_view:itemText="@string/teacher" />
+                                        card_view:itemText="@string/teacher"
+                                        card_view:selectorId="teacherSelector" />
 
                                 </com.example.learnflow.components.ItemsSelector>
 
                             </LinearLayout>
                         </androidx.cardview.widget.CardView>
                     </com.example.learnflow.components.SliderItem>
+
                     <com.example.learnflow.components.SliderItem
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -213,7 +214,7 @@
                                     card_view:hint="@string/first_name"
                                     card_view:icon="@drawable/baseline_person_24"
                                     card_view:inputType="text"
-                                    card_view:isRequired="true"/>
+                                    card_view:isRequired="true" />
 
                                 <com.example.learnflow.components.CustomInput
                                     android:id="@+id/ciEmailRegisterMain"
@@ -224,7 +225,7 @@
                                     card_view:hint="@string/email"
                                     card_view:icon="@drawable/baseline_alternate_email_24"
                                     card_view:inputType="textEmailAddress"
-                                    card_view:isRequired="true"/>
+                                    card_view:isRequired="true" />
 
                                 <com.example.learnflow.components.CustomInput
                                     android:id="@+id/ciBirthdateRegisterMain"
@@ -235,7 +236,7 @@
                                     card_view:hint="@string/birthdate"
                                     card_view:icon="@drawable/baseline_calendar_month_24"
                                     card_view:inputType="date"
-                                    card_view:isRequired="true"/>
+                                    card_view:isRequired="true" />
 
                                 <com.example.learnflow.components.CustomInput
                                     android:id="@+id/ciPhoneNumberRegisterMain"
@@ -246,11 +247,12 @@
                                     card_view:hint="@string/phone_number"
                                     card_view:icon="@drawable/baseline_phone_24"
                                     card_view:inputType="phoneNumber"
-                                    card_view:isRequired="true"/>
+                                    card_view:isRequired="true" />
 
                             </LinearLayout>
                         </androidx.cardview.widget.CardView>
                     </com.example.learnflow.components.SliderItem>
+
                     <com.example.learnflow.components.SliderItem
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -280,7 +282,7 @@
                                     card_view:hint="@string/home_city"
                                     card_view:icon="@drawable/baseline_location_city_24"
                                     card_view:inputType="text"
-                                    card_view:isRequired="true"/>
+                                    card_view:isRequired="true" />
 
                                 <com.example.learnflow.components.CustomInput
                                     android:id="@+id/ciStreetRegisterMain"
@@ -291,7 +293,7 @@
                                     card_view:hint="@string/street"
                                     card_view:icon="@drawable/ic_home_black_24dp"
                                     card_view:inputType="text"
-                                    card_view:isRequired="true"/>
+                                    card_view:isRequired="true" />
 
                                 <com.example.learnflow.components.CustomInput
                                     android:id="@+id/ciZipCodeRegisterMain"
@@ -302,7 +304,7 @@
                                     card_view:hint="@string/zip_code"
                                     card_view:icon="@drawable/baseline_my_location_24"
                                     card_view:inputType="number"
-                                    card_view:isRequired="true"/>
+                                    card_view:isRequired="true" />
 
                                 <com.example.learnflow.components.CustomInput
                                     android:id="@+id/ciFurtherAddressRegisterMain"
@@ -313,11 +315,12 @@
                                     card_view:hint="@string/further_address"
                                     card_view:icon="@drawable/baseline_info_24"
                                     card_view:inputType="text"
-                                    card_view:isRequired="true"/>
+                                    card_view:isRequired="false" />
 
                             </LinearLayout>
                         </androidx.cardview.widget.CardView>
                     </com.example.learnflow.components.SliderItem>
+
                     <com.example.learnflow.components.SliderItem
                         android:id="@+id/siStudentSchoolLevelMain"
                         android:layout_width="match_parent"
@@ -332,27 +335,28 @@
                             app:cardElevation="10dp"
                             card_view:cardUseCompatPadding="true">
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical">
-
-                            <TextView
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                style="@style/tvBoldTextStyle"
-                                android:textAlignment="center"
-                                android:layout_marginVertical="20dp"
-                                android:text="@string/select_school_level" />
+                                android:orientation="vertical">
 
-                            <com.example.learnflow.components.ItemsSelector
-                                android:id="@+id/iSelectStudentSchoolLevelMain"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content" />
-                        </LinearLayout>
+                                <TextView
+                                    style="@style/tvBoldTextStyle"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginVertical="20dp"
+                                    android:text="@string/select_school_level"
+                                    android:textAlignment="center" />
+
+                                <com.example.learnflow.components.ItemsSelector
+                                    android:id="@+id/iSelectStudentSchoolLevelMain"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content" />
+                            </LinearLayout>
 
                         </androidx.cardview.widget.CardView>
                     </com.example.learnflow.components.SliderItem>
+
                     <com.example.learnflow.components.SliderItem
                         android:id="@+id/siTeacherIdentityCardMain"
                         android:layout_width="match_parent"
@@ -375,23 +379,24 @@
 
                                 <fragment
                                     android:id="@+id/fragImgPickerTeacherIdentityCardMain"
+                                    android:name="fr.kameouss.instamemeeditor.components.ImagePickerFragment"
                                     android:layout_width="match_parent"
                                     android:layout_height="180dp"
-                                    android:name="fr.kameouss.instamemeeditor.components.ImagePickerFragment"
                                     app:isRequired="true" />
 
                                 <TextView
+                                    style="@style/tvBoldTextStyle"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    style="@style/tvBoldTextStyle"
-                                    android:textAlignment="center"
                                     android:layout_marginVertical="20dp"
-                                    android:text="@string/upload_identity_card_cta" />
+                                    android:text="@string/upload_identity_card_cta"
+                                    android:textAlignment="center" />
 
                             </LinearLayout>
 
                         </androidx.cardview.widget.CardView>
                     </com.example.learnflow.components.SliderItem>
+
                     <com.example.learnflow.components.SliderItem
                         android:id="@+id/siTeacherDocumentsMain"
                         android:layout_width="match_parent"
@@ -430,18 +435,19 @@
                                     card_view:text="@string/add_document" />
 
                                 <TextView
+                                    style="@style/tvBoldTextStyle"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    style="@style/tvBoldTextStyle"
-                                    android:textAlignment="center"
                                     android:layout_marginVertical="20dp"
-                                    android:textSize="16sp"
-                                    android:text="@string/signup_teacher_documents_desc" />
+                                    android:text="@string/signup_teacher_documents_desc"
+                                    android:textAlignment="center"
+                                    android:textSize="16sp" />
 
                             </LinearLayout>
 
                         </androidx.cardview.widget.CardView>
                     </com.example.learnflow.components.SliderItem>
+
                     <com.example.learnflow.components.SliderItem
                         android:id="@+id/siPasswordRegisterMain"
                         android:layout_width="match_parent"
@@ -455,6 +461,7 @@
                             app:cardCornerRadius="15dp"
                             app:cardElevation="10dp"
                             card_view:cardUseCompatPadding="true">
+
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -462,10 +469,10 @@
                                 android:padding="10dp">
 
                                 <TextView
+                                    style="@style/tvBoldTextStyle"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginBottom="10dp"
-                                    style="@style/tvBoldTextStyle"
                                     android:text="@string/choose_password" />
 
                                 <com.example.learnflow.components.CustomInput
@@ -476,7 +483,84 @@
                                     card_view:hint="@string/password"
                                     card_view:icon="@drawable/baseline_lock_24"
                                     card_view:inputType="textPassword"
-                                    card_view:isRequired="true"/>
+                                    card_view:isRequired="true" />
+
+                            </LinearLayout>
+
+                        </androidx.cardview.widget.CardView>
+                    </com.example.learnflow.components.SliderItem>
+
+                    <com.example.learnflow.components.SliderItem
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            app:cardCornerRadius="15dp"
+                            app:cardElevation="10dp"
+                            card_view:cardUseCompatPadding="true">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:paddingVertical="20dp"
+                                android:paddingHorizontal="10dp">
+
+                                <androidx.constraintlayout.widget.ConstraintLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+
+                                    <androidx.cardview.widget.CardView
+                                        android:layout_width="0dp"
+                                        android:layout_height="0dp"
+                                        app:layout_constraintDimensionRatio="1:1"
+                                        card_view:layout_constraintLeft_toLeftOf="parent"
+                                        card_view:layout_constraintRight_toRightOf="parent"
+                                        card_view:layout_constraintTop_toTopOf="parent"
+                                        card_view:layout_constraintWidth_percent="0.5"
+                                        card_view:cardCornerRadius="100dp">
+
+                                        <FrameLayout
+                                            android:layout_width="match_parent"
+                                            android:layout_height="match_parent"
+                                            android:background="@color/bright_gray">
+
+                                            <androidx.constraintlayout.widget.ConstraintLayout
+                                                android:layout_width="match_parent"
+                                                android:layout_height="match_parent">
+
+                                                <ImageView
+                                                    android:layout_width="0dp"
+                                                    android:layout_height="0dp"
+                                                    card_view:layout_constraintWidth_percent="0.5"
+                                                    card_view:layout_constraintDimensionRatio="1:1"
+                                                    card_view:layout_constraintTop_toTopOf="parent"
+                                                    card_view:layout_constraintBottom_toBottomOf="parent"
+                                                    card_view:layout_constraintLeft_toLeftOf="parent"
+                                                    card_view:layout_constraintRight_toRightOf="parent"
+                                                    android:src="@drawable/baseline_add_circle_outline_24" />
+                                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                                            <ImageView
+                                                android:id="@+id/ivProfilePicRegisterMain"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="match_parent"
+                                                android:scaleType="centerCrop" />
+                                        </FrameLayout>
+                                    </androidx.cardview.widget.CardView>
+                                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                                <TextView
+                                    style="@style/tvBoldTextStyle"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="30dp"
+                                    android:text="@string/insert_profile_picture"
+                                    android:textAlignment="center" />
 
                             </LinearLayout>
 

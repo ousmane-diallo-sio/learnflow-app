@@ -1,6 +1,8 @@
 package com.example.learnflow.webservices
 
+import android.app.Activity
 import android.app.AlertDialog
+import android.app.ProgressDialog.show
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
@@ -16,6 +18,9 @@ import com.example.learnflow.model.User
 import com.example.learnflow.model.UserType
 import com.example.learnflow.utils.EnvUtils
 import com.example.learnflow.webservices.Api.currentUser
+import com.example.learnflow.webservices.Api.handleError
+import com.example.learnflow.webservices.Api.handleMissingNetwork
+import com.example.learnflow.webservices.Api.isNetworkConnected
 import com.example.learnflow.webservices.Api.userType
 import com.google.gson.Gson
 import io.github.cdimascio.dotenv.dotenv
@@ -29,6 +34,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.io.IOException
+import java.net.ConnectException
 import java.util.logging.Handler
 
 object Api {
@@ -58,6 +64,16 @@ object Api {
                 .create()
 
             alertDialog.show()
+        }
+    }
+
+    fun handleError(context: Context, e: java.lang.Exception, methodName: String) {
+        Log.e("Components", "Api::${methodName} -> ${e.message ?: ""}")
+        (context as Activity).runOnUiThread {
+            when (e) {
+                is ConnectException -> Toast.makeText(context, "Erreur lors de la connexion au serveur", Toast.LENGTH_SHORT).show()
+                else -> Toast.makeText(context, "Une erreur est survenue", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -91,14 +107,12 @@ object Api {
             .post(formBody)
             .build()
 
-        try {
-            CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
                 client.newCall(request).execute().use { response ->
                     callback?.invoke(response)
                 }
-            }
-        } catch (e: Exception) {
-            throw e
+            } catch (e: Exception) { handleError(context, e, "register") }
         }
     }
 

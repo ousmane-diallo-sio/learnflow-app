@@ -40,16 +40,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
 
     //private var user: User = User()
-    private var user: User = User(
-        "Caillou",
-        "pierre",
-        LocalDate.of(1998, 1, 1).format(DateTimeFormatter.ISO_DATE),
-        "ouaia@ouai.com",
-        Address("1 rue de la paix", "Paris", "75000"),
-        "0602030405",
-        "https://d38b044pevnwc9.cloudfront.net/cutout-nuxt/enhancer/2.jpg",
-        "azertyuiop"
-    )
+    private var user: User = User().apply {
+        profilePictureUrl = "https://d38b044pevnwc9.cloudfront.net/cutout-nuxt/enhancer/2.jpg"
+    }
     private lateinit var imgPickerFragment: ImagePickerFragment
 
     private var isLoginView = true
@@ -90,6 +83,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var ciZipCodeRegister: CustomInput
     private lateinit var ciFurtherAddressRegister: CustomInput
     private lateinit var ciPasswordRegister: CustomInput
+    private lateinit var ivProfilePicRegister: ImageView
 
     // Student specific form
     private lateinit var siStudentSchoolLevel: SliderItem
@@ -136,6 +130,7 @@ class MainActivity : AppCompatActivity() {
         ciFurtherAddressRegister = findViewById(R.id.ciFurtherAddressRegisterMain)
         ciPasswordRegister = findViewById(R.id.ciPasswordRegisterMain)
         ciBirthdateRegister = findViewById(R.id.ciBirthdateRegisterMain)
+        ivProfilePicRegister = findViewById(R.id.ivProfilePicRegisterMain)
 
         imgPickerFragment = ImagePickerFragment()
         supportFragmentManager.beginTransaction().add(imgPickerFragment, "imgPickerFragmentMain").commit()
@@ -209,7 +204,12 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         }
-        ciPasswordRegister
+        ciZipCodeRegister.customValidator = object : CustomValidator {
+            override var errorMessage: String = "Code postal invalide"
+            override var validate: (String) -> Boolean = { string ->
+                FieldValidator.zipCode(string)
+            }
+        }
         setListeners()
     }
 
@@ -301,6 +301,12 @@ class MainActivity : AppCompatActivity() {
                     llTeacherDocumentsMain.addView(customInput)
 
                 }
+            }
+        }
+        ivProfilePicRegister.setOnClickListener {
+            imgPickerFragment.pickImage { uri: Uri? ->
+                if (uri == null) return@pickImage
+                ivProfilePicRegister.setImageURI(uri)
             }
         }
     }

@@ -19,8 +19,12 @@ object FieldValidator {
 
     fun date (string: String, maxDate: LocalDate): Boolean {
         if (!date(string)) return false
-        val date = LocalDate.parse(string, DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.FRANCE))
-        return date?.isBefore(maxDate) ?: false
+        return try {
+            val date = LocalDate.parse(string, DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.FRANCE))
+            date?.isBefore(maxDate) ?: false
+        } catch (e: Exception) {
+            false
+        }
     }
 
     fun phoneNumber(string: String): Boolean {
@@ -30,6 +34,11 @@ object FieldValidator {
 
     fun password(string: String): Boolean {
         val pattern = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}\$")
+        return pattern.matches(string)
+    }
+
+    fun zipCode(string: String): Boolean {
+        val pattern = Regex("^[0-9]{5}\$")
         return pattern.matches(string)
     }
 
