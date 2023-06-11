@@ -1,6 +1,8 @@
 package com.example.learnflow.utils
 
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 object FieldValidator {
@@ -15,10 +17,10 @@ object FieldValidator {
         return pattern.matches(string)
     }
 
-    fun date (string: String, maxDate: Date): Boolean {
+    fun date (string: String, maxDate: LocalDate): Boolean {
         if (!date(string)) return false
-        val date = SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE).parse(string)
-        return date?.before(maxDate) ?: false
+        val date = LocalDate.parse(string, DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.FRANCE))
+        return date?.isBefore(maxDate) ?: false
     }
 
     fun phoneNumber(string: String): Boolean {

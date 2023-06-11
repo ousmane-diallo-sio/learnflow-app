@@ -135,8 +135,7 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
 
     fun slideForward() {
         if (items.size < 2) return
-         // if (validateForm(items[currentIndex])) {
-        if (true) {
+         if (validateForm(items[currentIndex])) {
             animateItem(false)
             btnPrev.disabled = !isMovableLeft()
             btnNext.disabled = !isMovableRight()

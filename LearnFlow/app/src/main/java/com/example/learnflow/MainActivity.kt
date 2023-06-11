@@ -175,7 +175,7 @@ class MainActivity : AppCompatActivity() {
                 user.phoneNumber = ciPhoneNumberRegister.et.text.toString()
                 user.schoolLevel = iSelectStudentSchoolLevel.items.find { it.isSelected }?.tvItem?.text.toString()
 
-                Api.register(user) {response ->
+                Api.register(this@MainActivity, user) {response ->
                     runOnUiThread {
                         try {
                             val responseMsg = URLDecoder.decode(response.message, "UTF-8")
@@ -200,17 +200,12 @@ class MainActivity : AppCompatActivity() {
                 .filter { it is IValidator }
                 .all { (it as IValidator).validate() }
         }
-        val calendar = Calendar.getInstance()
         ciBirthdateRegister.customValidator = object : CustomValidator {
             override var errorMessage: String = "Vous devez avoir au moins 6 ans pour vous inscrire"
             override var validate: (String) -> Boolean = { string ->
                 FieldValidator.date(
                     string,
-                    Date(
-                        calendar.get(Calendar.YEAR) - 6,
-                        calendar.get(Calendar.MONTH),
-                        calendar.get(Calendar.DAY_OF_MONTH)
-                    )
+                    LocalDate.now().minusYears(6)
                 )
             }
         }

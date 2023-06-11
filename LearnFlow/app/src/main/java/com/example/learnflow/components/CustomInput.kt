@@ -172,7 +172,6 @@ class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context,
     }
 
     override fun validate(): Boolean {
-        // invert condition
         if (!isRequired) return true
 
         if (et.text.isBlank()) {

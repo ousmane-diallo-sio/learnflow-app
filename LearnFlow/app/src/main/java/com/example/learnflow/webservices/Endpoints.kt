@@ -1,9 +1,12 @@
 package com.example.learnflow.webservices
 
+import com.example.learnflow.utils.EnvUtils
+
 object Endpoints {
 
-    const val loginStudent = "/login/student"
-
-    const val loginTeacher = "/login/teacher"
+    val loginStudent = "${EnvUtils.API_BASE_URL}/login/student"
+    val loginTeacher = "${EnvUtils.API_BASE_URL}/login/teacher"
+    val registerStudent = "${EnvUtils.API_BASE_URL}/register/student"
+    val registerTeacher = "${EnvUtils.API_BASE_URL}/register/teacher"
 
 }
