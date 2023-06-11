@@ -74,6 +74,7 @@
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginBottom="5dp"
                 android:textColor="@color/carmine_red"
+                android:textSize="13sp"
                 android:visibility="gone" />
         </LinearLayout>
 

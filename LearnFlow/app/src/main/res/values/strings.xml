@@ -36,4 +36,6 @@
     <string name="invalid_email">Adresse email invalide</string>
     <string name="invalid_date">Date invalide</string>
     <string name="invalid_phone_number">Numéro de téléphone invalide</string>
+    <string name="choose_password">Choisissez un mot de passe</string>
+    <string name="invalid_password">Au moins 8 caractères sont requis (dont une majuscule, une minuscule et un chiffre)</string>
 </resources>

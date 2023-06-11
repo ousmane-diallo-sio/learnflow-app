@@ -6,7 +6,9 @@ import android.content.SharedPreferences
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
 import android.text.InputType
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View.*
 import android.view.ViewGroup
@@ -67,7 +69,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var loginPart: LinearLayout
     private lateinit var registerPart: LinearLayout
     private lateinit var cbWrapper: LinearLayout
-    private lateinit var ciEmail: CustomInput
+    private lateinit var ciLogin: CustomInput
     private lateinit var ciPassword: CustomInput
     private lateinit var cb: CheckBox
     private lateinit var tvBottomCTA: TextView
@@ -78,7 +80,16 @@ class MainActivity : AppCompatActivity() {
     // Register form
     private lateinit var sliderRegisterProcess: Slider
     private lateinit var iSelectUserType: ItemsSelector
-    private lateinit var ciBirthdateMain: CustomInput
+    private lateinit var ciFirstnameRegister: CustomInput
+    private lateinit var ciLastnameRegister: CustomInput
+    private lateinit var ciEmailRegister: CustomInput
+    private lateinit var ciBirthdateRegister: CustomInput
+    private lateinit var ciPhoneNumberRegister: CustomInput
+    private lateinit var ciCityRegister: CustomInput
+    private lateinit var ciStreetRegister: CustomInput
+    private lateinit var ciZipCodeRegister: CustomInput
+    private lateinit var ciFurtherAddressRegister: CustomInput
+    private lateinit var ciPasswordRegister: CustomInput
 
     // Student specific form
     private lateinit var siStudentSchoolLevel: SliderItem
@@ -100,7 +111,7 @@ class MainActivity : AppCompatActivity() {
         registerPart = findViewById(R.id.registerPartMain)
         cbWrapper = findViewById(R.id.cbWrapperMain)
         cb = cbWrapper.children.elementAt(0) as CheckBox
-        ciEmail = findViewById(R.id.ciEmailMain)
+        ciLogin = findViewById(R.id.ciEmailMain)
         ciPassword = findViewById(R.id.ciPasswordMain)
         tvBottomCTA = findViewById(R.id.tvBottomCTAMain)
         btnLogin = findViewById(R.id.btnLoginMain)
@@ -115,7 +126,16 @@ class MainActivity : AppCompatActivity() {
         siTeacherDocumentsMain = findViewById(R.id.siTeacherDocumentsMain)
         llTeacherDocumentsMain = findViewById(R.id.llTeacherDocumentsMain)
         btnTeacherPickDocumentMain = findViewById(R.id.btnTeacherPickDocumentMain)
-        ciBirthdateMain = findViewById(R.id.ciBirthdateMain)
+        ciFirstnameRegister = findViewById(R.id.ciFirstNameRegisterMain)
+        ciLastnameRegister = findViewById(R.id.ciLastNameRegisterMain)
+        ciEmailRegister = findViewById(R.id.ciEmailRegisterMain)
+        ciPhoneNumberRegister = findViewById(R.id.ciPhoneNumberRegisterMain)
+        ciCityRegister = findViewById(R.id.ciCityRegisterMain)
+        ciStreetRegister = findViewById(R.id.ciStreetRegisterMain)
+        ciZipCodeRegister = findViewById(R.id.ciZipCodeRegisterMain)
+        ciFurtherAddressRegister = findViewById(R.id.ciFurtherAddressRegisterMain)
+        ciPasswordRegister = findViewById(R.id.ciPasswordRegisterMain)
+        ciBirthdateRegister = findViewById(R.id.ciBirthdateRegisterMain)
 
         imgPickerFragment = ImagePickerFragment()
         supportFragmentManager.beginTransaction().add(imgPickerFragment, "imgPickerFragmentMain").commit()
@@ -124,7 +144,6 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.app_name),
             Context.MODE_PRIVATE
         )
-        setListeners()
         setupSchoolLevels()
     }
 
@@ -133,7 +152,7 @@ class MainActivity : AppCompatActivity() {
         val email = sharedPreferences.getString(SP_EMAIL_KEY, null) ?: ""
         val password = sharedPreferences.getString(SP_PASSWORD_KEY, null) ?: ""
         if (email.isNotEmpty()) {
-            ciEmail.et.setText(email)
+            ciLogin.et.setText(email)
         }
         if (password.isNotEmpty()) {
             ciPassword.et.setText(password)
@@ -144,6 +163,18 @@ class MainActivity : AppCompatActivity() {
         sliderRegisterProcess.btnLastSlide = CustomBtn(this, null).apply {
             tv.text = getString(R.string.validate)
             setOnClickListener {
+                user.firstName = ciFirstnameRegister.et.text.toString()
+                user.lastName = ciLastnameRegister.et.text.toString()
+                user.email = ciEmailRegister.et.text.toString()
+                user.birthdate = ciBirthdateRegister.et.text.toString()
+                user.address?.city = ciCityRegister.et.text.toString()
+                user.address?.street = ciStreetRegister.et.text.toString()
+                user.address?.zipCode = ciZipCodeRegister.et.text.toString()
+                user.address?.complement = ciFurtherAddressRegister.et.text.toString()
+                user.password = ciPasswordRegister.et.text.toString()
+                user.phoneNumber = ciPhoneNumberRegister.et.text.toString()
+                user.schoolLevel = iSelectStudentSchoolLevel.items.find { it.isSelected }?.tvItem?.text.toString()
+
                 Api.register(user) {response ->
                     runOnUiThread {
                         try {
@@ -170,7 +201,7 @@ class MainActivity : AppCompatActivity() {
                 .all { (it as IValidator).validate() }
         }
         val calendar = Calendar.getInstance()
-        ciBirthdateMain.customValidator = object : CustomValidator {
+        ciBirthdateRegister.customValidator = object : CustomValidator {
             override var errorMessage: String = "Vous devez avoir au moins 6 ans pour vous inscrire"
             override var validate: (String) -> Boolean = { string ->
                 FieldValidator.date(
@@ -183,6 +214,8 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         }
+        ciPasswordRegister
+        setListeners()
     }
 
     private fun setListeners() {
@@ -190,17 +223,16 @@ class MainActivity : AppCompatActivity() {
             cb.isChecked = !cb.isChecked
         }
 
-        ciEmail.onInputValidation = { btnLogin.disabled = !it }
+        ciLogin.onInputValidation = { btnLogin.disabled = !it }
         ciPassword.onInputValidation = { btnLogin.disabled = !it }
 
         btnLogin.setOnClickListener {
-            btnLogin.isLoading = true
             if (cb.isChecked) {
                 saveCredentials()
             } else {
                 deleteCredentials()
             }
-            Api.login(this, ciEmail.et.text.toString(), ciPassword.et.text.toString())
+            Api.login(this, ciLogin.et.text.toString(), ciPassword.et.text.toString())
         }
 
         btnRegisterCTA.setOnClickListener {
@@ -227,7 +259,6 @@ class MainActivity : AppCompatActivity() {
             }
             // set currentUser type to selected type
         }
-
         btnTeacherPickDocumentMain.setOnClickListener {
             if (llTeacherDocumentsMain.childCount >= 4) {
                 AlertDialog.Builder(this)
@@ -282,7 +313,7 @@ class MainActivity : AppCompatActivity() {
     private fun saveCredentials() {
         val spEditor = sharedPreferences.edit()
         spEditor.putBoolean(SP_CB_KEY, cb.isChecked)
-        spEditor.putString(SP_EMAIL_KEY, ciEmail.et.text.toString())
+        spEditor.putString(SP_EMAIL_KEY, ciLogin.et.text.toString())
         spEditor.putString(SP_PASSWORD_KEY, ciPassword.et.text.toString())
         spEditor.apply()
     }

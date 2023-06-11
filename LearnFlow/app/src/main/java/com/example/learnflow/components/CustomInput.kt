@@ -198,6 +198,12 @@ class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context,
                     return false
                 }
             }
+            TYPE_PASSWORD -> {
+                if (!FieldValidator.password(et.text.toString())) {
+                    triggerError(context.getString(R.string.invalid_password))
+                    return false
+                }
+            }
         }
         if (customValidator?.validate?.invoke(et.text.toString()) == false) {
             triggerError(customValidator?.errorMessage ?: "")

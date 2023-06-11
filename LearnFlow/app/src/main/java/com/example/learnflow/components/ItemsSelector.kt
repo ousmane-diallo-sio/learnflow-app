@@ -15,7 +15,8 @@ class ItemsSelector(context: Context, attrs: AttributeSet): LinearLayout(context
 
     private val fblItemsContainer: FlexboxLayout
     override lateinit var tvError: TextView
-    private var items = ArrayList<SelectorItem>()
+    var items = ArrayList<SelectorItem>()
+        private set
     private var multiSelection = false
     private var onElementSelected: ((SelectorItem) -> Unit)? = null
     override var isRequired: Boolean = false

@@ -15,7 +15,7 @@ class SelectorItem(context: Context, attrs: AttributeSet?): LinearLayout(context
 
     var selectorId: String? = null
     private val cvItemWrapper: CardView
-    private val tvItem: TextView
+    val tvItem: TextView
     private val defaultColors = HashMap<String, ColorStateList>()
     var isItemSelected = false
     set(value) {
