@@ -8,20 +8,10 @@ jobs:
       xcode: "14.2.0" # Specify the Xcode version
     steps: # Steps to run
       - checkout # Checkout the code
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "build.gradle" }}
-            - v1-dependencies-
 
       - run:
           name: Download Dependencies
           command: ./gradlew androidDependencies
-
-
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: v1-dependencies-{{ checksum "build.gradle" }}
 
       # Build
       - run:
