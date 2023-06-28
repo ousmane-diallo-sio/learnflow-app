@@ -7,7 +7,9 @@ jobs:
     macos:  # Specify the OS
       xcode: "14.2.0" # Specify the Xcode version
     environment: # Environment variables
-        ANDROID_HOME: /usr/local/share/android-sdk
+      # Install Android SDK Tools
+      ENV ANDROID_HOME "/home/circleci/android-sdk"
+      ENV ANDROID_SDK_ROOT $ANDROID_HOME
     steps: # Steps to run
       - checkout # Checkout the code
 
