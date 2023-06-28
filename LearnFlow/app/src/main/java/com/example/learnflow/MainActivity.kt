@@ -6,9 +6,7 @@ import android.content.SharedPreferences
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
 import android.text.InputType
-import android.text.TextWatcher
 import android.util.Log
 import android.view.View.*
 import android.view.ViewGroup
@@ -18,7 +16,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.children
 import androidx.core.view.setPadding
 import com.example.learnflow.components.*
-import com.example.learnflow.model.Address
 import com.example.learnflow.model.User
 import com.example.learnflow.model.UserType
 import com.example.learnflow.utils.FieldValidator
@@ -29,8 +26,6 @@ import fr.kameouss.instamemeeditor.components.ImagePickerFragment
 import java.io.IOException
 import java.net.URLDecoder
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -83,7 +78,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var ciZipCodeRegister: CustomInput
     private lateinit var ciFurtherAddressRegister: CustomInput
     private lateinit var ciPasswordRegister: CustomInput
-    private lateinit var ivProfilePicRegister: ImageView
+    private lateinit var ivProfilePicRegister: ImagePickerFragment
 
     // Student specific form
     private lateinit var siStudentSchoolLevel: SliderItem
@@ -130,7 +125,7 @@ class MainActivity : AppCompatActivity() {
         ciFurtherAddressRegister = findViewById(R.id.ciFurtherAddressRegisterMain)
         ciPasswordRegister = findViewById(R.id.ciPasswordRegisterMain)
         ciBirthdateRegister = findViewById(R.id.ciBirthdateRegisterMain)
-        ivProfilePicRegister = findViewById(R.id.ivProfilePicRegisterMain)
+        ivProfilePicRegister = supportFragmentManager.findFragmentById(R.id.fragImgPickerProfilePicRegisterMain) as ImagePickerFragment
 
         imgPickerFragment = ImagePickerFragment()
         supportFragmentManager.beginTransaction().add(imgPickerFragment, "imgPickerFragmentMain").commit()
@@ -189,8 +184,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        // TODO("Investigate how to make the validator detect the ImagePickerFragment")
-        sliderRegisterProcess.validateForm = { sliderItem ->
+        sliderRegisterProcess.validateForm = { sliderItem, index ->
             Utils.getAllNestedChildren(sliderItem)
                 .filter { it is IValidator }
                 .all { (it as IValidator).validate() }
@@ -303,12 +297,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        ivProfilePicRegister.setOnClickListener {
-            imgPickerFragment.pickImage { uri: Uri? ->
-                if (uri == null) return@pickImage
-                ivProfilePicRegister.setImageURI(uri)
-            }
-        }
     }
 
     private fun saveCredentials() {
@@ -337,6 +325,14 @@ class MainActivity : AppCompatActivity() {
             selectorItem.setText(it)
             selectorItem.selectorId = "selector$it"
             iSelectStudentSchoolLevel.addItems(selectorItem)
+        }
+    }
+
+    private fun getImagePickerToValidate(): List<ImagePickerFragment> {
+        return if (userType == UserType.STUDENT) {
+            listOf(ivProfilePicRegister)
+        } else {
+            listOf(ivProfilePicRegister, ivTeacherIdentityCardPicker)
         }
     }
 

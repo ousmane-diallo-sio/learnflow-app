@@ -6,9 +6,6 @@
     <string name="password" tools:ignore="ExtraTranslation">Mot de passe</string>
     <string name="create_account_cta">Vous n\'avez pas de compte ?</string>
     <string name="title_activity_home">HomeActivity</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
     <string name="register_user_type_title" tools:ignore="ExtraTranslation">Vous êtes un...</string>
     <string name="student">Élève</string>
     <string name="teacher">Professeur</string>
@@ -41,4 +38,7 @@
     <string name="register_success">Votre demande d’inscription a bien été prise en compte !</string>
     <string name="validate_register">Veuillez valider votre inscription</string>
     <string name="insert_profile_picture">Insérez une photo de profil qui apparaîtra sur l’application</string>
+    <string name="title_search">Rechercher</string>
+    <string name="title_messages">Messages</string>
+    <string name="search_teacher_cta">Recherchez une matière, un professeur...</string>
 </resources>
