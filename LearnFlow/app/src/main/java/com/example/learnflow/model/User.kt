@@ -1,20 +1,27 @@
 package com.example.learnflow.model
 
-import android.location.Address
+import com.google.gson.Gson
+import okhttp3.FormBody
+import okhttp3.RequestBody
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
-class User {
-    val firstName: String
-    val lastName: String
-    val birthDay: LocalDate
-    val email: String
-    val address: Address
-
-    constructor(firstName: String, lastName: String, birthDay: LocalDate, email: String, address: Address) {
-        this.firstName = firstName
-        this.lastName = lastName
-        this.birthDay = birthDay
-        this.email = email
-        this.address = address
+open class User(
+    var firstName: String? = null,
+    var lastName: String? = null,
+    var birthdate: String? = null,
+    var email: String? = null,
+    var address: Address? = null,
+    var phoneNumber: String? = null,
+    var profilePictureUrl: String? = null,
+    var schoolLevel: String? = null,
+    var password: String? = null
+) {
+    companion object {
+        fun fromJson(json: String): User {
+            val gson = Gson()
+             return gson.fromJson(json, User::class.java)
+        }
     }
+
 }
