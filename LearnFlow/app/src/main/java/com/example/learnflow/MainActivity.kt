@@ -12,10 +12,11 @@ import android.view.View.*
 import android.view.ViewGroup
 import android.widget.*
 import android.widget.LinearLayout.LayoutParams
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.children
 import androidx.core.view.setPadding
 import com.example.learnflow.components.*
+import com.example.learnflow.model.Address
 import com.example.learnflow.model.User
 import com.example.learnflow.model.UserType
 import com.example.learnflow.utils.FieldValidator
@@ -29,15 +30,10 @@ import java.time.LocalDate
 
 class MainActivity : AppCompatActivity() {
 
-    private val SP_CB_KEY = "cbCredentialsChecked"
-    private val SP_EMAIL_KEY = "credentialEmail"
-    private val SP_PASSWORD_KEY = "credentialPassword"
+    private val viewModel: MainViewModel by viewModels()
+
     private lateinit var sharedPreferences: SharedPreferences
 
-    //private var user: User = User()
-    private var user: User = User().apply {
-        profilePictureUrl = "https://d38b044pevnwc9.cloudfront.net/cutout-nuxt/enhancer/2.jpg"
-    }
     private lateinit var imgPickerFragment: ImagePickerFragment
 
     private var isLoginView = true
@@ -56,10 +52,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var loginPart: LinearLayout
     private lateinit var registerPart: LinearLayout
-    private lateinit var cbWrapper: LinearLayout
     private lateinit var ciLogin: CustomInput
     private lateinit var ciPassword: CustomInput
-    private lateinit var cb: CheckBox
     private lateinit var tvBottomCTA: TextView
     private lateinit var btnLogin: CustomBtn
     private lateinit var btnRegisterCTA: CustomBtn
@@ -98,8 +92,6 @@ class MainActivity : AppCompatActivity() {
 
         loginPart = findViewById(R.id.loginPartMain)
         registerPart = findViewById(R.id.registerPartMain)
-        cbWrapper = findViewById(R.id.cbWrapperMain)
-        cb = cbWrapper.children.elementAt(0) as CheckBox
         ciLogin = findViewById(R.id.ciEmailMain)
         ciPassword = findViewById(R.id.ciPasswordMain)
         tvBottomCTA = findViewById(R.id.tvBottomCTAMain)
@@ -139,33 +131,28 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        val email = sharedPreferences.getString(SP_EMAIL_KEY, null) ?: ""
-        val password = sharedPreferences.getString(SP_PASSWORD_KEY, null) ?: ""
-        if (email.isNotEmpty()) {
-            ciLogin.et.setText(email)
-        }
-        if (password.isNotEmpty()) {
-            ciPassword.et.setText(password)
-        }
-        cb.isChecked = sharedPreferences.getBoolean(SP_CB_KEY, false)
         btnLogin.isLoading = false
 
         sliderRegisterProcess.btnLastSlide = CustomBtn(this, null).apply {
             tv.text = getString(R.string.validate)
             setOnClickListener {
-                user.firstName = ciFirstnameRegister.et.text.toString()
-                user.lastName = ciLastnameRegister.et.text.toString()
-                user.email = ciEmailRegister.et.text.toString()
-                user.birthdate = ciBirthdateRegister.et.text.toString()
-                user.address?.city = ciCityRegister.et.text.toString()
-                user.address?.street = ciStreetRegister.et.text.toString()
-                user.address?.zipCode = ciZipCodeRegister.et.text.toString()
-                user.address?.complement = ciFurtherAddressRegister.et.text.toString()
-                user.password = ciPasswordRegister.et.text.toString()
-                user.phoneNumber = ciPhoneNumberRegister.et.text.toString()
-                user.schoolLevel = iSelectStudentSchoolLevel.items.find { it.isSelected }?.tvItem?.text.toString()
+                viewModel.updateUser(User(
+                    ciFirstnameRegister.et.text.toString(),
+                            ciLastnameRegister.et.text.toString(),
+                            ciEmailRegister.et.text.toString(),
+                            ciBirthdateRegister.et.text.toString(),
+                            Address(
+                                ciCityRegister.et.text.toString(),
+                                ciStreetRegister.et.text.toString(),
+                                ciZipCodeRegister.et.text.toString(),
+                                ciFurtherAddressRegister.et.text.toString()
+                            ),
+                            ciPasswordRegister.et.text.toString(),
+                            ciPhoneNumberRegister.et.text.toString(),
+                            iSelectStudentSchoolLevel.items.find { it.isSelected }?.tvItem?.text.toString()
+                ))
 
-                Api.register(this@MainActivity, user) {response ->
+                Api.register(this@MainActivity, viewModel.userFlow.value) {response ->
                     runOnUiThread {
                         try {
                             val responseMsg = URLDecoder.decode(response.message, "UTF-8")
@@ -175,7 +162,7 @@ class MainActivity : AppCompatActivity() {
                                 throw IOException("Unexpected code $responseMsg")
                             }
                             Api.currentUser = User.fromJson(response.body!!.string())
-                            Toast.makeText(this@MainActivity, "Bonjour ${user.firstName}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@MainActivity, "Bonjour ${viewModel.userFlow.value?.firstName}", Toast.LENGTH_SHORT).show()
                             startActivity(Intent(this@MainActivity, HomeActivity::class.java))
                         } catch (e: Exception) {
                             Log.e("MainActivity", e.toString())
@@ -208,19 +195,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setListeners() {
-        cbWrapper.setOnClickListener {
-            cb.isChecked = !cb.isChecked
-        }
-
-        ciLogin.onInputValidation = { btnLogin.disabled = !it }
-        ciPassword.onInputValidation = { btnLogin.disabled = !it }
+        ciLogin.onInputValidation = { btnLogin.disabled = false }
+        ciPassword.onInputValidation = { btnLogin.disabled = false }
 
         btnLogin.setOnClickListener {
-            if (cb.isChecked) {
-                saveCredentials()
-            } else {
-                deleteCredentials()
-            }
             Api.login(this, ciLogin.et.text.toString(), ciPassword.et.text.toString())
         }
 
@@ -297,23 +275,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    private fun saveCredentials() {
-        val spEditor = sharedPreferences.edit()
-        spEditor.putBoolean(SP_CB_KEY, cb.isChecked)
-        spEditor.putString(SP_EMAIL_KEY, ciLogin.et.text.toString())
-        spEditor.putString(SP_PASSWORD_KEY, ciPassword.et.text.toString())
-        spEditor.apply()
-    }
-
-    private fun deleteCredentials() {
-        val spEditor = sharedPreferences.edit()
-        spEditor
-            .remove(SP_EMAIL_KEY)
-            .remove(SP_PASSWORD_KEY)
-            .remove(SP_CB_KEY)
-            .apply()
     }
 
     private fun setupSchoolLevels() {

@@ -58,6 +58,7 @@ class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context,
         override var validate: (String) -> Boolean = { true }
     }
     override var isRequired: Boolean = false
+    var showErrorText = true
 
     init {
         LayoutInflater.from(context).inflate(R.layout.custom_input, this)
@@ -89,6 +90,7 @@ class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context,
             if (et.inputType == InputType.TYPE_TEXT_VARIATION_PASSWORD) {
                 setTextTypePassword()
             }
+            showErrorText = styledAttributes.getBoolean(R.styleable.CustomInput_showErrorText, true)
         } catch (e: Exception) {
             Log.e("Components", e.toString())
         } finally {
@@ -163,6 +165,7 @@ class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context,
     }
 
     override fun triggerError(error: String) {
+        if (!showErrorText) return
         tvError.text = error
         tvError.visibility = VISIBLE
     }

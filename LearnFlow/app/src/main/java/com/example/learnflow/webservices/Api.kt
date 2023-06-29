@@ -2,7 +2,6 @@ package com.example.learnflow.webservices
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.app.ProgressDialog.show
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
@@ -11,31 +10,20 @@ import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import com.example.learnflow.BuildConfig
 import com.example.learnflow.HomeActivity
 import com.example.learnflow.MainActivity
 import com.example.learnflow.model.User
 import com.example.learnflow.model.UserType
-import com.example.learnflow.utils.EnvUtils
-import com.example.learnflow.webservices.Api.currentUser
-import com.example.learnflow.webservices.Api.handleError
-import com.example.learnflow.webservices.Api.handleMissingNetwork
-import com.example.learnflow.webservices.Api.isNetworkConnected
-import com.example.learnflow.webservices.Api.userType
 import com.google.gson.Gson
-import io.github.cdimascio.dotenv.dotenv
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.FormBody
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
-import java.io.IOException
 import java.net.ConnectException
-import java.util.logging.Handler
 
 object Api {
     private val client = OkHttpClient()
@@ -88,7 +76,8 @@ object Api {
     }
 
     @Throws (Exception::class)
-    fun register(context: Context, user: User, callback: ((Response) -> Unit)?) {
+    fun register(context: Context, user: User?, callback: ((Response) -> Unit)?) {
+        if (user == null) throw Exception("User is required")
         if (userType == null) throw Exception("User type is required")
         if (!isNetworkConnected(context)) {
             handleMissingNetwork(context)
