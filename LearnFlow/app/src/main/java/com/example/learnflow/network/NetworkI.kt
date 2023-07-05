@@ -7,5 +7,5 @@ import retrofit2.http.POST
 interface NetworkI {
 
     @POST("/register/student")
-    fun registerStudentAsync(@Body requestBody: StudentRegistrationRequest): Deferred<ServerResponse<User.Student>>
+    fun registerStudentAsync(@Body requestBody: StudentRegisterRequest): Deferred<ServerResponse<User.Student>>
 }

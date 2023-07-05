@@ -2,7 +2,7 @@ package com.example.learnflow.network
 
 import com.example.learnflow.model.Address
 
-data class StudentRegistrationRequest(
+data class StudentRegisterRequest(
     val firstName: String,
     val lastName: String,
     val birthdate: String,

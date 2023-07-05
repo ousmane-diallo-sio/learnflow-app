@@ -19,6 +19,7 @@ import com.example.learnflow.components.*
 import com.example.learnflow.model.Address
 import com.example.learnflow.model.User
 import com.example.learnflow.model.UserType
+import com.example.learnflow.network.StudentRegisterRequest
 import com.example.learnflow.utils.FieldValidator
 import com.example.learnflow.utils.Utils
 import com.example.learnflow.webservices.Api
@@ -136,8 +137,10 @@ class MainActivity : AppCompatActivity() {
         sliderRegisterProcess.btnLastSlide = CustomBtn(this, null).apply {
             tv.text = getString(R.string.validate)
             setOnClickListener {
-                viewModel.updateUser(User(
-                    ciFirstnameRegister.et.text.toString(),
+                if (userType == UserType.STUDENT) {
+                    viewModel.updateStudentRegisterRequest(
+                        StudentRegisterRequest(
+                            ciFirstnameRegister.et.text.toString(),
                             ciLastnameRegister.et.text.toString(),
                             ciEmailRegister.et.text.toString(),
                             ciBirthdateRegister.et.text.toString(),
@@ -149,24 +152,18 @@ class MainActivity : AppCompatActivity() {
                             ),
                             ciPasswordRegister.et.text.toString(),
                             ciPhoneNumberRegister.et.text.toString(),
-                            iSelectStudentSchoolLevel.items.find { it.isSelected }?.tvItem?.text.toString()
-                ))
+                            iSelectStudentSchoolLevel.items.find { it.isSelected }?.tvItem?.text.toString(),
+                        )
+                    )
 
-                Api.register(this@MainActivity, viewModel.userFlow.value) {response ->
-                    runOnUiThread {
-                        try {
-                            val responseMsg = URLDecoder.decode(response.message, "UTF-8")
-                            if (response.code !in 200..299) {
-                                Log.e("MainActivity", "Error while registering user : $responseMsg")
-                                Toast.makeText(this@MainActivity, responseMsg, Toast.LENGTH_SHORT).show()
-                                throw IOException("Unexpected code $responseMsg")
-                            }
-                            Api.currentUser = User.fromJson(response.body!!.string())
-                            Toast.makeText(this@MainActivity, "Bonjour ${viewModel.userFlow.value?.firstName}", Toast.LENGTH_SHORT).show()
-                            startActivity(Intent(this@MainActivity, HomeActivity::class.java))
-                        } catch (e: Exception) {
-                            Log.e("MainActivity", e.toString())
+                    viewModel.registerStudent(this@MainActivity) { data, error ->
+                        if (error != null) {
+                            Log.e("MainActivity", "Error while registering user : ${error}")
+                            Toast.makeText(this@MainActivity, error, Toast.LENGTH_SHORT).show()
+                            return@registerStudent
                         }
+                        Toast.makeText(this@MainActivity, "Bonjour ${data?.firstName}", Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(this@MainActivity, HomeActivity::class.java))
                     }
                 }
             }
