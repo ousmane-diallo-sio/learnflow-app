@@ -12,3 +12,9 @@ data class StudentRegisterRequest(
     val profilePictureUrl: String,
     val password: String
 )
+
+data class UserLoginRequest(
+    val email: String?,
+    val password: String?,
+    val jwtToken: String?
+)

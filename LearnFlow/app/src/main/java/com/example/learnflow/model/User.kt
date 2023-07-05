@@ -1,12 +1,15 @@
 package com.example.learnflow.model
 
+import android.os.Parcelable
 import com.google.gson.Gson
+import kotlinx.parcelize.Parcelize
 import okhttp3.FormBody
 import okhttp3.RequestBody
 import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+@Parcelize
 open class User(
     open var firstName: String,
     open var lastName: String,
@@ -17,7 +20,7 @@ open class User(
     open var profilePictureUrl: String,
     var student: Student? = null,
     var teacher: Teacher? = null
-)
+) : Parcelable
 
 data class Student(
     override var firstName: String,

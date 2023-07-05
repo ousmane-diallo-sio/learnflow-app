@@ -7,8 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.learnflow.model.User
 import com.example.learnflow.network.NetworkManager
-import com.example.learnflow.network.ServerResponse
 import com.example.learnflow.network.StudentRegisterRequest
+import com.example.learnflow.network.UserLoginRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
@@ -30,25 +30,58 @@ class MainViewModel: ViewModel() {
         }
     }
 
+    fun login(context: Context, userLoginRequest: UserLoginRequest, callback: (error: String?) -> Unit) {
+        viewModelScope.launch {
+            try {
+                NetworkManager.loginAsync(context, userLoginRequest)?.await().let {
+                    if (it == null) return@launch
+
+                    if (it.error != null) {
+                        Log.e("MainViewModel", "Failed to login: ${it.error}")
+                        callback(it.error)
+                        return@launch
+                    }
+                    if (it.status == 200 && it.data != null) {
+                        val jwtToken = it.jwt
+                        if (jwtToken != null) {
+                            saveJwtToken(context.getSharedPreferences("jwtToken", Context.MODE_PRIVATE), jwtToken)
+                        }
+                        updateUser(it.data)
+                        callback(null)
+                    } else {
+                        Log.e("MainViewModel", "Failed to login: status ${it.status}")
+                        callback("Erreur lors de la connexion")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("MainViewModel", "Failed to login: $e")
+                callback("Erreur lors de la connexion")
+            }
+        }
+    }
+
     fun registerStudent(context: Context, callback: (data: User?, error: String?) -> Unit) {
         viewModelScope.launch {
             try {
-                val response = NetworkManager.registerStudentAsync(studentRegisterRequestFlow.value!!).await()
-                if (response.error != null) {
-                    Log.e("MainViewModel", "Failed to register student: ${response.error}")
-                    callback(null, response.error)
-                    return@launch
-                }
-                if (response.status == 201 && response.data != null) {
-                    val jwtToken = response.jwt
-                    if (jwtToken != null) {
-                        saveJwtToken(context.getSharedPreferences("jwtToken", Context.MODE_PRIVATE), jwtToken)
+                NetworkManager.registerStudentAsync(context, studentRegisterRequestFlow.value!!)?.await().let {
+                    if (it == null) return@launch
+
+                    if (it.error != null) {
+                        Log.e("MainViewModel", "Failed to register student: ${it.error}")
+                        callback(null, it.error)
+                        return@launch
                     }
-                    updateUser(response.data)
-                    callback(response.data, null)
-                } else {
-                    Log.e("MainViewModel", "Failed to register student: status ${response.status}")
-                    callback(null, "Erreur lors de l'enregistrement (${response.status})")
+                    if (it.status == 201 && it.data != null) {
+                        val jwtToken = it.jwt
+                        if (jwtToken != null) {
+                            saveJwtToken(context.getSharedPreferences("jwtToken", Context.MODE_PRIVATE), jwtToken)
+                        }
+                        updateUser(it.data)
+                        callback(it.data, null)
+                    } else {
+                        Log.e("MainViewModel", "Failed to register student: status ${it.status}")
+                        callback(null, "Erreur lors de l'enregistrement (${it.status})")
+                    }
                 }
             } catch (e: Exception) {
                 Log.e("MainViewModel", "Failed to register student: $e")

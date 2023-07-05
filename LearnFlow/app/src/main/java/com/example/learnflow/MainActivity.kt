@@ -20,6 +20,7 @@ import com.example.learnflow.model.Address
 import com.example.learnflow.model.User
 import com.example.learnflow.model.UserType
 import com.example.learnflow.network.StudentRegisterRequest
+import com.example.learnflow.network.UserLoginRequest
 import com.example.learnflow.utils.FieldValidator
 import com.example.learnflow.utils.Utils
 import com.example.learnflow.webservices.Api
@@ -196,7 +197,19 @@ class MainActivity : AppCompatActivity() {
         ciPassword.onInputValidation = { btnLogin.disabled = false }
 
         btnLogin.setOnClickListener {
-            Api.login(this, ciLogin.et.text.toString(), ciPassword.et.text.toString())
+            val userLoginRequest = UserLoginRequest(
+                ciLogin.et.text.toString(),
+                ciPassword.et.text.toString(),
+                null
+            )
+            viewModel.login(this@MainActivity, userLoginRequest) { error ->
+                if (error != null) {
+                    Toast.makeText(this@MainActivity, error, Toast.LENGTH_SHORT).show()
+                    return@login
+                }
+                Toast.makeText(this@MainActivity, "Connexion", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this@MainActivity, HomeActivity::class.java))
+            }
         }
 
         btnRegisterCTA.setOnClickListener {
