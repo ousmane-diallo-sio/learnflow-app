@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
+import android.os.Build.VERSION_CODES.N
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
@@ -19,6 +20,7 @@ import com.example.learnflow.components.*
 import com.example.learnflow.model.Address
 import com.example.learnflow.model.User
 import com.example.learnflow.model.UserType
+import com.example.learnflow.network.NetworkManager
 import com.example.learnflow.network.StudentRegisterRequest
 import com.example.learnflow.network.UserLoginRequest
 import com.example.learnflow.utils.FieldValidator
@@ -133,6 +135,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+
+        NetworkManager.observeNetworkConnectivity(this)
+
         btnLogin.isLoading = false
 
         sliderRegisterProcess.btnLastSlide = CustomBtn(this, null).apply {

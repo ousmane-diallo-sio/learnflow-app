@@ -4,9 +4,11 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
+import android.net.Network
 import android.net.NetworkCapabilities
 import android.provider.Settings
 import android.util.Log
+import android.widget.Toast
 import com.example.learnflow.model.User
 import com.example.learnflow.utils.EnvUtils
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
@@ -45,6 +47,20 @@ object NetworkManager {
             return true
         }
         return false
+    }
+
+    fun observeNetworkConnectivity(context: Context) {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkCallback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                Toast.makeText(context, "Connecté à internet", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onLost(network: Network) {
+                handleMissingNetwork(context)
+            }
+        }
+        connectivityManager.registerDefaultNetworkCallback(networkCallback)
     }
 
     fun loginAsync(context: Context, requestBody: UserLoginRequest): Deferred<ServerResponse<User>>? {
