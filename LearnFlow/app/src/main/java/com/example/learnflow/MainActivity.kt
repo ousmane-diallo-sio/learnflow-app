@@ -135,8 +135,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-
-        NetworkManager.observeNetworkConnectivity(this)
+        viewModel.onStart(this)
 
         btnLogin.isLoading = false
 

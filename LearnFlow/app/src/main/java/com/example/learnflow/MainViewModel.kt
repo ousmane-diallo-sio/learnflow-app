@@ -18,6 +18,10 @@ class MainViewModel: ViewModel() {
     private val studentRegisterRequestFlow = MutableStateFlow<StudentRegisterRequest?>(null)
     // profilePictureUrl = "https://d38b044pevnwc9.cloudfront.net/cutout-nuxt/enhancer/2.jpg"
 
+    fun onStart(mainActivity: MainActivity) {
+        NetworkManager.observeNetworkConnectivity(mainActivity)
+    }
+
     fun updateUser(user: User) {
         viewModelScope.launch {
             userFlow.emit(user)
