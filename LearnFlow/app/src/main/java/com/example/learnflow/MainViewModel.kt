@@ -5,12 +5,16 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.learnflow.model.Jwt
 import com.example.learnflow.model.User
 import com.example.learnflow.network.NetworkManager
+import com.example.learnflow.network.ServerResponse
 import com.example.learnflow.network.StudentRegisterRequest
 import com.example.learnflow.network.UserLoginRequest
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 class MainViewModel: ViewModel() {
 
@@ -37,29 +41,31 @@ class MainViewModel: ViewModel() {
     fun login(context: Context, userLoginRequest: UserLoginRequest, callback: (error: String?) -> Unit) {
         viewModelScope.launch {
             try {
-                NetworkManager.loginAsync(context, userLoginRequest)?.await().let {
-                    if (it == null) return@launch
+                val res = NetworkManager.loginAsync(context, userLoginRequest)?.await()
 
+                res?.let {
                     if (it.error != null) {
                         Log.e("MainViewModel", "Failed to login: ${it.error}")
                         callback(it.error)
                         return@launch
                     }
-                    if (it.status == 200 && it.data != null) {
-                        val jwtToken = it.jwt
-                        if (jwtToken != null) {
-                            saveJwtToken(context.getSharedPreferences("jwtToken", Context.MODE_PRIVATE), jwtToken)
-                        }
-                        updateUser(it.data)
-                        callback(null)
-                    } else {
+                    if (it.data == null) {
                         Log.e("MainViewModel", "Failed to login: status ${it.status}")
                         callback("Erreur lors de la connexion")
+                        return@launch
                     }
+
+                    updateUser(it.data)
+                    if (it.jwt != null) {
+                        saveJwtToken(context.getSharedPreferences("jwtToken", Context.MODE_PRIVATE), it.jwt)
+                    }
+                    callback(null)
                 }
-            } catch (e: Exception) {
-                Log.e("MainViewModel", "Failed to login: $e")
-                callback("Erreur lors de la connexion")
+            } catch (e: HttpException) {
+                val serverResponse = NetworkManager.parseHttpException(e)
+
+                Log.e("MainViewModel", "Failed to login: ${serverResponse?.error}")
+                callback(serverResponse?.error ?: context.getString(R.string.an_error_occured))
             }
         }
     }
@@ -94,16 +100,19 @@ class MainViewModel: ViewModel() {
         }
     }
 
-    private fun saveJwtToken(sharedPreferences: SharedPreferences, token: String) {
-        sharedPreferences.edit().putString("jwtToken", token).apply()
+    private fun saveJwtToken(sharedPreferences: SharedPreferences, token: Jwt) {
+        sharedPreferences.edit().putString("jwtToken", Gson().toJson(token)).apply()
     }
 
     fun deleteJwtToken(sharedPreferences: SharedPreferences) {
         sharedPreferences.edit().remove("jwtToken").apply()
     }
 
-    fun getJwtToken(sharedPreferences: SharedPreferences): String? {
-        return sharedPreferences.getString("jwtToken", null)
+    fun getJwtToken(sharedPreferences: SharedPreferences): Jwt? {
+        return Gson().fromJson(
+            sharedPreferences.getString("jwtToken", null),
+            Jwt::class.java
+        )
     }
 
     /*

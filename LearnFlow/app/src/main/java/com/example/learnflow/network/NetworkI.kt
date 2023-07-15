@@ -6,9 +6,9 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface NetworkI {
-    @POST("/login/user")
+    @POST("/auth/login/user")
     fun loginAsync(@Body requestBody: UserLoginRequest): Deferred<ServerResponse<User>>
 
-    @POST("/register/student")
+    @POST("/auth/register/student")
     fun registerStudentAsync(@Body requestBody: StudentRegisterRequest): Deferred<ServerResponse<User>>
 }

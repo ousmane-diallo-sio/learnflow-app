@@ -1,5 +1,6 @@
 package com.example.learnflow.network
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -9,17 +10,44 @@ import android.net.NetworkCapabilities
 import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
+import com.example.learnflow.MainActivity
+import com.example.learnflow.model.LocalDateTypeAdapter
 import com.example.learnflow.model.User
 import com.example.learnflow.utils.EnvUtils
+import com.example.learnflow.webservices.Api.handleMissingNetwork
+import com.example.learnflow.webservices.Api.isNetworkConnected
+import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import kotlinx.coroutines.Deferred
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.HttpException
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 object NetworkManager {
+    private val okHttpClient = OkHttpClient.Builder()
+        .addInterceptor(HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        })
+        .build()
+
+    private val gson = GsonBuilder()
+        .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+        .registerTypeAdapter(LocalDateTime::class.java, LocalDateTypeAdapter())
+        .create()
+
+
     private val api = Retrofit.Builder()
         .baseUrl(EnvUtils.API_BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
+        .client(okHttpClient)
+        .addConverterFactory(GsonConverterFactory.create(gson))
         .addCallAdapterFactory(CoroutineCallAdapterFactory())
         .build()
         .create(NetworkI::class.java)
@@ -63,17 +91,22 @@ object NetworkManager {
         connectivityManager.registerDefaultNetworkCallback(networkCallback)
     }
 
+    fun parseHttpException(httpException: HttpException): ServerResponse<*>? {
+        val responseBody = httpException.response()?.errorBody()?.string()
+        val serverResponse: ServerResponse<*>? = responseBody?.let {
+            val gson = Gson()
+            gson.fromJson(it, ServerResponse::class.java)
+        }
+        return serverResponse
+    }
+
     fun loginAsync(context: Context, requestBody: UserLoginRequest): Deferred<ServerResponse<User>>? {
         if (handleMissingNetwork(context)) return null
-
-        Log.d("NetworkManager", "loginAsync: $requestBody")
         return api.loginAsync(requestBody)
     }
 
     fun registerStudentAsync(context: Context, requestBody: StudentRegisterRequest): Deferred<ServerResponse<User>>? {
         if (handleMissingNetwork(context)) return null
-
-        Log.d("NetworkManager", "registerStudentAsync: $requestBody")
         return api.registerStudentAsync(requestBody)
     }
 }

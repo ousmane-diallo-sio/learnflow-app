@@ -6,29 +6,32 @@
     android:layout_height="match_parent"
     tools:context=".ui.search.SearchFragment">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clCiSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@color/salmon"
+        android:padding="10dp">
+
+        <com.example.learnflow.components.CustomInput
+            android:id="@+id/ciSearch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/salmon"
-            android:padding="10dp">
+            app:layout_constraintTop_toTopOf="parent"
+            app:hint="@string/search_teacher_cta"
+            app:icon="@drawable/baseline_search_24" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <com.example.learnflow.components.CustomInput
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:hint="@string/search_teacher_cta"
-                app:icon="@drawable/baseline_search_24" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
-    </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/clCiSearch"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

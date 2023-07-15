@@ -1,14 +1,10 @@
 package com.example.learnflow.network
 
-import com.google.gson.annotations.SerializedName
+import com.example.learnflow.model.Jwt
 
 data class ServerResponse<T>(
-    @SerializedName("status")
     val status: Int,
-    @SerializedName("jwt")
-    val jwt: String?,
-    @SerializedName("data")
+    val jwt: Jwt?,
     val data: T?,
-    @SerializedName("error")
     val error: String?,
 )

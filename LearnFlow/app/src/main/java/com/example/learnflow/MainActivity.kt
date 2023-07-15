@@ -27,6 +27,7 @@ import com.example.learnflow.utils.FieldValidator
 import com.example.learnflow.utils.Utils
 import com.example.learnflow.webservices.Api
 import com.example.learnflow.webservices.Api.userType
+import com.google.android.material.snackbar.Snackbar
 import fr.kameouss.instamemeeditor.components.ImagePickerFragment
 import java.io.IOException
 import java.net.URLDecoder
@@ -208,10 +209,9 @@ class MainActivity : AppCompatActivity() {
             )
             viewModel.login(this@MainActivity, userLoginRequest) { error ->
                 if (error != null) {
-                    Toast.makeText(this@MainActivity, error, Toast.LENGTH_SHORT).show()
+                    Snackbar.make(loginPart, error, Snackbar.LENGTH_SHORT).show()
                     return@login
                 }
-                Toast.makeText(this@MainActivity, "Connexion", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this@MainActivity, HomeActivity::class.java))
             }
         }
