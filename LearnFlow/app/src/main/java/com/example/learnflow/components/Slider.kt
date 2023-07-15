@@ -27,6 +27,7 @@ class Slider(context: Context?, private val attrs: AttributeSet) : LinearLayout(
     private var onGlobalLayoutListener: OnGlobalLayoutListener? = null
     var btnLastSlide: CustomBtn? = null
     set (value) {
+        field?.let { llBtnsWrapperSlider.removeView(it) }
         field = value
         field?.visibility = GONE
         val layoutParams = LayoutParams(
@@ -35,6 +36,7 @@ class Slider(context: Context?, private val attrs: AttributeSet) : LinearLayout(
         )
         layoutParams.weight = 1.0f
         field?.layoutParams = layoutParams
+
         llBtnsWrapperSlider.addView(field)
     }
     // Lambda to check weather we allow the user to go to the next slide or not

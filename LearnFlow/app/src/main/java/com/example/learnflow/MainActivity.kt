@@ -136,6 +136,7 @@ class MainActivity : AppCompatActivity() {
 
         btnLogin.isLoading = false
 
+        // TODO Investigate why the validation is not triggered on ImagePickers
         sliderRegisterProcess.btnLastSlide = CustomBtn(this, null).apply {
             tv.text = getString(R.string.validate)
             setOnClickListener {
