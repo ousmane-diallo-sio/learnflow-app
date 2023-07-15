@@ -12,7 +12,7 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import com.example.learnflow.R
 
-class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, attrs), IComponent {
+class Slider(context: Context?, private val attrs: AttributeSet) : LinearLayout(context, attrs), IComponent {
 
     private val llWrapper: LinearLayout
     private val rlItems: RelativeLayout
@@ -50,7 +50,7 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
         btnPrev = findViewById(R.id.btnPrevSlider)
         btnNext = findViewById(R.id.btnNextSlider)
 
-        handleAttrs(attrs)
+        handleAttrs()
         setListeners()
 
         onGlobalLayoutListener = OnGlobalLayoutListener {
@@ -62,7 +62,7 @@ class Slider(context: Context?, attrs: AttributeSet) : LinearLayout(context, att
         llWrapper.viewTreeObserver.addOnGlobalLayoutListener(onGlobalLayoutListener)
     }
 
-    override fun handleAttrs(attrs: AttributeSet?) {
+    override fun handleAttrs() {
         val styledAttributes = context.obtainStyledAttributes(attrs, R.styleable.Slider, 0, 0)
 
         try {

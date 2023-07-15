@@ -29,81 +29,10 @@ import com.yalantis.ucrop.UCrop
 import java.io.File
 import java.util.*
 
-class ImagePickerFragment : Fragment(), IValidator, IComponent {
+class ImagePickerFragment : Fragment() {
 
-    private lateinit var constraintLayout: ConstraintLayout
-    private lateinit var ivPlaceholder: ImageView
-    lateinit var ivImage: ImageView
-    override lateinit var tvError: TextView
-    override var customValidator: CustomValidator? = null
-    override var isRequired: Boolean = false
+
     private var callback: ((uri: Uri) -> Unit?)? = {}
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_image_picker, container, false)
-        constraintLayout = view.findViewById(R.id.clImagePickerFragment)
-        ivPlaceholder = view.findViewById(R.id.ivPlaceholderPickerFragment)
-        ivImage = view.findViewById(R.id.ivImagePickerFragment)
-        tvError = view.findViewById(R.id.tvErrorImagePickerFragment)
-        setListeners()
-
-        return view
-    }
-
-    override fun onInflate(context: Context, attrs: AttributeSet, savedInstanceState: Bundle?) {
-        super.onInflate(context, attrs, savedInstanceState)
-        handleAttrs(attrs)
-    }
-
-    override fun handleAttrs(attrs: AttributeSet?) {
-        val styledAttributes = context?.obtainStyledAttributes(attrs, R.styleable.ImagePickerFragment, 0, 0)
-
-        try {
-            isRequired = styledAttributes?.getBoolean(R.styleable.ImagePickerFragment_isRequired, isRequired) ?: isRequired
-        } catch (e: Exception) {
-            Log.e("Components", e.toString())
-        } finally {
-            styledAttributes?.recycle()
-        }
-    }
-
-    override fun setListeners() {
-        constraintLayout.setOnClickListener {
-            pickImage {
-                ivImage.setImageURI(it)
-                ivImage.setPadding(0)
-                ivImage.imageTintList = null
-                ivImage.layoutParams?.width = LinearLayout.LayoutParams.MATCH_PARENT
-                ivImage.layoutParams?.height = LinearLayout.LayoutParams.MATCH_PARENT
-                ivImage.scaleType = ImageView.ScaleType.CENTER_CROP
-            }
-        }
-    }
-
-    override fun triggerError(error: String) {
-        tvError.text = error
-        tvError.visibility = View.VISIBLE
-    }
-
-    override fun hideError() {
-        tvError.visibility = View.GONE
-    }
-
-    override fun validate(): Boolean {
-        if (!isRequired) return true
-
-        if (ivImage.drawable == null) {
-            triggerError("Veuillez sélectionner une image")
-            return false
-        }
-
-        hideError()
-        return true
-    }
 
     var mGetContent = registerForActivityResult<String, Uri>(ActivityResultContracts.GetContent()
     ) { uri ->
@@ -134,7 +63,7 @@ class ImagePickerFragment : Fragment(), IValidator, IComponent {
         mGetContent.launch("image/*")
     }
 
-    fun crop(sourceUri: Uri) {
+    private fun crop(sourceUri: Uri) {
         val destUriString = StringBuilder(UUID.randomUUID().toString()).append(".png").toString()
         val destUri = Uri.fromFile(File(requireActivity().cacheDir, destUriString))
 

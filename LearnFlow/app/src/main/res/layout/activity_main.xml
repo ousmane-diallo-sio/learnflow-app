@@ -356,12 +356,11 @@
                                 android:orientation="vertical"
                                 android:padding="10dp">
 
-                                <fragment
-                                    android:id="@+id/fragImgPickerTeacherIdentityCardMain"
-                                    android:name="fr.kameouss.instamemeeditor.components.ImagePickerFragment"
+                                <com.example.learnflow.components.ImagePicker
+                                    android:id="@+id/imgPickerTeacherIdentityCardMain"
                                     android:layout_width="match_parent"
                                     android:layout_height="180dp"
-                                    app:isRequired="true" />
+                                    card_view:isRequired="true" />
 
                                 <TextView
                                     style="@style/tvBoldTextStyle"
@@ -503,19 +502,11 @@
                                         card_view:layout_constraintWidth_percent="0.5"
                                         card_view:cardCornerRadius="100dp">
 
-                                        <FrameLayout
+                                        <com.example.learnflow.components.ImagePicker
+                                            android:id="@+id/imgPickerProfilePicRegisterMain"
                                             android:layout_width="match_parent"
                                             android:layout_height="match_parent"
-                                            android:background="@color/bright_gray">
-
-                                            <fragment
-                                                android:id="@+id/fragImgPickerProfilePicRegisterMain"
-                                                android:name="fr.kameouss.instamemeeditor.components.ImagePickerFragment"
-                                                android:layout_width="match_parent"
-                                                android:layout_height="180dp"
-                                                app:isRequired="true" />
-
-                                        </FrameLayout>
+                                            card_view:isRequired="true" />
                                     </androidx.cardview.widget.CardView>
                                 </androidx.constraintlayout.widget.ConstraintLayout>
 

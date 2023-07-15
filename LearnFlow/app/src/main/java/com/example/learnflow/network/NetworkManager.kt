@@ -1,6 +1,5 @@
 package com.example.learnflow.network
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -8,28 +7,22 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.provider.Settings
-import android.util.Log
 import android.widget.Toast
-import com.example.learnflow.MainActivity
 import com.example.learnflow.model.LocalDateTypeAdapter
 import com.example.learnflow.model.User
 import com.example.learnflow.utils.EnvUtils
-import com.example.learnflow.webservices.Api.handleMissingNetwork
-import com.example.learnflow.webservices.Api.isNetworkConnected
-import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import kotlinx.coroutines.Deferred
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.HttpException
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 object NetworkManager {
     private val okHttpClient = OkHttpClient.Builder()
@@ -100,12 +93,19 @@ object NetworkManager {
         return serverResponse
     }
 
-    fun loginAsync(context: Context, requestBody: UserLoginRequest): Deferred<ServerResponse<User>>? {
+    fun formatDateFRToISOString(dateString: String): String {
+        val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        val localDate = LocalDate.parse(dateString, dateFormatter)
+
+        return localDate.atStartOfDay().toString()
+    }
+
+    fun loginAsync(context: Context, requestBody: UserLoginDTO): Deferred<ServerResponse<User>>? {
         if (handleMissingNetwork(context)) return null
         return api.loginAsync(requestBody)
     }
 
-    fun registerStudentAsync(context: Context, requestBody: StudentRegisterRequest): Deferred<ServerResponse<User>>? {
+    fun registerStudentAsync(context: Context, requestBody: StudentSignupDTO): Deferred<ServerResponse<User>>? {
         if (handleMissingNetwork(context)) return null
         return api.registerStudentAsync(requestBody)
     }

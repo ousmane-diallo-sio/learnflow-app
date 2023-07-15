@@ -11,7 +11,7 @@ import androidx.cardview.widget.CardView
 import com.example.learnflow.R
 import com.example.learnflow.utils.Utils
 
-class SelectorItem(context: Context, attrs: AttributeSet?): LinearLayout(context, attrs), IComponent {
+class SelectorItem(context: Context, private val attrs: AttributeSet?): LinearLayout(context, attrs), IComponent {
 
     var selectorId: String? = null
     private val cvItemWrapper: CardView
@@ -42,10 +42,10 @@ class SelectorItem(context: Context, attrs: AttributeSet?): LinearLayout(context
         defaultColors["cvItemWrapper"] = cvItemWrapper.cardBackgroundColor
         defaultColors["tvItem"] = tvItem.textColors
 
-        handleAttrs(attrs)
+        handleAttrs()
     }
 
-    override fun handleAttrs(attrs: AttributeSet?) {
+    override fun handleAttrs() {
         val styledAttributes = context.obtainStyledAttributes(attrs, R.styleable.SelectorItem, 0, 0)
 
         try {

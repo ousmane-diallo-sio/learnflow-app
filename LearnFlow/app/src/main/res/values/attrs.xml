@@ -37,7 +37,7 @@
         <attr name="itemText" format="string|reference" />
         <attr name="selectorId" format="string" />
     </declare-styleable>
-    <declare-styleable name="ImagePickerFragment">
+    <declare-styleable name="ImagePicker">
         <attr name="isRequired">boolean</attr>
     </declare-styleable>
 </resources>

@@ -23,7 +23,8 @@ import androidx.core.view.children
 import com.example.learnflow.R
 import com.example.learnflow.utils.FieldValidator
 
-class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context, attrs), IComponent, IValidator {
+class CustomInput(context: Context, private val attrs: AttributeSet?) :
+    LinearLayout(context, attrs), IComponent, IValidator {
 
     companion object {
         const val TYPE_TEXT = 1
@@ -39,9 +40,9 @@ class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context,
     private val llAction: LinearLayout
     val ivAction: ImageView
 
-    var textWatcher: TextWatcher? = object:TextWatcher{
-        override fun afterTextChanged(s: Editable?) { }
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
+    var textWatcher: TextWatcher? = object : TextWatcher {
+        override fun afterTextChanged(s: Editable?) {}
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             onInputValidation(validate())
         }
@@ -52,8 +53,8 @@ class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context,
             et.addTextChangedListener(value)
         }
 
-    var onInputValidation: ((isValid: Boolean) -> Unit) = {  }
-    override var customValidator: CustomValidator? = object: CustomValidator {
+    var onInputValidation: ((isValid: Boolean) -> Unit) = { }
+    override var customValidator: CustomValidator? = object : CustomValidator {
         override var errorMessage: String = ""
         override var validate: (String) -> Boolean = { true }
     }
@@ -68,11 +69,11 @@ class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context,
         llAction = findViewById(R.id.llActionCustomInput)
         ivAction = llAction.children.elementAt(0) as ImageView
 
-        handleAttrs(attrs)
+        handleAttrs()
         setListeners()
     }
 
-    override fun handleAttrs(attrs: AttributeSet?) {
+    override fun handleAttrs() {
         val styledAttributes = context.obtainStyledAttributes(attrs, R.styleable.CustomInput, 0, 0)
         try {
             val resIconBefore = styledAttributes.getResourceId(
@@ -84,8 +85,16 @@ class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context,
             } else {
                 ivBefore.visibility = GONE
             }
-            et.setHint(styledAttributes.getResourceId(R.styleable.CustomInput_hint, R.string.app_name))
-            et.inputType = styledAttributes.getInt(R.styleable.CustomInput_inputType, InputType.TYPE_CLASS_TEXT)
+            et.setHint(
+                styledAttributes.getResourceId(
+                    R.styleable.CustomInput_hint,
+                    R.string.app_name
+                )
+            )
+            et.inputType = styledAttributes.getInt(
+                R.styleable.CustomInput_inputType,
+                InputType.TYPE_CLASS_TEXT
+            )
             isRequired = styledAttributes.getBoolean(R.styleable.CustomInput_isRequired, false)
             if (et.inputType == InputType.TYPE_TEXT_VARIATION_PASSWORD) {
                 setTextTypePassword()
@@ -126,11 +135,12 @@ class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context,
 
         et.transformationMethod = passwordTransformationMethod
         val action = { _: View ->
-            when(et.transformationMethod) {
+            when (et.transformationMethod) {
                 is PasswordTransformationMethod -> {
                     et.transformationMethod = null
                     setIvActionDrawable(context.getDrawable(drawableHideText)!!)
                 }
+
                 else -> {
                     et.transformationMethod = passwordTransformationMethod
                     setIvActionDrawable(context.getDrawable(drawableShowText)!!)
@@ -188,18 +198,21 @@ class CustomInput(context: Context, attrs: AttributeSet?): LinearLayout(context,
                     return false
                 }
             }
+
             TYPE_DATE -> {
                 if (!FieldValidator.date(et.text.toString())) {
                     triggerError(context.getString(R.string.invalid_date))
                     return false
                 }
             }
+
             TYPE_PHONE_NUMBER -> {
                 if (!FieldValidator.phoneNumber(et.text.toString())) {
                     triggerError(context.getString(R.string.invalid_phone_number))
                     return false
                 }
             }
+
             TYPE_PASSWORD -> {
                 if (!FieldValidator.password(et.text.toString())) {
                     triggerError(context.getString(R.string.invalid_password))

@@ -14,7 +14,7 @@ import androidx.cardview.widget.CardView
 import com.example.learnflow.R
 import com.example.learnflow.utils.Utils
 
-class CustomBtn(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs), IComponent {
+class CustomBtn(context: Context, private val attrs: AttributeSet?) : LinearLayout(context, attrs), IComponent {
 
     private val cv: CardView
     private val ll: FrameLayout
@@ -56,11 +56,11 @@ class CustomBtn(context: Context, attrs: AttributeSet?) : LinearLayout(context, 
         pb = findViewById(R.id.pbCustomBtn)
         llContent = findViewById(R.id.llContentCustomBtn)
 
-        handleAttrs(attrs)
+        handleAttrs()
         setListeners()
     }
 
-    override fun handleAttrs(attrs: AttributeSet?) {
+    override fun handleAttrs() {
         val styledAttributes = context.obtainStyledAttributes(attrs, R.styleable.CustomBtn, 0, 0)
         try {
             tv.text = styledAttributes.getString(R.styleable.CustomBtn_text)

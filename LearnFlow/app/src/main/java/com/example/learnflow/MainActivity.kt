@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
-import android.os.Build.VERSION_CODES.N
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
@@ -18,20 +17,17 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.setPadding
 import com.example.learnflow.components.*
 import com.example.learnflow.model.Address
-import com.example.learnflow.model.User
 import com.example.learnflow.model.UserType
 import com.example.learnflow.network.NetworkManager
-import com.example.learnflow.network.StudentRegisterRequest
-import com.example.learnflow.network.UserLoginRequest
+import com.example.learnflow.network.StudentSignupDTO
+import com.example.learnflow.network.UserLoginDTO
 import com.example.learnflow.utils.FieldValidator
 import com.example.learnflow.utils.Utils
-import com.example.learnflow.webservices.Api
 import com.example.learnflow.webservices.Api.userType
 import com.google.android.material.snackbar.Snackbar
 import fr.kameouss.instamemeeditor.components.ImagePickerFragment
-import java.io.IOException
-import java.net.URLDecoder
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class MainActivity : AppCompatActivity() {
 
@@ -77,7 +73,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var ciZipCodeRegister: CustomInput
     private lateinit var ciFurtherAddressRegister: CustomInput
     private lateinit var ciPasswordRegister: CustomInput
-    private lateinit var ivProfilePicRegister: ImagePickerFragment
+    private lateinit var ipProfilePicRegister: ImagePicker
 
     // Student specific form
     private lateinit var siStudentSchoolLevel: SliderItem
@@ -85,7 +81,7 @@ class MainActivity : AppCompatActivity() {
 
     // Teacher specific form
     private lateinit var siTeacherIdentityCard: SliderItem
-    private lateinit var ivTeacherIdentityCardPicker: ImagePickerFragment
+    private lateinit var ipTeacherIdentityCardPicker: ImagePicker
     private lateinit var siTeacherDocumentsMain: SliderItem
     private lateinit var llTeacherDocumentsMain: LinearLayout
     private lateinit var btnTeacherPickDocumentMain: CustomBtn
@@ -108,7 +104,6 @@ class MainActivity : AppCompatActivity() {
         iSelectStudentSchoolLevel = findViewById(R.id.iSelectStudentSchoolLevelMain)
         siStudentSchoolLevel = findViewById(R.id.siStudentSchoolLevelMain)
         siTeacherIdentityCard = findViewById(R.id.siTeacherIdentityCardMain)
-        ivTeacherIdentityCardPicker = supportFragmentManager.findFragmentById(R.id.fragImgPickerTeacherIdentityCardMain) as ImagePickerFragment
         siTeacherDocumentsMain = findViewById(R.id.siTeacherDocumentsMain)
         llTeacherDocumentsMain = findViewById(R.id.llTeacherDocumentsMain)
         btnTeacherPickDocumentMain = findViewById(R.id.btnTeacherPickDocumentMain)
@@ -122,7 +117,8 @@ class MainActivity : AppCompatActivity() {
         ciFurtherAddressRegister = findViewById(R.id.ciFurtherAddressRegisterMain)
         ciPasswordRegister = findViewById(R.id.ciPasswordRegisterMain)
         ciBirthdateRegister = findViewById(R.id.ciBirthdateRegisterMain)
-        ivProfilePicRegister = supportFragmentManager.findFragmentById(R.id.fragImgPickerProfilePicRegisterMain) as ImagePickerFragment
+        ipProfilePicRegister = findViewById(R.id.imgPickerProfilePicRegisterMain)
+        ipTeacherIdentityCardPicker = findViewById(R.id.imgPickerTeacherIdentityCardMain)
 
         imgPickerFragment = ImagePickerFragment()
         supportFragmentManager.beginTransaction().add(imgPickerFragment, "imgPickerFragmentMain").commit()
@@ -145,20 +141,23 @@ class MainActivity : AppCompatActivity() {
             setOnClickListener {
                 if (userType == UserType.STUDENT) {
                     viewModel.updateStudentRegisterRequest(
-                        StudentRegisterRequest(
-                            ciFirstnameRegister.et.text.toString(),
-                            ciLastnameRegister.et.text.toString(),
-                            ciEmailRegister.et.text.toString(),
-                            ciBirthdateRegister.et.text.toString(),
-                            Address(
+                        StudentSignupDTO(
+                            firstName = ciFirstnameRegister.et.text.toString(),
+                            lastName = ciLastnameRegister.et.text.toString(),
+                            email = ciEmailRegister.et.text.toString(),
+                            birthdate = NetworkManager.formatDateFRToISOString(
+                                ciBirthdateRegister.et.text.toString()
+                            ),
+                            address = Address(
                                 ciCityRegister.et.text.toString(),
                                 ciStreetRegister.et.text.toString(),
                                 ciZipCodeRegister.et.text.toString(),
-                                ciFurtherAddressRegister.et.text.toString()
+                                ciFurtherAddressRegister.et.text.toString().ifEmpty { null }
                             ),
-                            ciPasswordRegister.et.text.toString(),
-                            ciPhoneNumberRegister.et.text.toString(),
-                            iSelectStudentSchoolLevel.items.find { it.isSelected }?.tvItem?.text.toString(),
+                            password = ciPasswordRegister.et.text.toString(),
+                            phoneNumber = ciPhoneNumberRegister.et.text.toString(),
+                            schoolLevel = iSelectStudentSchoolLevel.items.find { it.isItemSelected }?.tvItem?.text.toString(),
+                            profilePictureUrl = "https://imgr.cineserie.com/2020/12/spider-man-3-sony-vient-il-de-confirmer-l-arrivee-des-3-peter-parker-2.jpg?imgeng=/f_jpg/cmpr_0/w_1280/h_960/m_cropbox&ver=1"
                         )
                     )
 
@@ -194,15 +193,12 @@ class MainActivity : AppCompatActivity() {
                 FieldValidator.zipCode(string)
             }
         }
-        setListeners()
-    }
 
-    private fun setListeners() {
         ciLogin.onInputValidation = { btnLogin.disabled = false }
         ciPassword.onInputValidation = { btnLogin.disabled = false }
 
         btnLogin.setOnClickListener {
-            val userLoginRequest = UserLoginRequest(
+            val userLoginRequest = UserLoginDTO(
                 ciLogin.et.text.toString(),
                 ciPassword.et.text.toString(),
                 null
@@ -289,6 +285,19 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+        ipProfilePicRegister.setOnClickListener {
+            imgPickerFragment.pickImage { uri: Uri? ->
+                if (uri == null) return@pickImage
+                ipProfilePicRegister.ivImage.setImageURI(uri)
+            }
+        }
+        ipProfilePicRegister.setOnClickListener {
+            imgPickerFragment.pickImage { uri: Uri? ->
+                if (uri == null) return@pickImage
+                ipProfilePicRegister.ivImage.setImageURI(uri)
+            }
+        }
     }
 
     private fun setupSchoolLevels() {
@@ -300,14 +309,6 @@ class MainActivity : AppCompatActivity() {
             selectorItem.setText(it)
             selectorItem.selectorId = "selector$it"
             iSelectStudentSchoolLevel.addItems(selectorItem)
-        }
-    }
-
-    private fun getImagePickerToValidate(): List<ImagePickerFragment> {
-        return if (userType == UserType.STUDENT) {
-            listOf(ivProfilePicRegister)
-        } else {
-            listOf(ivProfilePicRegister, ivTeacherIdentityCardPicker)
         }
     }
 

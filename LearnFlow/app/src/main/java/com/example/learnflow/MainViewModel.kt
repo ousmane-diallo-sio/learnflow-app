@@ -8,18 +8,17 @@ import androidx.lifecycle.viewModelScope
 import com.example.learnflow.model.Jwt
 import com.example.learnflow.model.User
 import com.example.learnflow.network.NetworkManager
-import com.example.learnflow.network.ServerResponse
-import com.example.learnflow.network.StudentRegisterRequest
-import com.example.learnflow.network.UserLoginRequest
+import com.example.learnflow.network.StudentSignupDTO
+import com.example.learnflow.network.UserLoginDTO
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
-class MainViewModel: ViewModel() {
+class MainViewModel : ViewModel() {
 
     private val userFlow = MutableStateFlow<User?>(null)
-    private val studentRegisterRequestFlow = MutableStateFlow<StudentRegisterRequest?>(null)
+    private val studentSignupDTOFlow = MutableStateFlow<StudentSignupDTO?>(null)
     // profilePictureUrl = "https://d38b044pevnwc9.cloudfront.net/cutout-nuxt/enhancer/2.jpg"
 
     fun onStart(mainActivity: MainActivity) {
@@ -32,35 +31,36 @@ class MainViewModel: ViewModel() {
         }
     }
 
-    fun updateStudentRegisterRequest(studentRegisterRequest: StudentRegisterRequest) {
+    fun updateStudentRegisterRequest(studentRegisterDTO: StudentSignupDTO) {
         viewModelScope.launch {
-            studentRegisterRequestFlow.emit(studentRegisterRequest)
+            studentSignupDTOFlow.emit(studentRegisterDTO)
         }
     }
 
-    fun login(context: Context, userLoginRequest: UserLoginRequest, callback: (error: String?) -> Unit) {
+    fun login(
+        context: Context,
+        userLoginRequest: UserLoginDTO,
+        callback: (error: String?) -> Unit
+    ) {
         viewModelScope.launch {
             try {
                 val res = NetworkManager.loginAsync(context, userLoginRequest)?.await()
 
-                res?.let {
-                    if (it.error != null) {
-                        Log.e("MainViewModel", "Failed to login: ${it.error}")
-                        callback(it.error)
+                res?.let { serverResponse ->
+                    serverResponse.data?.let { data ->
+                        updateUser(data)
+                        serverResponse.jwt?.let { jwt ->
+                            saveJwtToken(
+                                context.getSharedPreferences("jwtToken", Context.MODE_PRIVATE),
+                                jwt
+                            )
+                        }
+                        callback(null)
                         return@launch
                     }
-                    if (it.data == null) {
-                        Log.e("MainViewModel", "Failed to login: status ${it.status}")
-                        callback("Erreur lors de la connexion")
-                        return@launch
-                    }
-
-                    updateUser(it.data)
-                    if (it.jwt != null) {
-                        saveJwtToken(context.getSharedPreferences("jwtToken", Context.MODE_PRIVATE), it.jwt)
-                    }
-                    callback(null)
                 }
+                Log.e("MainViewModel", "API response data is null !!")
+                callback("Erreur lors de la connexion")
             } catch (e: HttpException) {
                 val serverResponse = NetworkManager.parseHttpException(e)
 
@@ -71,31 +71,33 @@ class MainViewModel: ViewModel() {
     }
 
     fun registerStudent(context: Context, callback: (data: User?, error: String?) -> Unit) {
+        val defaultErrorMsg = context.getString(R.string.an_error_occured)
+
         viewModelScope.launch {
             try {
-                NetworkManager.registerStudentAsync(context, studentRegisterRequestFlow.value!!)?.await().let {
-                    if (it == null) return@launch
+                val res = NetworkManager.registerStudentAsync(context, studentSignupDTOFlow.value!!)
+                    ?.await()
 
-                    if (it.error != null) {
-                        Log.e("MainViewModel", "Failed to register student: ${it.error}")
-                        callback(null, it.error)
+                res?.let { serverResponse ->
+                    serverResponse.data?.let { data ->
+                        updateUser(data)
+                        serverResponse.jwt?.let { jwt ->
+                            saveJwtToken(
+                                context.getSharedPreferences("jwtToken", Context.MODE_PRIVATE),
+                                jwt
+                            )
+                        }
+                        callback(data, null)
                         return@launch
                     }
-                    if (it.status == 201 && it.data != null) {
-                        val jwtToken = it.jwt
-                        if (jwtToken != null) {
-                            saveJwtToken(context.getSharedPreferences("jwtToken", Context.MODE_PRIVATE), jwtToken)
-                        }
-                        updateUser(it.data)
-                        callback(it.data, null)
-                    } else {
-                        Log.e("MainViewModel", "Failed to register student: status ${it.status}")
-                        callback(null, "Erreur lors de l'enregistrement (${it.status})")
-                    }
+                    Log.e("MainViewModel", "API response data is null !!")
+                    callback(null, defaultErrorMsg)
                 }
-            } catch (e: Exception) {
-                Log.e("MainViewModel", "Failed to register student: $e")
-                callback(null, "Erreur lors de l'enregistrement")
+            } catch (e: HttpException) {
+                val serverResponse = NetworkManager.parseHttpException(e)
+
+                Log.e("MainViewModel", "Failed to login: ${serverResponse?.error}")
+                callback(null, serverResponse?.error ?: context.getString(R.string.an_error_occured))
             }
         }
     }
