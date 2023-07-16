@@ -20,12 +20,12 @@ import com.example.learnflow.model.Address
 import com.example.learnflow.model.User
 import com.example.learnflow.model.UserType
 import com.example.learnflow.network.NetworkManager
+import com.example.learnflow.network.NetworkManager.userType
 import com.example.learnflow.network.StudentSignupDTO
 import com.example.learnflow.network.TeacherSignupDTO
 import com.example.learnflow.network.UserLoginDTO
 import com.example.learnflow.utils.FieldValidator
 import com.example.learnflow.utils.Utils
-import com.example.learnflow.webservices.Api.userType
 import com.google.android.material.snackbar.Snackbar
 import fr.kameouss.instamemeeditor.components.ImagePickerFragment
 import java.time.LocalDate
