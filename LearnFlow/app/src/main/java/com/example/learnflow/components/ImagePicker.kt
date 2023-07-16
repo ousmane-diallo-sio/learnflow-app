@@ -69,8 +69,6 @@ class ImagePicker(context: Context, private val attrs: AttributeSet) : LinearLay
     override fun validate(): Boolean {
         if (!isRequired) return true
 
-        Log.d("ImagePicker", "validating image picker")
-        Log.d("ImagePicker", "ivImage.drawable: ${ivImage.drawable}")
         if (ivImage.drawable == null) {
             triggerError("Veuillez sélectionner une image")
             return false
