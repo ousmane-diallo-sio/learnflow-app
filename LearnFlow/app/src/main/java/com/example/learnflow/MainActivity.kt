@@ -161,12 +161,14 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
         ciPassword.onInputValidation = { btnLogin.disabled = false }
 
         btnLogin.setOnClickListener {
+            btnLogin.isLoading = true
             val userLoginRequest = UserLoginDTO(
                 ciLogin.et.text.toString(),
                 ciPassword.et.text.toString(),
                 null
             )
             viewModel.login(this@MainActivity, userLoginRequest) { error ->
+                btnLogin.isLoading = false
                 if (error != null) {
                     Snackbar.make(loginPart, error, Snackbar.LENGTH_SHORT).show()
                     return@login

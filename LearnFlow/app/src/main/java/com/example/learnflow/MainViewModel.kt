@@ -16,6 +16,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import java.net.SocketTimeoutException
 
 class MainViewModel : ViewModel() {
 
@@ -75,6 +76,12 @@ class MainViewModel : ViewModel() {
 
                 Log.e("MainViewModel", "Failed to login: ${serverResponse?.error}")
                 callback(serverResponse?.error ?: context.getString(R.string.an_error_occured))
+            } catch (e: SocketTimeoutException) {
+                Log.e("MainViewModel", "Connection timed out: $e")
+                callback("Le serveur est injoignable")
+            } catch (e: Exception) {
+                Log.e("MainViewModel", "Failed to login: ${e.message}")
+                callback(context.getString(R.string.an_error_occured))
             }
         }
     }
@@ -105,8 +112,14 @@ class MainViewModel : ViewModel() {
             } catch (e: HttpException) {
                 val serverResponse = NetworkManager.parseHttpException(e)
 
-                Log.e("MainViewModel", "Failed to login: ${serverResponse?.error}")
+                Log.e("MainViewModel", "Failed to register: ${serverResponse?.error}")
                 callback(null, serverResponse?.error ?: context.getString(R.string.an_error_occured))
+            } catch (e: SocketTimeoutException) {
+                Log.e("MainViewModel", "Connection timed out: $e")
+                callback(null, "Le serveur est injoignable")
+            } catch (e: Exception) {
+                Log.e("MainViewModel", "Failed to register: ${e.message}")
+                callback(null, defaultErrorMsg)
             }
         }
     }
@@ -137,8 +150,14 @@ class MainViewModel : ViewModel() {
             } catch (e: HttpException) {
                 val serverResponse = NetworkManager.parseHttpException(e)
 
-                Log.e("MainViewModel", "Failed to login: ${serverResponse?.error}")
+                Log.e("MainViewModel", "Failed to register: ${serverResponse?.error}")
                 callback(null, serverResponse?.error ?: context.getString(R.string.an_error_occured))
+            } catch (e: SocketTimeoutException) {
+                Log.e("MainViewModel", "Connection timed out: $e")
+                callback(null, "Le serveur est injoignable")
+            } catch (e: Exception) {
+                Log.e("MainViewModel", "Failed to register: ${e.message}")
+                callback(null, defaultErrorMsg)
             }
         }
     }
