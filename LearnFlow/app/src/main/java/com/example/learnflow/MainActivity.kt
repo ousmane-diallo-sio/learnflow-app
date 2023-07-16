@@ -45,7 +45,6 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
             val registerVisibility = if (value) GONE else VISIBLE
 
             tvBottomCTA.setText(if (loginVisibility == VISIBLE) R.string.create_account_cta else R.string.login_cta)
-            btnLoginCTA.isLoading = false
 
             btnRegisterCTA.visibility = loginVisibility
             loginPart.visibility = loginVisibility
@@ -137,8 +136,6 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
         super.onStart()
         viewModel.onStart(this)
 
-        btnLogin.isLoading = false
-
         // TODO Investigate why the validation btn is not always available at the end of the Teacher slider
         // TODO Investigate why the validation is not triggered on ImagePickers
         sliderRegisterProcess.btnLastSlide = CustomBtn(this, null).apply {
@@ -185,7 +182,6 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
         }
 
         btnRegisterCTA.setOnClickListener {
-            (it as CustomBtn).isLoading = true
             isLoginView = !isLoginView
             sliderRegisterProcess.slideTo(0)
         }

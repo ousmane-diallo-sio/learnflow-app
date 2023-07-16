@@ -80,8 +80,7 @@
                 <com.example.learnflow.components.CustomBtn
                     android:id="@+id/btnLoginMain"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
                     android:gravity="center"
                     app:text="@string/login"
                     app:textSize="16sp" />
