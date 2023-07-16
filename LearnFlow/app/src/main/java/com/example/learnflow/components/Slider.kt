@@ -29,7 +29,6 @@ class Slider(context: Context?, private val attrs: AttributeSet) : LinearLayout(
     set (value) {
         field?.let { llBtnsWrapperSlider.removeView(it) }
         field = value
-        field?.visibility = GONE
         val layoutParams = LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
