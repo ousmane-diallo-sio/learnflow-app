@@ -67,7 +67,5 @@ class SelectorItem(context: Context, private val attrs: AttributeSet?): LinearLa
         tvItem.text = text
     }
 
-    override fun setListeners() {
-        TODO("Not yet implemented")
-    }
+    override fun setListeners() {}
 }
