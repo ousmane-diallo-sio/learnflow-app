@@ -10,4 +10,7 @@ interface NetworkI {
 
     @POST("/register/student")
     fun registerStudentAsync(@Body requestBody: StudentSignupDTO): Deferred<ServerResponse<User>>
+
+    @POST("/register/teacher")
+    fun registerTeacherAsync(@Body requestBody: TeacherSignupDTO): Deferred<ServerResponse<User>>
 }

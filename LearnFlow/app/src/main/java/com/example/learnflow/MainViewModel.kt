@@ -9,7 +9,9 @@ import com.example.learnflow.model.Jwt
 import com.example.learnflow.model.User
 import com.example.learnflow.network.NetworkManager
 import com.example.learnflow.network.StudentSignupDTO
+import com.example.learnflow.network.TeacherSignupDTO
 import com.example.learnflow.network.UserLoginDTO
+import com.google.android.gms.tasks.Tasks.await
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -19,6 +21,7 @@ class MainViewModel : ViewModel() {
 
     private val userFlow = MutableStateFlow<User?>(null)
     private val studentSignupDTOFlow = MutableStateFlow<StudentSignupDTO?>(null)
+    private val teacherSignupDTOFlow = MutableStateFlow<TeacherSignupDTO?>(null)
     // profilePictureUrl = "https://d38b044pevnwc9.cloudfront.net/cutout-nuxt/enhancer/2.jpg"
 
     fun onStart(mainActivity: MainActivity) {
@@ -34,6 +37,12 @@ class MainViewModel : ViewModel() {
     fun updateStudentRegisterRequest(studentRegisterDTO: StudentSignupDTO) {
         viewModelScope.launch {
             studentSignupDTOFlow.emit(studentRegisterDTO)
+        }
+    }
+
+    fun updateTeacherRegisterRequest(teacherRegisterDTO: TeacherSignupDTO) {
+        viewModelScope.launch {
+            teacherSignupDTOFlow.emit(teacherRegisterDTO)
         }
     }
 
@@ -76,6 +85,38 @@ class MainViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val res = NetworkManager.registerStudentAsync(context, studentSignupDTOFlow.value!!)
+                    ?.await()
+
+                res?.let { serverResponse ->
+                    serverResponse.data?.let { data ->
+                        updateUser(data)
+                        serverResponse.jwt?.let { jwt ->
+                            saveJwtToken(
+                                context.getSharedPreferences("jwtToken", Context.MODE_PRIVATE),
+                                jwt
+                            )
+                        }
+                        callback(data, null)
+                        return@launch
+                    }
+                    Log.e("MainViewModel", "API response data is null !!")
+                    callback(null, defaultErrorMsg)
+                }
+            } catch (e: HttpException) {
+                val serverResponse = NetworkManager.parseHttpException(e)
+
+                Log.e("MainViewModel", "Failed to login: ${serverResponse?.error}")
+                callback(null, serverResponse?.error ?: context.getString(R.string.an_error_occured))
+            }
+        }
+    }
+
+    fun registerTeacher(context: Context, callback: (data: User?, error: String?) -> Unit) {
+        val defaultErrorMsg = context.getString(R.string.an_error_occured)
+
+        viewModelScope.launch {
+            try {
+                val res = NetworkManager.registerTeacherAsync(context, teacherSignupDTOFlow.value!!)
                     ?.await()
 
                 res?.let { serverResponse ->

@@ -25,6 +25,7 @@ import com.example.learnflow.R
 import com.example.learnflow.components.CustomValidator
 import com.example.learnflow.components.IComponent
 import com.example.learnflow.components.IValidator
+import com.google.android.material.snackbar.Snackbar
 import com.yalantis.ucrop.UCrop
 import java.io.File
 import java.util.*
@@ -49,11 +50,11 @@ class ImagePickerFragment : Fragment() {
             if (resultUri != null) {
                 callback?.invoke(resultUri)
             }
-        } else {
-            Toast.makeText(
-                context,
+        } else if (result.resultCode != 0) {
+            Snackbar.make(
+                requireActivity().window.decorView.rootView,
                 "Une erreur est survenue\n Code d'erreur : ${result.resultCode}",
-                Toast.LENGTH_SHORT
+                Snackbar.LENGTH_SHORT
             ).show()
         }
     }

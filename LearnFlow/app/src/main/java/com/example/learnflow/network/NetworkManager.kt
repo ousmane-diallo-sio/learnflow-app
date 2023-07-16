@@ -73,9 +73,7 @@ object NetworkManager {
     fun observeNetworkConnectivity(context: Context) {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkCallback = object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network) {
-                Toast.makeText(context, "Connecté à internet", Toast.LENGTH_SHORT).show()
-            }
+            override fun onAvailable(network: Network) {}
 
             override fun onLost(network: Network) {
                 handleMissingNetwork(context)
@@ -108,5 +106,10 @@ object NetworkManager {
     fun registerStudentAsync(context: Context, requestBody: StudentSignupDTO): Deferred<ServerResponse<User>>? {
         if (handleMissingNetwork(context)) return null
         return api.registerStudentAsync(requestBody)
+    }
+
+    fun registerTeacherAsync(context: Context, requestBody: TeacherSignupDTO): Deferred<ServerResponse<User>>? {
+        if (handleMissingNetwork(context)) return null
+        return api.registerTeacherAsync(requestBody)
     }
 }

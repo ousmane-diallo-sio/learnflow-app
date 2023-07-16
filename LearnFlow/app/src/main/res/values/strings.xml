@@ -42,4 +42,7 @@
     <string name="title_messages">Messages</string>
     <string name="search_teacher_cta">Recherchez une matière, un professeur...</string>
     <string name="an_error_occured">Une erreur est survenue</string>
+    <string name="teacher_signup_confirmation_title">Votre demande d’inscription a bien été prise en compte !</string>
+    <string name="teacher_signup_confirmation_title_2">Vous ne pouvez pas vous connecter pour le moment.</string>
+    <string name="teacher_signup_confirmation_desc">Veuillez attendre que notre équipe de modération valide votre inscription. Nous vous enverrons une notification lorsque la décision aura été prise.</string>
 </resources>
