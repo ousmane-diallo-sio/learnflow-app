@@ -4,12 +4,13 @@ import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.animation.ValueAnimator.AnimatorUpdateListener
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-
-
-
+import java.io.ByteArrayOutputStream
 
 
 object Utils {
@@ -37,5 +38,17 @@ object Utils {
             for (i in 0 until childCount) unvisited.add(child.getChildAt(i))
         }
         return visited
+    }
+
+    fun base64ToBitmap(base64String: String): Bitmap? {
+        val decodedBytes: ByteArray = Base64.decode(base64String, Base64.DEFAULT)
+        return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+    }
+
+    fun bitmapToBase64(bitmap: Bitmap): String? {
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+        val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
+        return Base64.encodeToString(byteArray, Base64.DEFAULT)
     }
 }
