@@ -136,12 +136,6 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
         super.onStart()
         viewModel.onStart(this)
 
-        // TODO Investigate why the validation btn is not always available at the end of the Teacher slider
-        // TODO Investigate why the validation is not triggered on ImagePickers
-        sliderRegisterProcess.btnLastSlide = CustomBtn(this, null).apply {
-            tv.text = getString(R.string.validate)
-            setOnClickListener { handleSignup() }
-        }
         sliderRegisterProcess.validateForm = { sliderItem, index ->
             Utils.getAllNestedChildren(sliderItem)
                 .filter { it is IValidator }
@@ -255,18 +249,22 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
             }
         }
 
-        ipProfilePicRegister.setOnClickListener {
-            imgPickerFragment.pickImage { uri: Uri? ->
-                if (uri == null) return@pickImage
-                ipProfilePicRegister.ivImage.setImageURI(uri)
-                ipProfilePicRegister.hideError()
-            }
-        }
         ipTeacherIdentityCardPicker.setOnClickListener {
             imgPickerFragment.pickImage { uri: Uri? ->
                 if (uri == null) return@pickImage
                 ipTeacherIdentityCardPicker.ivImage.setImageURI(uri)
                 ipTeacherIdentityCardPicker.hideError()
+            }
+        }
+        ipProfilePicRegister.setOnClickListener {
+            imgPickerFragment.pickImage { uri: Uri? ->
+                if (uri == null) return@pickImage
+                ipProfilePicRegister.ivImage.setImageURI(uri)
+                ipProfilePicRegister.hideError()
+                sliderRegisterProcess.btnLastSlide = CustomBtn(this, null).apply {
+                    tv.text = getString(R.string.validate)
+                    setOnClickListener { handleSignup() }
+                }
             }
         }
     }
