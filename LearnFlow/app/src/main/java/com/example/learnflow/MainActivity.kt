@@ -136,8 +136,6 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
         super.onStart()
         viewModel.onStart(this)
 
-        // TODO Investigate why validation btn disappears when profile picture is picked
-
         sliderRegisterProcess.validateForm = { sliderItem, index ->
             Utils.getAllNestedChildren(sliderItem)
                 .filter { it is IValidator }
