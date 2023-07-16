@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
 import android.util.Log
@@ -12,32 +11,31 @@ import android.view.View.*
 import android.view.ViewGroup
 import android.widget.*
 import android.widget.LinearLayout.LayoutParams
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.children
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.setPadding
 import com.example.learnflow.components.*
+import com.example.learnflow.model.Address
 import com.example.learnflow.model.User
 import com.example.learnflow.model.UserType
+import com.example.learnflow.network.NetworkManager
+import com.example.learnflow.network.StudentSignupDTO
+import com.example.learnflow.network.TeacherSignupDTO
+import com.example.learnflow.network.UserLoginDTO
 import com.example.learnflow.utils.FieldValidator
 import com.example.learnflow.utils.Utils
-import com.example.learnflow.webservices.Api
 import com.example.learnflow.webservices.Api.userType
+import com.google.android.material.snackbar.Snackbar
 import fr.kameouss.instamemeeditor.components.ImagePickerFragment
-import java.io.IOException
-import java.net.URLDecoder
 import java.time.LocalDate
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
 
-    private val SP_CB_KEY = "cbCredentialsChecked"
-    private val SP_EMAIL_KEY = "credentialEmail"
-    private val SP_PASSWORD_KEY = "credentialPassword"
+    private val viewModel: MainViewModel by viewModels()
+
     private lateinit var sharedPreferences: SharedPreferences
 
-    //private var user: User = User()
-    private var user: User = User().apply {
-        profilePictureUrl = "https://d38b044pevnwc9.cloudfront.net/cutout-nuxt/enhancer/2.jpg"
-    }
     private lateinit var imgPickerFragment: ImagePickerFragment
 
     private var isLoginView = true
@@ -56,10 +54,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var loginPart: LinearLayout
     private lateinit var registerPart: LinearLayout
-    private lateinit var cbWrapper: LinearLayout
     private lateinit var ciLogin: CustomInput
     private lateinit var ciPassword: CustomInput
-    private lateinit var cb: CheckBox
     private lateinit var tvBottomCTA: TextView
     private lateinit var btnLogin: CustomBtn
     private lateinit var btnRegisterCTA: CustomBtn
@@ -78,7 +74,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var ciZipCodeRegister: CustomInput
     private lateinit var ciFurtherAddressRegister: CustomInput
     private lateinit var ciPasswordRegister: CustomInput
-    private lateinit var ivProfilePicRegister: ImagePickerFragment
+    private lateinit var ipProfilePicRegister: ImagePicker
 
     // Student specific form
     private lateinit var siStudentSchoolLevel: SliderItem
@@ -86,7 +82,7 @@ class MainActivity : AppCompatActivity() {
 
     // Teacher specific form
     private lateinit var siTeacherIdentityCard: SliderItem
-    private lateinit var ivTeacherIdentityCardPicker: ImagePickerFragment
+    private lateinit var ipTeacherIdentityCardPicker: ImagePicker
     private lateinit var siTeacherDocumentsMain: SliderItem
     private lateinit var llTeacherDocumentsMain: LinearLayout
     private lateinit var btnTeacherPickDocumentMain: CustomBtn
@@ -98,8 +94,6 @@ class MainActivity : AppCompatActivity() {
 
         loginPart = findViewById(R.id.loginPartMain)
         registerPart = findViewById(R.id.registerPartMain)
-        cbWrapper = findViewById(R.id.cbWrapperMain)
-        cb = cbWrapper.children.elementAt(0) as CheckBox
         ciLogin = findViewById(R.id.ciEmailMain)
         ciPassword = findViewById(R.id.ciPasswordMain)
         tvBottomCTA = findViewById(R.id.tvBottomCTAMain)
@@ -111,7 +105,6 @@ class MainActivity : AppCompatActivity() {
         iSelectStudentSchoolLevel = findViewById(R.id.iSelectStudentSchoolLevelMain)
         siStudentSchoolLevel = findViewById(R.id.siStudentSchoolLevelMain)
         siTeacherIdentityCard = findViewById(R.id.siTeacherIdentityCardMain)
-        ivTeacherIdentityCardPicker = supportFragmentManager.findFragmentById(R.id.fragImgPickerTeacherIdentityCardMain) as ImagePickerFragment
         siTeacherDocumentsMain = findViewById(R.id.siTeacherDocumentsMain)
         llTeacherDocumentsMain = findViewById(R.id.llTeacherDocumentsMain)
         btnTeacherPickDocumentMain = findViewById(R.id.btnTeacherPickDocumentMain)
@@ -125,10 +118,12 @@ class MainActivity : AppCompatActivity() {
         ciFurtherAddressRegister = findViewById(R.id.ciFurtherAddressRegisterMain)
         ciPasswordRegister = findViewById(R.id.ciPasswordRegisterMain)
         ciBirthdateRegister = findViewById(R.id.ciBirthdateRegisterMain)
-        ivProfilePicRegister = supportFragmentManager.findFragmentById(R.id.fragImgPickerProfilePicRegisterMain) as ImagePickerFragment
+        ipProfilePicRegister = findViewById(R.id.imgPickerProfilePicRegisterMain)
+        ipTeacherIdentityCardPicker = findViewById(R.id.imgPickerTeacherIdentityCardMain)
 
         imgPickerFragment = ImagePickerFragment()
-        supportFragmentManager.beginTransaction().add(imgPickerFragment, "imgPickerFragmentMain").commit()
+        supportFragmentManager.beginTransaction().add(imgPickerFragment, "imgPickerFragmentMain")
+            .commit()
 
         sharedPreferences = getSharedPreferences(
             getString(R.string.app_name),
@@ -139,50 +134,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        val email = sharedPreferences.getString(SP_EMAIL_KEY, null) ?: ""
-        val password = sharedPreferences.getString(SP_PASSWORD_KEY, null) ?: ""
-        if (email.isNotEmpty()) {
-            ciLogin.et.setText(email)
-        }
-        if (password.isNotEmpty()) {
-            ciPassword.et.setText(password)
-        }
-        cb.isChecked = sharedPreferences.getBoolean(SP_CB_KEY, false)
-        btnLogin.isLoading = false
+        viewModel.onStart(this)
 
+        // TODO Investigate why the validation btn is not always available at the end of the Teacher slider
+        // TODO Investigate why the validation is not triggered on ImagePickers
         sliderRegisterProcess.btnLastSlide = CustomBtn(this, null).apply {
             tv.text = getString(R.string.validate)
-            setOnClickListener {
-                user.firstName = ciFirstnameRegister.et.text.toString()
-                user.lastName = ciLastnameRegister.et.text.toString()
-                user.email = ciEmailRegister.et.text.toString()
-                user.birthdate = ciBirthdateRegister.et.text.toString()
-                user.address?.city = ciCityRegister.et.text.toString()
-                user.address?.street = ciStreetRegister.et.text.toString()
-                user.address?.zipCode = ciZipCodeRegister.et.text.toString()
-                user.address?.complement = ciFurtherAddressRegister.et.text.toString()
-                user.password = ciPasswordRegister.et.text.toString()
-                user.phoneNumber = ciPhoneNumberRegister.et.text.toString()
-                user.schoolLevel = iSelectStudentSchoolLevel.items.find { it.isSelected }?.tvItem?.text.toString()
-
-                Api.register(this@MainActivity, user) {response ->
-                    runOnUiThread {
-                        try {
-                            val responseMsg = URLDecoder.decode(response.message, "UTF-8")
-                            if (response.code !in 200..299) {
-                                Log.e("MainActivity", "Error while registering user : $responseMsg")
-                                Toast.makeText(this@MainActivity, responseMsg, Toast.LENGTH_SHORT).show()
-                                throw IOException("Unexpected code $responseMsg")
-                            }
-                            Api.currentUser = User.fromJson(response.body!!.string())
-                            Toast.makeText(this@MainActivity, "Bonjour ${user.firstName}", Toast.LENGTH_SHORT).show()
-                            startActivity(Intent(this@MainActivity, HomeActivity::class.java))
-                        } catch (e: Exception) {
-                            Log.e("MainActivity", e.toString())
-                        }
-                    }
-                }
-            }
+            setOnClickListener { handleSignup() }
         }
         sliderRegisterProcess.validateForm = { sliderItem, index ->
             Utils.getAllNestedChildren(sliderItem)
@@ -204,28 +162,26 @@ class MainActivity : AppCompatActivity() {
                 FieldValidator.zipCode(string)
             }
         }
-        setListeners()
-    }
 
-    private fun setListeners() {
-        cbWrapper.setOnClickListener {
-            cb.isChecked = !cb.isChecked
-        }
-
-        ciLogin.onInputValidation = { btnLogin.disabled = !it }
-        ciPassword.onInputValidation = { btnLogin.disabled = !it }
+        ciLogin.onInputValidation = { btnLogin.disabled = false }
+        ciPassword.onInputValidation = { btnLogin.disabled = false }
 
         btnLogin.setOnClickListener {
-            if (cb.isChecked) {
-                saveCredentials()
-            } else {
-                deleteCredentials()
+            val userLoginRequest = UserLoginDTO(
+                ciLogin.et.text.toString(),
+                ciPassword.et.text.toString(),
+                null
+            )
+            viewModel.login(this@MainActivity, userLoginRequest) { error ->
+                if (error != null) {
+                    Snackbar.make(loginPart, error, Snackbar.LENGTH_SHORT).show()
+                    return@login
+                }
+                startActivity(Intent(this@MainActivity, HomeActivity::class.java))
             }
-            Api.login(this, ciLogin.et.text.toString(), ciPassword.et.text.toString())
         }
 
         btnRegisterCTA.setOnClickListener {
-            (it as CustomBtn).isLoading = true
             isLoginView = !isLoginView
             sliderRegisterProcess.slideTo(0)
         }
@@ -286,7 +242,8 @@ class MainActivity : AppCompatActivity() {
                             dialog.dismiss()
                             ivOverview.parent?.let { (it as ViewGroup).removeView(ivOverview) }
                         }
-                        .setNegativeButton(getText(R.string.delete)) { dialog, _ -> dialog.dismiss()
+                        .setNegativeButton(getText(R.string.delete)) { dialog, _ ->
+                            dialog.dismiss()
                             llTeacherDocumentsMain.removeView(customInput)
                         }
                         .setView(ivOverview)
@@ -297,27 +254,43 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-    }
 
-    private fun saveCredentials() {
-        val spEditor = sharedPreferences.edit()
-        spEditor.putBoolean(SP_CB_KEY, cb.isChecked)
-        spEditor.putString(SP_EMAIL_KEY, ciLogin.et.text.toString())
-        spEditor.putString(SP_PASSWORD_KEY, ciPassword.et.text.toString())
-        spEditor.apply()
-    }
-
-    private fun deleteCredentials() {
-        val spEditor = sharedPreferences.edit()
-        spEditor
-            .remove(SP_EMAIL_KEY)
-            .remove(SP_PASSWORD_KEY)
-            .remove(SP_CB_KEY)
-            .apply()
+        ipProfilePicRegister.setOnClickListener {
+            imgPickerFragment.pickImage { uri: Uri? ->
+                if (uri == null) return@pickImage
+                ipProfilePicRegister.ivImage.setImageURI(uri)
+                ipProfilePicRegister.hideError()
+            }
+        }
+        ipTeacherIdentityCardPicker.setOnClickListener {
+            imgPickerFragment.pickImage { uri: Uri? ->
+                if (uri == null) return@pickImage
+                ipTeacherIdentityCardPicker.ivImage.setImageURI(uri)
+                ipTeacherIdentityCardPicker.hideError()
+            }
+        }
     }
 
     private fun setupSchoolLevels() {
-        val schoolLevels = arrayOf("CP", "CE1", "CE2", "CM1", "CM2", "6ème", "5ème", "4ème", "3ème", "2nde", "1ère", "Terminale", "Bac +1", "Bac +2", "Bac +3", "Bac +4", "Bac +5")
+        val schoolLevels = arrayOf(
+            "CP",
+            "CE1",
+            "CE2",
+            "CM1",
+            "CM2",
+            "6ème",
+            "5ème",
+            "4ème",
+            "3ème",
+            "2nde",
+            "1ère",
+            "Terminale",
+            "Bac +1",
+            "Bac +2",
+            "Bac +3",
+            "Bac +4",
+            "Bac +5"
+        )
         val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
         schoolLevels.forEach {
             val selectorItem = SelectorItem(this, null)
@@ -328,12 +301,86 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getImagePickerToValidate(): List<ImagePickerFragment> {
-        return if (userType == UserType.STUDENT) {
-            listOf(ivProfilePicRegister)
-        } else {
-            listOf(ivProfilePicRegister, ivTeacherIdentityCardPicker)
+    private fun handleSignup() {
+
+        fun onRegisterStudent(data: User?, error: String?) {
+            if (error != null) {
+                Log.e("MainActivity", "Error while registering user : ${error}")
+                Toast.makeText(this@MainActivity, error, Toast.LENGTH_SHORT).show()
+                return
+            }
+            Toast.makeText(
+                this@MainActivity,
+                "Bonjour ${data?.firstName}",
+                Toast.LENGTH_SHORT
+            ).show()
+            startActivity(Intent(this@MainActivity, HomeActivity::class.java))
         }
+
+        fun onRegisterTeacher(data: User?, error: String?) {
+            if (error != null) {
+                Log.e("MainActivity", "Error while registering user : ${error}")
+                Toast.makeText(this@MainActivity, error, Toast.LENGTH_SHORT).show()
+                return
+            }
+            val teacherSignupConfirmation = TeacherSignupConfirmation()
+            teacherSignupConfirmation.show(supportFragmentManager, "teacherSignupConfirmation")
+        }
+
+        if (userType == UserType.STUDENT) {
+            viewModel.updateStudentRegisterRequest(
+                StudentSignupDTO(
+                    firstName = ciFirstnameRegister.et.text.toString(),
+                    lastName = ciLastnameRegister.et.text.toString(),
+                    email = ciEmailRegister.et.text.toString(),
+                    birthdate = NetworkManager.formatDateFRToISOString(
+                        ciBirthdateRegister.et.text.toString()
+                    ),
+                    address = Address(
+                        ciCityRegister.et.text.toString(),
+                        ciStreetRegister.et.text.toString(),
+                        ciZipCodeRegister.et.text.toString(),
+                        ciFurtherAddressRegister.et.text.toString().ifEmpty { null }
+                    ),
+                    password = ciPasswordRegister.et.text.toString(),
+                    phoneNumber = ciPhoneNumberRegister.et.text.toString(),
+                    schoolLevel = iSelectStudentSchoolLevel.items.find { it.isItemSelected }?.tvItem?.text.toString(),
+                    profilePictureUrl = "https://imgr.cineserie.com/2020/12/spider-man-3-sony-vient-il-de-confirmer-l-arrivee-des-3-peter-parker-2.jpg?imgeng=/f_jpg/cmpr_0/w_1280/h_960/m_cropbox&ver=1"
+                )
+            )
+
+            viewModel.registerStudent(this@MainActivity) { data, error ->
+                onRegisterStudent(data, error)
+            }
+        } else {
+            viewModel.updateTeacherRegisterRequest(
+                TeacherSignupDTO(
+                    firstName = ciFirstnameRegister.et.text.toString(),
+                    lastName = ciLastnameRegister.et.text.toString(),
+                    email = ciEmailRegister.et.text.toString(),
+                    birthdate = NetworkManager.formatDateFRToISOString(
+                        ciBirthdateRegister.et.text.toString()
+                    ),
+                    address = Address(
+                        ciCityRegister.et.text.toString(),
+                        ciStreetRegister.et.text.toString(),
+                        ciZipCodeRegister.et.text.toString(),
+                        ciFurtherAddressRegister.et.text.toString().ifEmpty { null }
+                    ),
+                    password = ciPasswordRegister.et.text.toString(),
+                    phoneNumber = ciPhoneNumberRegister.et.text.toString(),
+                    documents = listOf(),
+                    profilePictureUrl = "https://imgr.cineserie.com/2020/12/spider-man-3-sony-vient-il-de-confirmer-l-arrivee-des-3-peter-parker-2.jpg?imgeng=/f_jpg/cmpr_0/w_1280/h_960/m_cropbox&ver=1"
+                )
+            )
+            viewModel.registerTeacher(this@MainActivity) { data, error ->
+                onRegisterTeacher(data, error)
+            }
+        }
+    }
+
+    override fun onTeacherSignupConfirmationDismissed() {
+        isLoginView = true
     }
 
 }

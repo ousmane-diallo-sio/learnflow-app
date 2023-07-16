@@ -41,7 +41,7 @@
 
                 <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
                     android:layout_width="match_parent"
-                    android:layout_height="350dp"
+                    android:layout_height="250dp"
                     app:cardCornerRadius="15dp"
                     app:cardElevation="10dp"
                     card_view:cardUseCompatPadding="true">
@@ -73,36 +73,14 @@
                             card_view:hint="@string/password"
                             card_view:icon="@drawable/baseline_lock_24"
                             card_view:inputType="textPassword"
-                            card_view:isRequired="true" />
-
-                        <LinearLayout
-                            android:id="@+id/cbWrapperMain"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:background="@drawable/ripple_selector"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <CheckBox
-                                android:layout_width="40dp"
-                                android:layout_height="40dp"
-                                android:layout_marginEnd="10dp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/save_credentials"
-                                android:textColor="@color/gray" />
-                        </LinearLayout>
+                            card_view:isRequired="false" />
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
                 <com.example.learnflow.components.CustomBtn
                     android:id="@+id/btnLoginMain"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
                     android:gravity="center"
                     app:text="@string/login"
                     app:textSize="16sp" />
@@ -377,12 +355,11 @@
                                 android:orientation="vertical"
                                 android:padding="10dp">
 
-                                <fragment
-                                    android:id="@+id/fragImgPickerTeacherIdentityCardMain"
-                                    android:name="fr.kameouss.instamemeeditor.components.ImagePickerFragment"
+                                <com.example.learnflow.components.ImagePicker
+                                    android:id="@+id/imgPickerTeacherIdentityCardMain"
                                     android:layout_width="match_parent"
                                     android:layout_height="180dp"
-                                    app:isRequired="true" />
+                                    card_view:isRequired="true" />
 
                                 <TextView
                                     style="@style/tvBoldTextStyle"
@@ -524,19 +501,11 @@
                                         card_view:layout_constraintWidth_percent="0.5"
                                         card_view:cardCornerRadius="100dp">
 
-                                        <FrameLayout
+                                        <com.example.learnflow.components.ImagePicker
+                                            android:id="@+id/imgPickerProfilePicRegisterMain"
                                             android:layout_width="match_parent"
                                             android:layout_height="match_parent"
-                                            android:background="@color/bright_gray">
-
-                                            <fragment
-                                                android:id="@+id/fragImgPickerProfilePicRegisterMain"
-                                                android:name="fr.kameouss.instamemeeditor.components.ImagePickerFragment"
-                                                android:layout_width="match_parent"
-                                                android:layout_height="180dp"
-                                                app:isRequired="true" />
-
-                                        </FrameLayout>
+                                            card_view:isRequired="true" />
                                     </androidx.cardview.widget.CardView>
                                 </androidx.constraintlayout.widget.ConstraintLayout>
 
