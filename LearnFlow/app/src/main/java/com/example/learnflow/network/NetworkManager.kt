@@ -10,6 +10,7 @@ import android.provider.Settings
 import android.widget.Toast
 import com.example.learnflow.model.LocalDateTypeAdapter
 import com.example.learnflow.model.User
+import com.example.learnflow.model.UserType
 import com.example.learnflow.utils.EnvUtils
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -25,6 +26,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 object NetworkManager {
+    var userType: UserType? = null
+
     private val okHttpClient = OkHttpClient.Builder()
         .addInterceptor(HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
