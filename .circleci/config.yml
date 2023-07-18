@@ -9,21 +9,21 @@ jobs:  # Define the jobs section
     working_directory: ~/project/LearnFlow  # Set the working directory to the root of the project
     steps: 
       - checkout  # Check out the code from the repository
-      
+
       # Task : Download and install dependencies
       - run:
           name: Download Dependencies
-          command: ./LearnFlow/gradlew androidDependencies
+          command: ./gradlew androidDependencies
 
       # Task : Build the project
       - run:
           name: Build
-          command: ./LearnFlow/gradlew clean assemble
+          command: ./gradlew clean assemble
 
       # Task : Run tests
       - run:
           name: Run Tests
-          command: ./LearnFlow/gradlew test
+          command: ./gradlew test
 
       - save_cache:
           paths:
