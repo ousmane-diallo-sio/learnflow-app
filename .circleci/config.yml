@@ -12,6 +12,14 @@ jobs:  # Define the jobs section
           path: ~/LearnFlow
 
       - run:
+          name: Get current directory
+          command: pwd
+
+      - run:
+          name: List files in current directory
+          command: ls -la
+
+      - run:
           name: Make gradlew executable
           command: chmod +x ./gradlew
 
