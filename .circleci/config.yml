@@ -10,11 +10,6 @@ jobs:  # Define the jobs section
     steps: 
       - checkout  # Check out the code from the repository
 
-      # Task : Clear Gradle cache
-      - run:
-          name: Clear Gradle Cache
-          command: ./LearnFlow/gradlew cleanBuildCache
-
       # Task : Clear CircleCI cache
       - run:
           name: Clear CircleCI Cache
