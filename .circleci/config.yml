@@ -15,13 +15,10 @@ jobs:  # Define the jobs section
           name: Clear Gradle Cache
           command: ./LearnFlow/gradlew cleanBuildCache
 
-      # Clear CircleCI cache
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "build.gradle" }}
-            # Add more cache keys for other dependencies if needed
-          name: Restore Gradle Dependencies
-
+      # Task : Clear CircleCI cache
+      - run:
+          name: Clear CircleCI Cache
+          command: circleci cache clear
       # Task : Download and install dependencies
       - run:
           name: Download Dependencies
