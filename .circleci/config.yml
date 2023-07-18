@@ -6,9 +6,25 @@ jobs:  # Define the jobs section
   build-and-test:  # Define a job named "build"
     macos:
       xcode: 14.0.1
-    working_directory: ~/project/LearnFlow  # Set the working directory to the root of the project
-    steps: 
-      - checkout  # Check out the code from the repository
+
+    working_directory: ~/LearnFlow/LearnFlow # Set the working directory to the root of the project
+    steps:
+      - checkout:  # Check out the code from the repository
+          path: ~/LearnFlow
+
+      - run:
+          name: Setup Android SDK
+          command: |
+            export ANDROID_SDK_ROOT='/home/circleci/android-sdk'
+            export JAVA_HOME='/usr/lib/jvm/java-8-openjdk-amd64'
+
+      - run:
+          name: Get current directory
+          command: pwd
+
+      - run:
+          name: List files in current directory
+          command: ls -la
 
       - run:
           name: Make gradlew executable
@@ -28,11 +44,6 @@ jobs:  # Define the jobs section
       - run:
           name: Run Tests
           command: ./gradlew test
-
-      - save_cache:
-          paths:
-            - ~/.gradle/caches
-          key: v1-dependencies-{{ checksum "build.gradle" }}
 
 # Define a workflow named "simple-workflow" that includes the "build-and-test" job
 workflows:
