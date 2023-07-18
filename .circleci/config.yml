@@ -6,7 +6,7 @@ jobs:  # Define the jobs section
   build-and-test:  # Define a job named "build"
     macos:
       xcode: 14.0.1
-    working_directory: ~/LearnFlow # Set the working directory to the root of the project
+    working_directory: ~/LearnFlow/LearnFlow # Set the working directory to the root of the project
     steps: 
       - checkout:  # Check out the code from the repository
           path: ~/LearnFlow/LearnFlow
