@@ -9,11 +9,7 @@ jobs:  # Define the jobs section
     working_directory: ~/project/LearnFlow  # Set the working directory to the root of the project
     steps: 
       - checkout  # Check out the code from the repository
-
-      # Task : Clear CircleCI cache
-      - run:
-          name: Clear CircleCI Cache
-          command: circleci cache clear
+      
       # Task : Download and install dependencies
       - run:
           name: Download Dependencies
