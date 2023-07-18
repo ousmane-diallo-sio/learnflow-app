@@ -4,8 +4,6 @@ version: 2.1
 
 jobs:
   build: # Name of the job
-    macos:  # Specify the OS
-      xcode: "14.2.0" # Specify the Xcode version
     environment:
       ANDROID_HOME: /opt/android/sdk
     steps: # Steps to run
