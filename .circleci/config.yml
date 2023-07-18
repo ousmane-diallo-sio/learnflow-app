@@ -32,7 +32,7 @@ jobs:  # Define the jobs section
       # Task : Build the project
       - run:
           name: Build
-          command: sudo ANDROID_HOME=/usr/local/android-sdk-linux ./gradlew dependencies ./gradlew clean assemble
+          command: sudo ANDROID_HOME=/usr/local/android-sdk-linux ./gradlew clean assemble
 
       # Task : Run tests
       - run:
