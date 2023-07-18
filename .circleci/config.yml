@@ -4,11 +4,6 @@ version: 2.1  # CircleCI config version
 
 jobs:  # Define the jobs section
   build:  # Define a job named "build"
-    docker:  # Use Docker to set up the build environment
-      - image: circleci/android:api-31  # Use Android Docker image
-
-    working_directory: ~/project  # Set the working directory to the root of the project
-
     steps: 
       - checkout  # Check out the code from the repository
 
