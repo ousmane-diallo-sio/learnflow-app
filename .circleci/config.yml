@@ -3,7 +3,9 @@
 version: 2.1  # CircleCI config version
 
 jobs:  # Define the jobs section
-  build:  # Define a job named "build"
+  build-and-test:  # Define a job named "build"
+    macos:
+      xcode: 14.0.1
     steps: 
       - checkout  # Check out the code from the repository
 
@@ -21,3 +23,9 @@ jobs:  # Define the jobs section
       - run:
           name: Run Tests
           command: ./gradlew test
+
+# Define a workflow named "simple-workflow" that includes the "build-and-test" job
+workflows:
+  simple-workflow:
+    jobs:
+      - build-and-test
