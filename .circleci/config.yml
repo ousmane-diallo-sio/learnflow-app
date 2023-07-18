@@ -6,18 +6,11 @@ jobs:  # Define the jobs section
   build-and-test:  # Define a job named "build"
     macos:
       xcode: 14.0.1
-    environment:
-      ANDROID_HOME: /opt/android/sdk
+      
     working_directory: ~/LearnFlow/LearnFlow # Set the working directory to the root of the project
     steps: 
       - checkout:  # Check out the code from the repository
           path: ~/LearnFlow
-
-      - run:
-          name: Setup Android SDK
-          command: |            
-            export ANDROID_SDK_ROOT='$ANDROID_HOME'
-            export JAVA_HOME='/usr/lib/jvm/java-8-openjdk-amd64'
 
       - run:
           name: Get current directory
@@ -39,7 +32,7 @@ jobs:  # Define the jobs section
       # Task : Build the project
       - run:
           name: Build
-          command: ./gradlew clean assemble
+          command: sudo ANDROID_HOME=/usr/local/android-sdk-linux ./gradlew dependencies ./gradlew clean assemble
 
       # Task : Run tests
       - run:
