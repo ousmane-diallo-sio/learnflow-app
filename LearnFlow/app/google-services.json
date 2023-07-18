@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "112804812697",
+    "project_id": "learn-flow-7c349",
+    "storage_bucket": "learn-flow-7c349.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:112804812697:android:4a82dec14e8fcfad6ae508",
+        "android_client_info": {
+          "package_name": "com.example.learnflow"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "112804812697-nvgflmi8mpekr1k5onv0132vgaj1uham.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBEASwFeJYOF3uVi1hn-_qEMNplHJIuUOM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "112804812697-nvgflmi8mpekr1k5onv0132vgaj1uham.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
