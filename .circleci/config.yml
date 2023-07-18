@@ -13,10 +13,6 @@ jobs:  # Define the jobs section
       - checkout:  # Check out the code from the repository
           path: ~/LearnFlow
 
-       run:
-          name: Set SDK Location
-          command: 
-
       - run:
           name: Setup Android SDK
           command: |            
