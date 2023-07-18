@@ -4,9 +4,10 @@ version: 2.1  # CircleCI config version
 
 jobs:  # Define the jobs section
   build-and-test:  # Define a job named "build"
-    macos:
-      xcode: 14.0.1
-      
+    docker:
+      - image: circleci/android:api-25-alpha
+    environment:
+      JVM_OPTS: -Xmx3200m
     working_directory: ~/LearnFlow/LearnFlow # Set the working directory to the root of the project
     steps: 
       - checkout:  # Check out the code from the repository
@@ -32,12 +33,18 @@ jobs:  # Define the jobs section
       # Task : Build the project
       - run:
           name: Build
-          command: sudo ANDROID_HOME=/usr/local/android-sdk-linux ./gradlew clean assemble
+          command: ./gradlew clean assemble
 
       # Task : Run tests
       - run:
           name: Run Tests
           command: ./gradlew test
+
+      - store_artifacts:
+          path: app/build/reports
+          destination: reports
+      - store_test_results:
+          path: app/build/test-resultss
 
 # Define a workflow named "simple-workflow" that includes the "build-and-test" job
 workflows:
