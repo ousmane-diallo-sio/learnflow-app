@@ -9,11 +9,7 @@ jobs:  # Define the jobs section
     working_directory: ~/LearnFlow # Set the working directory to the root of the project
     steps: 
       - checkout:  # Check out the code from the repository
-          path: ~/LearnFlow
-
-      - run:
-          name: Move to Android project directory
-          command: cd LearnFlow
+          path: ~/LearnFlow/LearnFlow
 
       - run:
           name: Get current directory
