@@ -12,7 +12,7 @@ jobs:  # Define the jobs section
 
       - run:
           name: Make gradlew executable
-          command: chmod +x ./gradlew
+          command: chmod +x ./LearnFlow/gradlew
 
       # Task : Download and install dependencies
       - run:
