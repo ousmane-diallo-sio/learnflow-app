@@ -1,0 +1,20 @@
+current directory: /Users/aaldn/Desktop/Project/Android/learnflow-app/LearnFlow/vendor/bundle/ruby/3.1.0/gems/unf_ext-0.0.8.2/ext/unf_ext
+/opt/homebrew/opt/ruby@3.1/bin/ruby extconf.rb
+checking for -lstdc++... yes
+creating Makefile
+
+current directory: /Users/aaldn/Desktop/Project/Android/learnflow-app/LearnFlow/vendor/bundle/ruby/3.1.0/gems/unf_ext-0.0.8.2/ext/unf_ext
+make DESTDIR\= sitearchdir\=./.gem.20230718-49592-60r2ql sitelibdir\=./.gem.20230718-49592-60r2ql clean
+
+current directory: /Users/aaldn/Desktop/Project/Android/learnflow-app/LearnFlow/vendor/bundle/ruby/3.1.0/gems/unf_ext-0.0.8.2/ext/unf_ext
+make DESTDIR\= sitearchdir\=./.gem.20230718-49592-60r2ql sitelibdir\=./.gem.20230718-49592-60r2ql
+compiling unf.cc
+linking shared-object unf_ext.bundle
+ld: warning: -undefined dynamic_lookup may not work with chained fixups
+
+current directory: /Users/aaldn/Desktop/Project/Android/learnflow-app/LearnFlow/vendor/bundle/ruby/3.1.0/gems/unf_ext-0.0.8.2/ext/unf_ext
+make DESTDIR\= sitearchdir\=./.gem.20230718-49592-60r2ql sitelibdir\=./.gem.20230718-49592-60r2ql install
+/usr/bin/install -c -m 0755 unf_ext.bundle ./.gem.20230718-49592-60r2ql
+
+current directory: /Users/aaldn/Desktop/Project/Android/learnflow-app/LearnFlow/vendor/bundle/ruby/3.1.0/gems/unf_ext-0.0.8.2/ext/unf_ext
+make DESTDIR\= sitearchdir\=./.gem.20230718-49592-60r2ql sitelibdir\=./.gem.20230718-49592-60r2ql clean
