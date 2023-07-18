@@ -1,19 +1,28 @@
 # Circle CI configuration file
 
-version: 2.1
+version: 2.1  # CircleCI config version
 
-jobs:
-  build: # Name of the job
-    environment:
-      ANDROID_HOME: /opt/android/sdk
-    steps: # Steps to run
-      - checkout # Checkout the code
+jobs:  # Define the jobs section
+  build:  # Define a job named "build"
+    docker:  # Use Docker to set up the build environment
+      - image: circleci/android:api-31  # Use Android Docker image
 
+    working_directory: ~/project  # Set the working directory to the root of the project
+
+    steps: 
+      - checkout  # Check out the code from the repository
+
+      # Task : Download and install dependencies
       - run:
           name: Download Dependencies
           command: ./gradlew androidDependencies
 
-      # Build
+      # Task : Build the project
       - run:
-          name: build
+          name: Build
           command: ./gradlew clean assemble
+
+      # Task : Run tests
+      - run:
+          name: Run Tests
+          command: ./gradlew test
