@@ -12,16 +12,16 @@ jobs:  # Define the jobs section
           path: ~/LearnFlow
 
       - run:
+          name: Move to Android project directory
+          command: cd LearnFlow
+
+      - run:
           name: Get current directory
           command: pwd
 
       - run:
           name: List files in current directory
           command: ls -la
-
-      - run:
-          name: Move to Android project directory
-          command: cd LearnFlow
 
       - run:
           name: Make gradlew executable
