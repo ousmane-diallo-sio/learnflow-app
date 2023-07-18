@@ -13,7 +13,7 @@ jobs:  # Define the jobs section
       # Task : Clear Gradle cache
       - run:
           name: Clear Gradle Cache
-          command: ./gradlew cleanBuildCache
+          command: ./LearnFlow/gradlew cleanBuildCache
 
       # Task : Download and install dependencies
       - run:
