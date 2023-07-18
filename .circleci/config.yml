@@ -13,7 +13,7 @@ jobs:  # Define the jobs section
 
       - run:
           name: List files in app/src/debug directory
-          command: ls -l LearnFlow/app/src/
+          command: ls -l app/src/
 
       - run:
           name: Get current directory
