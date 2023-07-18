@@ -12,6 +12,10 @@ jobs:  # Define the jobs section
           path: ~/LearnFlow/
 
       - run:
+          name: List files in app/src/debug directory
+          command: ls -l /home/circleci/LearnFlow/LearnFlow/app/src/debug
+
+      - run:
           name: Get current directory
           command: pwd
 
