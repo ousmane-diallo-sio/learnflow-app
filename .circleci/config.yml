@@ -6,7 +6,7 @@ jobs:  # Define the jobs section
   build-and-test:  # Define a job named "build"
     macos:
       xcode: 14.0.1
-    working_directory: ~/project/LearnFlow  # Set the working directory to the root of the project
+    working_directory: ~/project  # Set the working directory to the root of the project
     steps: 
       - checkout  # Check out the code from the repository
 
@@ -17,21 +17,21 @@ jobs:  # Define the jobs section
       # Task : Download and install dependencies
       - run:
           name: Download Dependencies
-          command: ./gradlew androidDependencies
+          command: ./LearnFlow/gradlew androidDependencies
 
       # Task : Build the project
       - run:
           name: Build
-          command: ./gradlew clean assemble
+          command: ./LearnFlow/gradlew clean assemble
 
       # Task : Run tests
       - run:
           name: Run Tests
-          command: ./gradlew test
+          command: ./LearnFlow/gradlew test
 
       - save_cache:
           paths:
-            - ~/.gradle/caches
+            - ~/LearnFlow/.gradle/caches
           key: v1-dependencies-{{ checksum "build.gradle" }}
 
 # Define a workflow named "simple-workflow" that includes the "build-and-test" job
