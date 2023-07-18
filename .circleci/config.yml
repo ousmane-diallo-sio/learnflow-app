@@ -20,6 +20,10 @@ jobs:  # Define the jobs section
           command: ls -la
 
       - run:
+          name: Move to Android project directory
+          command: cd LearnFlow
+
+      - run:
           name: Make gradlew executable
           command: chmod +x ./gradlew
 
