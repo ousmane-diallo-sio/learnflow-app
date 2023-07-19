@@ -135,7 +135,7 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
     override fun onStart() {
         super.onStart()
         viewModel.onStart(this)
-
+        Log.d("test", "test")
         sliderRegisterProcess.validateForm = { sliderItem, index ->
             Utils.getAllNestedChildren(sliderItem)
                 .filter { it is IValidator }
