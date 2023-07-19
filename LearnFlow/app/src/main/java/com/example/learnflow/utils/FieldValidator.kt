@@ -32,10 +32,7 @@ object FieldValidator {
         return pattern.matches(string)
     }
 
-    fun password(string: String): Boolean {
-        val pattern = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}\$")
-        return pattern.matches(string)
-    }
+    fun password(string: String) = string.length in 8..25
 
     fun zipCode(string: String): Boolean {
         val pattern = Regex("^[0-9]{5}\$")

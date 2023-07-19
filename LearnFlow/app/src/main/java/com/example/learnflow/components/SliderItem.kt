@@ -5,13 +5,15 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.widget.LinearLayout
 
-class SliderItem(context: Context, attrs: AttributeSet): LinearLayout(context, attrs), IComponent {
+// The purpose of this class is only the wrap SliderItems in order to recognize them
+// in the Slider
+class SliderItem(context: Context, private val attrs: AttributeSet): LinearLayout(context, attrs), IComponent {
 
-    override fun handleAttrs(attrs: AttributeSet?) {
-        TODO("Not yet implemented")
+    override fun handleAttrs() {
+        // Not needed
     }
 
     override fun setListeners() {
-        TODO("Not yet implemented")
+        // Not needed
     }
 }

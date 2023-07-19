@@ -8,27 +8,28 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.bumptech.glide.Glide.init
 import com.example.learnflow.R
 import com.google.android.flexbox.FlexboxLayout
 
-class ItemsSelector(context: Context, attrs: AttributeSet): LinearLayout(context, attrs), IComponent, IValidator {
+class ItemsSelector(context: Context, private val attrs: AttributeSet): LinearLayout(context, attrs), IComponent, IValidator {
 
-    private val fblItemsContainer: FlexboxLayout
-    override lateinit var tvError: TextView
-    var items = ArrayList<SelectorItem>()
-        private set
-    private var multiSelection = false
-    private var onElementSelected: ((SelectorItem) -> Unit)? = null
     override var isRequired: Boolean = false
     override var customValidator: CustomValidator? = null
+    private val fblItemsContainer: FlexboxLayout
+    override lateinit var tvError: TextView
+    val items = ArrayList<SelectorItem>()
+    private var multiSelection = false
+    private var onElementSelected: ((SelectorItem) -> Unit)? = null
 
     init {
         LayoutInflater.from(context).inflate(R.layout.items_selector, this)
         fblItemsContainer = findViewById(R.id.fblItemsContainerItemsSelector)
         tvError = findViewById(R.id.tvErrorItemsSelector)
+        handleAttrs()
     }
 
-    override fun handleAttrs(attrs: AttributeSet?) {
+    override fun handleAttrs() {
         val styledAttributes =
             context.obtainStyledAttributes(attrs, R.styleable.ItemsSelector, 0, 0)
 

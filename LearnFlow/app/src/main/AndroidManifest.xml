@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LearnFlow"
         tools:targetApi="31">
+        <instrumentation
+            android:name="androidx.test.runner.AndroidJUnitRunner"
+            android:targetPackage="com.example.learnflow" />
         <activity
             android:name=".HomeActivity"
             android:exported="false"
@@ -34,4 +37,14 @@
     </application>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Allows storing screenshots on external storage, where it can be accessed by ADB -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <!-- Allows changing locales -->
+    <uses-permission
+        android:name="android.permission.CHANGE_CONFIGURATION"
+        tools:ignore="ProtectedPermissions" />
+    <!-- Allows changing SystemUI demo mode -->
+    <uses-permission
+        android:name="android.permission.DUMP"
+        tools:ignore="ProtectedPermissions" />
 </manifest>

@@ -22,7 +22,6 @@
     <string name="further_address">Complément d\'adresse</string>
     <string name="select_school_level">Sélectionnez votre niveau scolaire</string>
     <string name="upload_identity_card_cta">Veuillez insérer une pièce d’identité</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="signup_teacher_documents_desc">Veuillez insérer une photo des diplômes que vous possédez ou tout autre document pouvant attester de votre capacité d’enseignement</string>
     <string name="add_document">Ajouter un document</string>
@@ -34,11 +33,15 @@
     <string name="invalid_date">Date invalide</string>
     <string name="invalid_phone_number">Numéro de téléphone invalide</string>
     <string name="choose_password">Choisissez un mot de passe</string>
-    <string name="invalid_password">Au moins 8 caractères sont requis (dont une majuscule, une minuscule et un chiffre)</string>
+    <string name="invalid_password">Vous devez insérer entre 8 et 25 caractères</string>
     <string name="register_success">Votre demande d’inscription a bien été prise en compte !</string>
     <string name="validate_register">Veuillez valider votre inscription</string>
     <string name="insert_profile_picture">Insérez une photo de profil qui apparaîtra sur l’application</string>
     <string name="title_search">Rechercher</string>
     <string name="title_messages">Messages</string>
     <string name="search_teacher_cta">Recherchez une matière, un professeur...</string>
+    <string name="an_error_occured">Une erreur est survenue</string>
+    <string name="teacher_signup_confirmation_title">Votre demande d’inscription a bien été prise en compte !</string>
+    <string name="teacher_signup_confirmation_title_2">Vous ne pouvez pas vous connecter pour le moment.</string>
+    <string name="teacher_signup_confirmation_desc">Veuillez attendre que notre équipe de modération valide votre inscription. Nous vous enverrons une notification lorsque la décision aura été prise.</string>
 </resources>

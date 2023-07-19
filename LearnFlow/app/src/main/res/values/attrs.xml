@@ -24,6 +24,7 @@
             <enum name="textPassword" value="128" />
         </attr>
         <attr name="isRequired" format="boolean" />
+        <attr name="showErrorText" format="boolean" />
     </declare-styleable>
     <declare-styleable name="ItemsSelector">
         <attr name="multiSelection" format="boolean" />
@@ -36,7 +37,7 @@
         <attr name="itemText" format="string|reference" />
         <attr name="selectorId" format="string" />
     </declare-styleable>
-    <declare-styleable name="ImagePickerFragment">
+    <declare-styleable name="ImagePicker">
         <attr name="isRequired">boolean</attr>
     </declare-styleable>
 </resources>
