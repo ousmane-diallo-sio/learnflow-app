@@ -46,6 +46,14 @@ jobs:  # Define the jobs section
           name: Run Tests
           command: ./gradlew test
 
+      # Send Discord message on build success
+      - run:
+          name: Send Discord message on success
+          command: |
+            curl -X POST -H "Content-Type: application/json" -d '{
+              "content": "Build successful :white_check_mark:"
+            }' $DISCORD_WEBHOOK_URL
+
 # Define a workflow named "simple-workflow" that includes the "build-and-test" job
 workflows:
   simple-workflow:
