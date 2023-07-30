@@ -12,9 +12,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LearnFlow"
         tools:targetApi="31">
-        <instrumentation
-            android:name="androidx.test.runner.AndroidJUnitRunner"
-            android:targetPackage="com.example.learnflow" />
         <activity
             android:name=".HomeActivity"
             android:exported="false"

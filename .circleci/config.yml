@@ -1,0 +1,61 @@
+# Circle CI configuration file
+
+version: 2.1  # CircleCI config version
+
+jobs:  # Define the jobs section
+  build-and-test:  # Define a job named "build"
+    docker:
+      - image: cimg/android:2023.07
+    working_directory: ~/LearnFlow/LearnFlow # Set the working directory to the root of the project
+    steps: 
+      - checkout:  # Check out the code from the repository
+          path: ~/LearnFlow/
+
+      - run:
+          name: List files in app/src/debug directory
+          command: ls -la app/
+
+      - run:
+          name: Get current directory
+          command: pwd
+
+      - run:
+          name: List files in current directory
+          command: ls -la
+
+      - run:
+          name: Install Android SDK
+          command: echo y | sdkmanager "platforms;android-31" "build-tools;31.0.0" "extras;google;m2repository" "extras;android;m2repository"
+
+      - run:
+          name: Make gradlew executable
+          command: chmod +x ./gradlew
+
+      # Task : Download and install dependencies
+      - run:
+          name: Download Dependencies
+          command: ./gradlew androidDependencies
+
+      # Task : Build the project
+      - run:
+          name: Build
+          command: ./gradlew clean assemble
+
+      # Task : Run tests
+      - run:
+          name: Run Tests
+          command: ./gradlew test
+
+      # Send Discord message on build success
+      - run:
+          name: Send Discord message on success
+          command: |
+            curl -X POST -H "Content-Type: application/json" -d '{
+              "content": "Build successful :white_check_mark:"
+            }' $DISCORD_WEBHOOK_URL
+
+# Define a workflow named "simple-workflow" that includes the "build-and-test" job
+workflows:
+  simple-workflow:
+    jobs:
+      - build-and-test
