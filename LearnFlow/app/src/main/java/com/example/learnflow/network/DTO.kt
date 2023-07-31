@@ -12,7 +12,7 @@ data class StudentSignupDTO(
     val email: String,
     val address: Address,
     val phoneNumber: String,
-    val profilePictureUrl: String,
+    val profilePicture: String,
     val schoolLevel: String,
     val password: String
 )

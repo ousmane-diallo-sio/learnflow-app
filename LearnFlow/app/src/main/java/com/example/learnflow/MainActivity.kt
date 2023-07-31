@@ -14,6 +14,7 @@ import android.widget.LinearLayout.LayoutParams
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.drawToBitmap
 import androidx.core.view.setPadding
 import com.example.learnflow.components.*
 import com.example.learnflow.model.Address
@@ -342,7 +343,7 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                     password = ciPasswordRegister.et.text.toString(),
                     phoneNumber = ciPhoneNumberRegister.et.text.toString(),
                     schoolLevel = iSelectStudentSchoolLevel.items.find { it.isItemSelected }?.tvItem?.text.toString(),
-                    profilePictureUrl = "https://imgr.cineserie.com/2020/12/spider-man-3-sony-vient-il-de-confirmer-l-arrivee-des-3-peter-parker-2.jpg?imgeng=/f_jpg/cmpr_0/w_1280/h_960/m_cropbox&ver=1"
+                    profilePicture = Utils.bitmapToBase64(ipProfilePicRegister.ivImage.drawToBitmap()) ?: ""
                 )
             )
 
