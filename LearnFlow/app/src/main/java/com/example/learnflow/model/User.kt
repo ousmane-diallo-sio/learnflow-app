@@ -44,33 +44,10 @@ data class User(
     var email: String,
     var address: Address,
     var phoneNumber: String,
-    var profilePicture: String,
+    var profilePicture: Document,
     var student: Student? = null,
     var teacher: Teacher? = null
-) : Parcelable {
-    companion object {
-        fun toUser(response: ServerResponse<User>): User? = response.let { resp ->
-            return try {
-                return User(
-                    firstName = resp.data?.firstName ?: "",
-                    lastName = resp.data?.lastName ?: "",
-                    birthdate = resp.data?.birthdate ?: LocalDateTime.now(),
-                    email = resp.data?.email ?: "",
-                    address = resp.data?.address ?: Address(
-                        "street", "city", "zipCode", "complement"
-                    ),
-                    phoneNumber = resp.data?.phoneNumber ?: "",
-                    profilePicture = resp.data?.profilePicture ?: "",
-                    student = resp.data?.student,
-                    teacher = resp.data?.teacher
-                )
-            } catch (e: Exception) {
-                Log.e("User", "Unable to parse User: $e")
-                return null
-            }
-        }
-    }
-}
+) : Parcelable
 
 @Parcelize
 data class Student(

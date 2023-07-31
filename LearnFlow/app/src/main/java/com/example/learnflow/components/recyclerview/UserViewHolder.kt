@@ -16,7 +16,7 @@ class UserViewHolder(itemView: UserSearchItem) : RecyclerView.ViewHolder(itemVie
         itemView.tvName.text = "${user.firstName} ${user.lastName}"
         itemView.tvLocation.text = user.address.city
         try {
-            val imageBytes = Base64.decode(user.profilePicture, Base64.DEFAULT)
+            val imageBytes = Base64.decode(user.profilePicture.base64, Base64.DEFAULT)
             val decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
             itemView.ivProfilePic.setImageBitmap(decodedImage)
         } catch (e: Exception) {

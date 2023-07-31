@@ -12,7 +12,7 @@ data class StudentSignupDTO(
     val email: String,
     val address: Address,
     val phoneNumber: String,
-    val profilePicture: String,
+    val profilePicture: Document,
     val schoolLevel: String,
     val password: String
 )
@@ -24,7 +24,7 @@ data class TeacherSignupDTO(
     val email: String,
     val address: Address,
     val phoneNumber: String,
-    val profilePictureUrl: String,
+    val profilePicture: Document,
     val documents: List<Document>,
     val password: String
 )
