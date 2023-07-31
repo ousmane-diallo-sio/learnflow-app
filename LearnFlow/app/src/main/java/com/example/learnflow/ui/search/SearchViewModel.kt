@@ -1,13 +1,57 @@
 package com.example.learnflow.ui.search
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.learnflow.model.User
+import com.example.learnflow.network.NetworkManager
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.net.SocketTimeoutException
 
 class SearchViewModel : ViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
+    val searchFlow = MutableStateFlow<List<User>>(emptyList())
+
+    fun searchTeachers(context: Context, query: String) {
+        viewModelScope.launch {
+            try {
+                val teachers = NetworkManager.getTeachersAsync(context, query)?.await()
+
+                teachers?.data?.let { searchFlow.emit(it) }
+            } catch (e: HttpException) {
+                val serverResponse = NetworkManager.parseHttpException(e)
+                Log.e("MainViewModel", "Failed to register: ${serverResponse?.error}")
+            } catch (e: SocketTimeoutException) {
+                Log.e("MainViewModel", "Connection timed out: $e")
+            } catch (e: Exception) {
+                Log.e("MainViewModel", "Failed to register: ${e.message}")
+            }
+        }
     }
-    val text: LiveData<String> = _text
+
+    fun searchStudents(context: Context, query: String) {
+        viewModelScope.launch {
+            try {
+                val students = NetworkManager.getStudentsAsync(context, query)?.await()
+
+                students?.data?.let { searchFlow.emit(it) }
+            } catch (e: HttpException) {
+                val serverResponse = NetworkManager.parseHttpException(e)
+                Log.e("MainViewModel", "Failed to register: ${serverResponse?.error}")
+            } catch (e: SocketTimeoutException) {
+                Log.e("MainViewModel", "Connection timed out: $e")
+            } catch (e: Exception) {
+                Log.e("MainViewModel", "Failed to register: ${e.message}")
+            }
+        }
+    }
+
+    fun resetUsers() {
+        viewModelScope.launch {
+            searchFlow.emit(emptyList())
+        }
+    }
 }

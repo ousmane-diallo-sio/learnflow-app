@@ -115,4 +115,14 @@ object NetworkManager {
         if (handleMissingNetwork(context)) return null
         return api.registerTeacherAsync(requestBody)
     }
+
+    fun getTeachersAsync(context: Context, query: String): Deferred<ServerResponse<List<User>>>? {
+        if (handleMissingNetwork(context)) return null
+        return api.getTeachersAsync(query)
+    }
+
+    fun getStudentsAsync(context: Context, query: String): Deferred<ServerResponse<List<User>>>? {
+        if (handleMissingNetwork(context)) return null
+        return api.getStudentsAsync(query)
+    }
 }

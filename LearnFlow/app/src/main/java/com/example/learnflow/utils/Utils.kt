@@ -4,6 +4,7 @@ import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.animation.ValueAnimator.AnimatorUpdateListener
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
@@ -50,5 +51,9 @@ object Utils {
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
         val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
         return Base64.encodeToString(byteArray, Base64.DEFAULT)
+    }
+
+    fun convertDpToPx(px: Int): Float {
+        return (px * Resources.getSystem().displayMetrics.density)
     }
 }
