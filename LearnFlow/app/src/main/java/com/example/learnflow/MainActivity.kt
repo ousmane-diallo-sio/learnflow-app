@@ -14,6 +14,7 @@ import android.widget.LinearLayout.LayoutParams
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.drawToBitmap
 import androidx.core.view.setPadding
 import com.example.learnflow.components.*
@@ -345,7 +346,7 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                     password = ciPasswordRegister.et.text.toString(),
                     phoneNumber = ciPhoneNumberRegister.et.text.toString(),
                     schoolLevel = iSelectStudentSchoolLevel.items.find { it.isItemSelected }?.tvItem?.text.toString(),
-                    profilePicture = Utils.bitmapToBase64(ipProfilePicRegister.ivImage.drawToBitmap()) ?: ""
+                    profilePicture = Utils.bitmapToBase64(ipProfilePicRegister.ivImage.drawable.toBitmap()) ?: ""
                 )
             )
 
