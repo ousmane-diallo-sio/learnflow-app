@@ -28,10 +28,28 @@
 
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/clCiSearch"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/clCiSearch"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/lytSearchPlaceholder"
+            layout="@layout/search_placeholder"/>
+
+        <include
+            android:id="@+id/lytNoResultPlaceholder"
+            android:visibility="gone"
+            layout="@layout/no_result_placeholder"/>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

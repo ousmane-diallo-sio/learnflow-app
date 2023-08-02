@@ -3,21 +3,14 @@ package com.example.learnflow.model
 import android.os.Parcelable
 import android.util.Log
 import com.example.learnflow.network.ServerResponse
-import com.google.gson.Gson
 import com.google.gson.TypeAdapter
-import com.google.gson.annotations.SerializedName
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
 import kotlinx.parcelize.Parcelize
-import okhttp3.FormBody
-import okhttp3.RequestBody
-import java.io.File
 import java.io.IOException
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 class LocalDateTypeAdapter : TypeAdapter<LocalDateTime>() {
     private val formatter: DateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME
@@ -51,33 +44,10 @@ data class User(
     var email: String,
     var address: Address,
     var phoneNumber: String,
-    var profilePictureUrl: String,
+    var profilePicture: Document,
     var student: Student? = null,
     var teacher: Teacher? = null
-) : Parcelable {
-    companion object {
-        fun toUser(response: ServerResponse<User>): User? = response.let { resp ->
-            return try {
-                return User(
-                    firstName = resp.data?.firstName ?: "",
-                    lastName = resp.data?.lastName ?: "",
-                    birthdate = resp.data?.birthdate ?: LocalDateTime.now(),
-                    email = resp.data?.email ?: "",
-                    address = resp.data?.address ?: Address(
-                        "street", "city", "zipCode", "complement"
-                    ),
-                    phoneNumber = resp.data?.phoneNumber ?: "",
-                    profilePictureUrl = resp.data?.profilePictureUrl ?: "",
-                    student = resp.data?.student,
-                    teacher = resp.data?.teacher
-                )
-            } catch (e: Exception) {
-                Log.e("User", "Unable to parse User: $e")
-                return null
-            }
-        }
-    }
-}
+) : Parcelable
 
 @Parcelize
 data class Student(

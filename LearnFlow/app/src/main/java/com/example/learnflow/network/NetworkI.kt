@@ -2,7 +2,10 @@ package com.example.learnflow.network
 import com.example.learnflow.model.User
 import kotlinx.coroutines.Deferred
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface NetworkI {
     @POST("/auth/login/user")
@@ -13,4 +16,10 @@ interface NetworkI {
 
     @POST("/register/teacher")
     fun registerTeacherAsync(@Body requestBody: TeacherSignupDTO): Deferred<ServerResponse<User>>
+
+    @GET("/teachers/{query}")
+    fun getTeachersAsync(@Path("query") query: String): Deferred<ServerResponse<List<User>>>
+
+    @GET("/students/{query}")
+    fun getStudentsAsync(@Path("query") query: String): Deferred<ServerResponse<List<User>>>
 }

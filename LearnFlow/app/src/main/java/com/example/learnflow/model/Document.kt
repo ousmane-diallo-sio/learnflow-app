@@ -1,14 +1,32 @@
 package com.example.learnflow.model
 
-import java.io.File
+import android.os.Parcelable
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 
-class Document(
-    var uploadUrl: String,
-    var documentType: DocumentType,
-    var file: File
-) {
-    inner class DocumentType(
-        var name: String,
-        var description: String
-    )
+@Parcelize
+data class Document(
+    var name: String,
+    var desc: String?,
+    var base64: String,
+    var documentType: String
+) : Parcelable {
+    constructor(
+        name: String,
+        desc: String?,
+        base64: String,
+        documentType: DocumentType
+    ) : this(name, desc, base64, documentType.toString())
+}
+
+enum class DocumentType {
+    IMAGE,
+    PDF;
+
+    override fun toString(): String {
+        return when (this) {
+            IMAGE -> "image"
+            PDF -> "pdf"
+        }
+    }
 }
