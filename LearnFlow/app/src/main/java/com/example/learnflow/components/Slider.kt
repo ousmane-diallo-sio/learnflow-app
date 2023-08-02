@@ -136,8 +136,9 @@ class Slider(context: Context?, private val attrs: AttributeSet) : LinearLayout(
 
     fun slideForward() {
         if (items.size < 2) return
-        if (validateForm(items[currentIndex], currentIndex)) {
-        // if (true) {
+
+        val item = items[currentIndex]
+        if (validateForm(item, currentIndex) && item.validate()) {
             animateItem(false)
             btnPrev.disabled = !isMovableLeft()
             btnNext.disabled = !isMovableRight()

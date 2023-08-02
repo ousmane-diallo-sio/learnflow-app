@@ -25,7 +25,7 @@ data class TeacherSignupDTO(
     val address: Address,
     val phoneNumber: String,
     val profilePicture: Document,
-    val documents: List<Document>,
+    val documents: MutableList<Document>,
     val password: String
 )
 

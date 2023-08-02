@@ -5,15 +5,16 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.learnflow.model.Document
 import com.example.learnflow.model.Jwt
 import com.example.learnflow.model.User
 import com.example.learnflow.network.NetworkManager
 import com.example.learnflow.network.StudentSignupDTO
 import com.example.learnflow.network.TeacherSignupDTO
 import com.example.learnflow.network.UserLoginDTO
-import com.google.android.gms.tasks.Tasks.await
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.net.SocketTimeoutException
@@ -23,7 +24,7 @@ class MainViewModel : ViewModel() {
     private val userFlow = MutableStateFlow<User?>(null)
     private val studentSignupDTOFlow = MutableStateFlow<StudentSignupDTO?>(null)
     private val teacherSignupDTOFlow = MutableStateFlow<TeacherSignupDTO?>(null)
-    // profilePictureUrl = "https://d38b044pevnwc9.cloudfront.net/cutout-nuxt/enhancer/2.jpg"
+    val teacherSignupDocumentsFlow = MutableStateFlow<MutableList<Document>>(mutableListOf())
 
     fun onStart(mainActivity: MainActivity) {
         NetworkManager.observeNetworkConnectivity(mainActivity)
@@ -45,6 +46,17 @@ class MainViewModel : ViewModel() {
         viewModelScope.launch {
             teacherSignupDTOFlow.emit(teacherRegisterDTO)
         }
+    }
+
+    fun addOrReplaceTeacherDocument(document: Document) {
+        val duplicateDocument = teacherSignupDocumentsFlow.value.find { it.name == document.name }
+        duplicateDocument.let { teacherSignupDocumentsFlow.value.remove(it) }
+        teacherSignupDocumentsFlow.value = teacherSignupDocumentsFlow.value.plus(document) as MutableList<Document>
+        Log.d("MainViewModel", "state flow : ${teacherSignupDTOFlow.value?.documents}")
+    }
+
+    fun removeTeacherDocument(document: Document) {
+        teacherSignupDocumentsFlow.value = teacherSignupDocumentsFlow.value.minus(document) as MutableList<Document>
     }
 
     fun login(

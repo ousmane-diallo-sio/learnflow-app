@@ -5,7 +5,9 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
 import android.text.InputType
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View.*
 import android.view.ViewGroup
@@ -32,6 +34,7 @@ import com.example.learnflow.utils.Utils
 import com.google.android.material.snackbar.Snackbar
 import fr.kameouss.instamemeeditor.components.ImagePickerFragment
 import java.time.LocalDate
+import java.util.UUID
 
 class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
 
@@ -158,6 +161,12 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                 FieldValidator.zipCode(string)
             }
         }
+        siTeacherDocumentsMain.slideValidator = {
+            if (llTeacherDocumentsMain.childCount < 1) {
+                Snackbar.make(registerPart, "Vous devez ajouter au moins un justificatif", Snackbar.LENGTH_SHORT).show()
+            }
+            llTeacherDocumentsMain.childCount > 1
+        }
 
         ciLogin.onInputValidation = { btnLogin.disabled = false }
         ciPassword.onInputValidation = { btnLogin.disabled = false }
@@ -216,21 +225,49 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                 imgPickerFragment.pickImage { uri: Uri? ->
                     if (uri == null) return@pickImage
 
+                    val document = Document(
+                        "document-${UUID.randomUUID()}",
+                        null,
+                        Utils.bitmapToBase64(ipTeacherIdentityCardPicker.ivImage.drawable.toBitmap()) ?: "",
+                        DocumentType.IMAGE
+                    )
+
                     val customInput = CustomInput(this, null)
-                    customInput.et.hint = "Saisissez une description"
-                    customInput.et.inputType = InputType.TYPE_CLASS_TEXT
                     customInput.layoutParams = LayoutParams(
                         LayoutParams.MATCH_PARENT,
                         LayoutParams.WRAP_CONTENT
                     )
+                    customInput.et.hint = "Intitulé du document"
+                    customInput.et.inputType = InputType.TYPE_CLASS_TEXT
+                    customInput.textWatcher = object : TextWatcher {
+                        override fun beforeTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            count: Int,
+                            after: Int
+                        ) {}
+
+                        override fun onTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            before: Int,
+                            count: Int
+                        ) {}
+
+                        override fun afterTextChanged(s: Editable?) {
+                            document.name = s.toString()
+                            viewModel.addOrReplaceTeacherDocument(document)
+                        }
+
+                    }
 
 
                     val ivOverview = ImageView(this).apply {
-                        setImageURI(uri)
                         layoutParams = LayoutParams(
                             LayoutParams.MATCH_PARENT,
                             LayoutParams.WRAP_CONTENT
                         )
+                        setImageURI(uri)
                         scaleType = ImageView.ScaleType.FIT_CENTER
                         setPadding(20)
                     }
@@ -243,6 +280,7 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                         .setNegativeButton(getText(R.string.delete)) { dialog, _ ->
                             dialog.dismiss()
                             llTeacherDocumentsMain.removeView(customInput)
+                            viewModel.removeTeacherDocument(document)
                         }
                         .setView(ivOverview)
                         .create()
@@ -257,6 +295,14 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
             imgPickerFragment.pickImage { uri: Uri? ->
                 if (uri == null) return@pickImage
                 ipTeacherIdentityCardPicker.ivImage.setImageURI(uri)
+                viewModel.addOrReplaceTeacherDocument(
+                    Document(
+                        "Pièce d'identité",
+                        null,
+                        Utils.bitmapToBase64(ipTeacherIdentityCardPicker.ivImage.drawable.toBitmap()) ?: "",
+                        DocumentType.IMAGE
+                    ),
+                )
                 ipTeacherIdentityCardPicker.hideError()
             }
         }
@@ -376,7 +422,7 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                     ),
                     password = ciPasswordRegister.et.text.toString(),
                     phoneNumber = ciPhoneNumberRegister.et.text.toString(),
-                    documents = listOf(),
+                    documents = viewModel.teacherSignupDocumentsFlow.value,
                     profilePicture =  Document(
                         "Photo de profil",
                         null,
