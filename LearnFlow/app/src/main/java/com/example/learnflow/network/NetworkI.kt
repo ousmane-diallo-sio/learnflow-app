@@ -1,4 +1,5 @@
 package com.example.learnflow.network
+import com.example.learnflow.model.SchoolSubject
 import com.example.learnflow.model.User
 import kotlinx.coroutines.Deferred
 import retrofit2.http.Body
@@ -22,4 +23,7 @@ interface NetworkI {
 
     @GET("/students/{query}")
     fun getStudentsAsync(@Path("query") query: String): Deferred<ServerResponse<List<User>>>
+
+    @GET("/school-subjects")
+    fun getSchoolSubjectsAsync(): Deferred<ServerResponse<List<SchoolSubject>>>
 }

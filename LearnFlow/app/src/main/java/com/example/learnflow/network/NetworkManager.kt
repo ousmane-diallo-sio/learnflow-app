@@ -9,6 +9,7 @@ import android.net.NetworkCapabilities
 import android.provider.Settings
 import android.widget.Toast
 import com.example.learnflow.model.LocalDateTypeAdapter
+import com.example.learnflow.model.SchoolSubject
 import com.example.learnflow.model.User
 import com.example.learnflow.model.UserType
 import com.example.learnflow.utils.EnvUtils
@@ -124,5 +125,10 @@ object NetworkManager {
     fun getStudentsAsync(context: Context, query: String): Deferred<ServerResponse<List<User>>>? {
         if (handleMissingNetwork(context)) return null
         return api.getStudentsAsync(query)
+    }
+
+    fun getSchoolSubjectsAsync(context: Context): Deferred<ServerResponse<List<SchoolSubject>>>? {
+        if (handleMissingNetwork(context)) return null
+        return api.getSchoolSubjectsAsync()
     }
 }

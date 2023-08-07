@@ -19,6 +19,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.cardview.widget.CardView
+import androidx.core.view.accessibility.AccessibilityEventCompat.setAction
 import androidx.core.view.children
 import com.example.learnflow.R
 import com.example.learnflow.utils.FieldValidator
@@ -35,6 +37,7 @@ class CustomInput(context: Context, private val attrs: AttributeSet?) :
     }
 
     val et: EditText
+    val cv: CardView
     override lateinit var tvError: TextView
     private val ivBefore: ImageView
     private val llAction: LinearLayout
@@ -64,6 +67,7 @@ class CustomInput(context: Context, private val attrs: AttributeSet?) :
     init {
         LayoutInflater.from(context).inflate(R.layout.custom_input, this)
         et = findViewById(R.id.etCustomInput)
+        cv = findViewById(R.id.cvCustomInput)
         tvError = findViewById(R.id.tvErrorCustomInput)
         ivBefore = findViewById(R.id.ivCustomInput)
         llAction = findViewById(R.id.llActionCustomInput)
@@ -75,36 +79,47 @@ class CustomInput(context: Context, private val attrs: AttributeSet?) :
 
     override fun handleAttrs() {
         val styledAttributes = context.obtainStyledAttributes(attrs, R.styleable.CustomInput, 0, 0)
-        try {
-            val resIconBefore = styledAttributes.getResourceId(
-                R.styleable.CustomInput_icon,
-                0
-            )
-            if (resIconBefore != 0) {
-                ivBefore.setImageResource(resIconBefore)
-            } else {
-                ivBefore.visibility = GONE
-            }
-            et.setHint(
-                styledAttributes.getResourceId(
-                    R.styleable.CustomInput_hint,
-                    R.string.app_name
-                )
-            )
-            et.inputType = styledAttributes.getInt(
-                R.styleable.CustomInput_inputType,
-                InputType.TYPE_CLASS_TEXT
-            )
-            isRequired = styledAttributes.getBoolean(R.styleable.CustomInput_isRequired, false)
-            if (et.inputType == InputType.TYPE_TEXT_VARIATION_PASSWORD) {
-                setTextTypePassword()
-            }
-            showErrorText = styledAttributes.getBoolean(R.styleable.CustomInput_showErrorText, true)
-        } catch (e: Exception) {
-            Log.e("Components", e.toString())
-        } finally {
-            styledAttributes.recycle()
+
+        val resIconBefore = styledAttributes.getResourceId(R.styleable.CustomInput_icon, 0)
+        if (resIconBefore != 0) {
+            ivBefore.setImageResource(resIconBefore)
+        } else {
+            ivBefore.visibility = GONE
         }
+        et.setHint(styledAttributes.getResourceId(R.styleable.CustomInput_hint, R.string.app_name))
+        et.inputType = styledAttributes.getInt(
+            R.styleable.CustomInput_inputType,
+            InputType.TYPE_CLASS_TEXT
+        )
+        et.setHintTextColor(
+            styledAttributes.getColor(
+                R.styleable.CustomInput_hintColor,
+                et.currentHintTextColor
+            )
+        )
+        et.setTextColor(
+            styledAttributes.getColor(
+                R.styleable.CustomInput_inputColor,
+                et.currentTextColor
+            )
+        )
+        cv.radius = styledAttributes.getDimension(R.styleable.CustomInput_radius, cv.radius)
+        styledAttributes.getColorStateList(R.styleable.CustomInput_inputBackground).let {
+            if (it != null) {
+                cv.setCardBackgroundColor(it)
+            }
+        }
+
+        isRequired = styledAttributes.getBoolean(R.styleable.CustomInput_isRequired, false)
+        if (et.inputType == InputType.TYPE_TEXT_VARIATION_PASSWORD) {
+            setTextTypePassword()
+        }
+        showErrorText = styledAttributes.getBoolean(
+            R.styleable.CustomInput_showErrorText,
+            true
+        )
+
+        styledAttributes.recycle()
     }
 
     @SuppressLint("SetTextI18n", "ClickableViewAccessibility")

@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.learnflow.model.Document
 import com.example.learnflow.model.Jwt
+import com.example.learnflow.model.SchoolSubject
 import com.example.learnflow.model.User
 import com.example.learnflow.network.NetworkManager
 import com.example.learnflow.network.StudentSignupDTO
@@ -14,7 +15,6 @@ import com.example.learnflow.network.TeacherSignupDTO
 import com.example.learnflow.network.UserLoginDTO
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.net.SocketTimeoutException
@@ -22,9 +22,12 @@ import java.net.SocketTimeoutException
 class MainViewModel : ViewModel() {
 
     private val userFlow = MutableStateFlow<User?>(null)
+    val schoolSubjectsFlow = MutableStateFlow<List<SchoolSubject>>(emptyList())
+
     private val studentSignupDTOFlow = MutableStateFlow<StudentSignupDTO?>(null)
     private val teacherSignupDTOFlow = MutableStateFlow<TeacherSignupDTO?>(null)
     val teacherSignupDocumentsFlow = MutableStateFlow<MutableList<Document>>(mutableListOf())
+    val teacherSchoolSubjectsFlow = MutableStateFlow<List<SchoolSubject>>(emptyList())
 
     fun onStart(mainActivity: MainActivity) {
         NetworkManager.observeNetworkConnectivity(mainActivity)
@@ -45,6 +48,29 @@ class MainViewModel : ViewModel() {
     fun updateTeacherRegisterRequest(teacherRegisterDTO: TeacherSignupDTO) {
         viewModelScope.launch {
             teacherSignupDTOFlow.emit(teacherRegisterDTO)
+        }
+    }
+
+    fun getSchoolSubjects(context: Context) {
+        viewModelScope.launch {
+            try {
+                val res = NetworkManager.getSchoolSubjectsAsync(context)?.await()
+
+                res?.let { serverResponse ->
+                    serverResponse.data?.let { data ->
+                        schoolSubjectsFlow.value = data
+                        return@launch
+                    }
+                }
+                Log.e("MainViewModel", "API response data is null !!")
+            } catch (e: HttpException) {
+                val serverResponse = NetworkManager.parseHttpException(e)
+                Log.e("MainViewModel", "Failed to get school subjects: ${serverResponse?.error}")
+            } catch (e: SocketTimeoutException) {
+                Log.e("MainViewModel", "Connection timed out: $e")
+            } catch (e: Exception) {
+                Log.e("MainViewModel", "Failed to get school subjects: ${e.message}")
+            }
         }
     }
 

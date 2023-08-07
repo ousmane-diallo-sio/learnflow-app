@@ -17,7 +17,10 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.view.marginBottom
+import androidx.core.view.marginTop
 import androidx.core.view.setPadding
+import androidx.lifecycle.lifecycleScope
 import com.example.learnflow.components.*
 import com.example.learnflow.model.Address
 import com.example.learnflow.model.Document
@@ -33,6 +36,7 @@ import com.example.learnflow.utils.FieldValidator
 import com.example.learnflow.utils.Utils
 import com.google.android.material.snackbar.Snackbar
 import fr.kameouss.instamemeeditor.components.ImagePickerFragment
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.UUID
 
@@ -89,9 +93,11 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
     // Teacher specific form
     private lateinit var siTeacherIdentityCard: SliderItem
     private lateinit var ipTeacherIdentityCardPicker: ImagePicker
-    private lateinit var siTeacherDocumentsMain: SliderItem
-    private lateinit var llTeacherDocumentsMain: LinearLayout
-    private lateinit var btnTeacherPickDocumentMain: CustomBtn
+    private lateinit var siTeacherDocuments: SliderItem
+    private lateinit var llTeacherDocuments: LinearLayout
+    private lateinit var btnTeacherPickDocument: CustomBtn
+    private lateinit var siTeacherSchoolSubjectsTeached: SliderItem
+    private lateinit var llSchoolSubjectsTeacher: LinearLayout
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -111,9 +117,9 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
         iSelectStudentSchoolLevel = findViewById(R.id.iSelectStudentSchoolLevelMain)
         siStudentSchoolLevel = findViewById(R.id.siStudentSchoolLevelMain)
         siTeacherIdentityCard = findViewById(R.id.siTeacherIdentityCardMain)
-        siTeacherDocumentsMain = findViewById(R.id.siTeacherDocumentsMain)
-        llTeacherDocumentsMain = findViewById(R.id.llTeacherDocumentsMain)
-        btnTeacherPickDocumentMain = findViewById(R.id.btnTeacherPickDocumentMain)
+        siTeacherDocuments = findViewById(R.id.siTeacherDocumentsMain)
+        llTeacherDocuments = findViewById(R.id.llTeacherDocumentsMain)
+        btnTeacherPickDocument = findViewById(R.id.btnTeacherPickDocumentMain)
         ciFirstnameRegister = findViewById(R.id.ciFirstNameRegisterMain)
         ciLastnameRegister = findViewById(R.id.ciLastNameRegisterMain)
         ciEmailRegister = findViewById(R.id.ciEmailRegisterMain)
@@ -126,6 +132,8 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
         ciBirthdateRegister = findViewById(R.id.ciBirthdateRegisterMain)
         ipProfilePicRegister = findViewById(R.id.imgPickerProfilePicRegisterMain)
         ipTeacherIdentityCardPicker = findViewById(R.id.imgPickerTeacherIdentityCardMain)
+        siTeacherSchoolSubjectsTeached = findViewById(R.id.siTeacherSchoolSubjectsTeachedMain)
+        llSchoolSubjectsTeacher = findViewById(R.id.llSchoolSubjectsTeacherMain)
 
         imgPickerFragment = ImagePickerFragment()
         supportFragmentManager.beginTransaction().add(imgPickerFragment, "imgPickerFragmentMain")
@@ -141,6 +149,31 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
     override fun onStart() {
         super.onStart()
         viewModel.onStart(this)
+        viewModel.getSchoolSubjects(this)
+
+        lifecycleScope.launch {
+            viewModel.schoolSubjectsFlow.collect {
+                it.forEach { schoolSubject ->
+                    try {
+                        llSchoolSubjectsTeacher.removeViews(1, llSchoolSubjectsTeacher.childCount - 1)
+                    } catch (_: Exception) { }
+                    val checkboxCounterItem = CheckboxCounterItem(this@MainActivity)
+                    checkboxCounterItem.tv.text = schoolSubject.name
+                    checkboxCounterItem.setOnClickListener {
+                        viewModel.teacherSchoolSubjectsFlow.value =
+                            viewModel.teacherSchoolSubjectsFlow.value.toMutableList().apply {
+                                if (checkboxCounterItem.cb.isChecked) {
+                                    add(schoolSubject)
+                                    return@apply
+                                }
+                                remove(schoolSubject)
+                            }
+                    }
+                    llSchoolSubjectsTeacher.addView(checkboxCounterItem)
+                }
+            }
+        }
+
         sliderRegisterProcess.validateForm = { sliderItem, index ->
             Utils.getAllNestedChildren(sliderItem)
                 .filter { it is IValidator }
@@ -161,11 +194,16 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                 FieldValidator.zipCode(string)
             }
         }
-        siTeacherDocumentsMain.slideValidator = {
-            if (llTeacherDocumentsMain.childCount < 1) {
-                Snackbar.make(registerPart, "Vous devez ajouter au moins un justificatif", Snackbar.LENGTH_SHORT).show()
+        siTeacherDocuments.slideValidator = {
+            val isValid = llTeacherDocuments.childCount > 0
+            if (!isValid) {
+                Snackbar.make(
+                    registerPart,
+                    "Vous devez ajouter au moins un justificatif",
+                    Snackbar.LENGTH_SHORT
+                ).show()
             }
-            llTeacherDocumentsMain.childCount > 1
+            isValid
         }
 
         ciLogin.onInputValidation = { btnLogin.disabled = false }
@@ -200,19 +238,23 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                 userType = UserType.STUDENT
 
                 sliderRegisterProcess.addItems(siStudentSchoolLevel)
-                sliderRegisterProcess.removeItems(siTeacherIdentityCard)
-                sliderRegisterProcess.removeItems(siTeacherDocumentsMain)
+                sliderRegisterProcess.removeItems(
+                    siTeacherIdentityCard,
+                    siTeacherDocuments,
+                    siTeacherSchoolSubjectsTeached
+                )
             } else {
                 userType = UserType.TEACHER
-
-                sliderRegisterProcess.addItems(siTeacherIdentityCard)
-                sliderRegisterProcess.addItems(siTeacherDocumentsMain)
+                sliderRegisterProcess.addItems(
+                    siTeacherIdentityCard,
+                    siTeacherDocuments,
+                    siTeacherSchoolSubjectsTeached
+                )
                 sliderRegisterProcess.removeItems(siStudentSchoolLevel)
             }
-            // set currentUser type to selected type
         }
-        btnTeacherPickDocumentMain.setOnClickListener {
-            if (llTeacherDocumentsMain.childCount >= 4) {
+        btnTeacherPickDocument.setOnClickListener {
+            if (llTeacherDocuments.childCount >= 4) {
                 AlertDialog.Builder(this)
                     .setTitle("Vous ne pouvez pas ajouter plus de 4 documents")
                     .setMessage("Veuillez supprimer au moins un document avant d'en ajouter un nouveau")
@@ -228,7 +270,8 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                     val document = Document(
                         "document-${UUID.randomUUID()}",
                         null,
-                        Utils.bitmapToBase64(ipTeacherIdentityCardPicker.ivImage.drawable.toBitmap()) ?: "",
+                        Utils.bitmapToBase64(ipTeacherIdentityCardPicker.ivImage.drawable.toBitmap())
+                            ?: "",
                         DocumentType.IMAGE
                     )
 
@@ -245,14 +288,16 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                             start: Int,
                             count: Int,
                             after: Int
-                        ) {}
+                        ) {
+                        }
 
                         override fun onTextChanged(
                             s: CharSequence?,
                             start: Int,
                             before: Int,
                             count: Int
-                        ) {}
+                        ) {
+                        }
 
                         override fun afterTextChanged(s: Editable?) {
                             document.name = s.toString()
@@ -279,13 +324,13 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                         }
                         .setNegativeButton(getText(R.string.delete)) { dialog, _ ->
                             dialog.dismiss()
-                            llTeacherDocumentsMain.removeView(customInput)
+                            llTeacherDocuments.removeView(customInput)
                             viewModel.removeTeacherDocument(document)
                         }
                         .setView(ivOverview)
                         .create()
                     customInput.setAction({ alertDialog.show() }, uri)
-                    llTeacherDocumentsMain.addView(customInput)
+                    llTeacherDocuments.addView(customInput)
 
                 }
             }
@@ -299,7 +344,8 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                     Document(
                         "Pièce d'identité",
                         null,
-                        Utils.bitmapToBase64(ipTeacherIdentityCardPicker.ivImage.drawable.toBitmap()) ?: "",
+                        Utils.bitmapToBase64(ipTeacherIdentityCardPicker.ivImage.drawable.toBitmap())
+                            ?: "",
                         DocumentType.IMAGE
                     ),
                 )
@@ -396,7 +442,8 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                     profilePicture = Document(
                         "Photo de profil",
                         null,
-                        Utils.bitmapToBase64(ipProfilePicRegister.ivImage.drawable.toBitmap()) ?: "",
+                        Utils.bitmapToBase64(ipProfilePicRegister.ivImage.drawable.toBitmap())
+                            ?: "",
                         DocumentType.IMAGE
                     )
                 )
@@ -423,10 +470,12 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                     password = ciPasswordRegister.et.text.toString(),
                     phoneNumber = ciPhoneNumberRegister.et.text.toString(),
                     documents = viewModel.teacherSignupDocumentsFlow.value,
-                    profilePicture =  Document(
+                    schoolSubjectsTeached = viewModel.teacherSchoolSubjectsFlow.value,
+                    profilePicture = Document(
                         "Photo de profil",
                         null,
-                        Utils.bitmapToBase64(ipProfilePicRegister.ivImage.drawable.toBitmap()) ?: "",
+                        Utils.bitmapToBase64(ipProfilePicRegister.ivImage.drawable.toBitmap())
+                            ?: "",
                         DocumentType.IMAGE
                     )
                 )
