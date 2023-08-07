@@ -23,7 +23,7 @@
             android:layout_width="0dp"
             app:layout_constraintWidth_percent=".15"
             android:layout_height="20dp"
-            android:buttonTint="@color/black"
+            android:buttonTint="@color/salmon"
             tools:checked="true"/>
 
         <TextView

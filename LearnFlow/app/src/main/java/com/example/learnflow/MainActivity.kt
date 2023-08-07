@@ -153,10 +153,10 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
 
         lifecycleScope.launch {
             viewModel.schoolSubjectsFlow.collect {
+                try {
+                    llSchoolSubjectsTeacher.removeViews(1, llSchoolSubjectsTeacher.childCount - 1)
+                } catch (_: Exception) { }
                 it.forEach { schoolSubject ->
-                    try {
-                        llSchoolSubjectsTeacher.removeViews(1, llSchoolSubjectsTeacher.childCount - 1)
-                    } catch (_: Exception) { }
                     val checkboxCounterItem = CheckboxCounterItem(this@MainActivity)
                     checkboxCounterItem.tv.text = schoolSubject.name
                     checkboxCounterItem.setOnClickListener {
