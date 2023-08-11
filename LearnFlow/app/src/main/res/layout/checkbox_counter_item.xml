@@ -40,6 +40,7 @@
         <com.example.learnflow.components.CustomInput
             android:id="@+id/ciCheckboxCounterItem"
             android:visibility="invisible"
+            tools:visibility="visible"
             android:layout_width="0dp"
             app:layout_constraintWidth_percent=".2"
             android:layout_height="match_parent"

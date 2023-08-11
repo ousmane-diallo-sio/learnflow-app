@@ -18,6 +18,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.cardview.widget.CardView
 import androidx.core.view.accessibility.AccessibilityEventCompat.setAction
@@ -104,10 +105,8 @@ class CustomInput(context: Context, private val attrs: AttributeSet?) :
             )
         )
         cv.radius = styledAttributes.getDimension(R.styleable.CustomInput_radius, cv.radius)
-        styledAttributes.getColorStateList(R.styleable.CustomInput_inputBackground).let {
-            if (it != null) {
-                cv.setCardBackgroundColor(it)
-            }
+        styledAttributes.getColor(R.styleable.CustomInput_inputBackground, 0).let {
+            cv.setCardBackgroundColor(it)
         }
 
         isRequired = styledAttributes.getBoolean(R.styleable.CustomInput_isRequired, false)
