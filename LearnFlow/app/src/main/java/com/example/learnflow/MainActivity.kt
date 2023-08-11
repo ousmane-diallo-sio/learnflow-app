@@ -142,65 +142,13 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
             Context.MODE_PRIVATE
         )
         setupSchoolLevels()
+        setupSchoolSubjectsTeached()
     }
 
     override fun onStart() {
         super.onStart()
         viewModel.onStart(this)
         viewModel.getSchoolSubjects(this)
-
-        lifecycleScope.launch {
-            viewModel.schoolSubjectsFlow.collect { schoolSubjects ->
-                try {
-                    llSchoolSubjectsTeacher.removeViews(1, llSchoolSubjectsTeacher.childCount - 1)
-                } catch (_: Exception) {
-                }
-
-                schoolSubjects.forEach { schoolSubject ->
-                    val checkboxCounterItem = CheckboxCounterItem(this@MainActivity)
-
-                    checkboxCounterItem.tv.text = schoolSubject.name
-                    checkboxCounterItem.ci.et.setText("1")
-                    checkboxCounterItem.setOnClickListener {
-                        viewModel.addOrRemoveSchoolSubjectTeached(schoolSubject, 1)
-                    }
-
-                    checkboxCounterItem.ci.textWatcher = object : TextWatcher {
-                        override fun beforeTextChanged(
-                            s: CharSequence?,
-                            start: Int,
-                            count: Int,
-                            after: Int
-                        ) {
-                        }
-
-                        override fun onTextChanged(
-                            s: CharSequence?,
-                            start: Int,
-                            before: Int,
-                            count: Int
-                        ) {
-                            if (s.toString().isNotEmpty() && s.toString().toInt() > 50) {
-                                checkboxCounterItem.ci.et.setText("1")
-                                Snackbar.make(
-                                    findViewById(android.R.id.content),
-                                    "Vous ne pouvez pas avoir plus de 50 ans d'expérience",
-                                    Snackbar.LENGTH_SHORT
-                                ).show()
-                            }
-                        }
-
-                        override fun afterTextChanged(s: Editable?) {
-                            viewModel.editSchoolSubjectTeachedExp(
-                                schoolSubject,
-                                s.toString().toInt()
-                            )
-                        }
-                    }
-                    llSchoolSubjectsTeacher.addView(checkboxCounterItem)
-                }
-            }
-        }
 
         sliderRegisterProcess.validateForm = { sliderItem, index ->
             Utils.getAllNestedChildren(sliderItem)
@@ -423,6 +371,56 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
         }
     }
 
+    private fun setupSchoolSubjectsTeached() {
+        lifecycleScope.launch {
+            viewModel.schoolSubjectsFlow.collect { schoolSubjects ->
+                schoolSubjects.forEach { schoolSubject ->
+                    val checkboxCounterItem = CheckboxCounterItem(this@MainActivity)
+
+                    checkboxCounterItem.tv.text = schoolSubject.name
+                    checkboxCounterItem.ci.et.setText("1")
+                    checkboxCounterItem.setOnClickListener {
+                        viewModel.addOrRemoveSchoolSubjectTeached(schoolSubject, 1)
+                    }
+
+                    checkboxCounterItem.ci.textWatcher = object : TextWatcher {
+                        override fun beforeTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            count: Int,
+                            after: Int
+                        ) {
+                        }
+
+                        override fun onTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            before: Int,
+                            count: Int
+                        ) {
+                            if (s.toString().isNotEmpty() && s.toString().toInt() > 50) {
+                                checkboxCounterItem.ci.et.setText("1")
+                                Snackbar.make(
+                                    findViewById(android.R.id.content),
+                                    "Vous ne pouvez pas avoir plus de 50 ans d'expérience",
+                                    Snackbar.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+
+                        override fun afterTextChanged(s: Editable?) {
+                            viewModel.editSchoolSubjectTeachedExp(
+                                schoolSubject,
+                                s.toString().toIntOrNull() ?: 1
+                            )
+                        }
+                    }
+                    llSchoolSubjectsTeacher.addView(checkboxCounterItem)
+                }
+            }
+        }
+    }
+
     private fun handleSignup() {
 
         fun onRegisterStudent(data: User?, error: String?) {
@@ -481,7 +479,6 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                 onRegisterStudent(data, error)
             }
         } else {
-            Log.d("MainActivity", "Teacher signup request : ${viewModel.teacherSchoolSubjectsTeached}")
             viewModel.updateTeacherRegisterRequest(
                 TeacherSignupDTO(
                     firstName = ciFirstnameRegister.et.text.toString(),

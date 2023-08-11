@@ -113,7 +113,6 @@ class MainViewModel : ViewModel() {
             }) {
             teacherSchoolSubjectsTeached.add(SchoolSubjectTeached(schoolSubject, nbYearsExp))
         }
-        Log.d("debug", "teacherSchoolSubjects: $teacherSchoolSubjectsTeached")
     }
 
     fun editSchoolSubjectTeachedExp(schoolSubject: SchoolSubject, nbYearsExp: Int) {
