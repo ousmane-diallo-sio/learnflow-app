@@ -24,6 +24,7 @@
             app:layout_constraintWidth_percent=".15"
             android:layout_height="20dp"
             android:buttonTint="@color/salmon"
+            android:clickable="false"
             tools:checked="true"/>
 
         <TextView

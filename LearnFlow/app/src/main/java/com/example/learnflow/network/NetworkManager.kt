@@ -22,6 +22,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.lang.Exception
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -95,11 +96,14 @@ object NetworkManager {
         return serverResponse
     }
 
-    fun formatDateFRToISOString(dateString: String): String {
+    fun formatDateFRToISOString(dateString: String): String? {
         val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-        val localDate = LocalDate.parse(dateString, dateFormatter)
-
-        return localDate.atStartOfDay().toString()
+        return try {
+            val localDate = LocalDate.parse(dateString, dateFormatter)
+            localDate.atStartOfDay().toString()
+        } catch (e: Exception) {
+            null
+        }
     }
 
     fun loginAsync(context: Context, requestBody: UserLoginDTO): Deferred<ServerResponse<User>>? {

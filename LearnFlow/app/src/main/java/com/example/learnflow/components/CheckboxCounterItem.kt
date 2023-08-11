@@ -2,6 +2,7 @@ package com.example.learnflow.components
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -16,6 +17,8 @@ class CheckboxCounterItem(val viewContext: Context) :
     val tv: TextView
     val ci: CustomInput
 
+    private var onClickListener: OnClickListener? = null
+
     init {
         LayoutInflater.from(viewContext).inflate(R.layout.checkbox_counter_item, this)
 
@@ -28,10 +31,15 @@ class CheckboxCounterItem(val viewContext: Context) :
         setListeners()
     }
 
+    override fun setOnClickListener(l: OnClickListener?) {
+        onClickListener = l
+    }
+
     override fun handleAttrs() {}
 
     override fun setListeners() {
         cvRoot.setOnClickListener {
+            onClickListener?.onClick(it)
             cb.isChecked = !cb.isChecked
             if (cb.isChecked) {
                 ci.visibility = VISIBLE

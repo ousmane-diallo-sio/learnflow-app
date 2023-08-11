@@ -17,8 +17,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
-import androidx.core.view.marginBottom
-import androidx.core.view.marginTop
 import androidx.core.view.setPadding
 import androidx.lifecycle.lifecycleScope
 import com.example.learnflow.components.*
@@ -152,22 +150,52 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
         viewModel.getSchoolSubjects(this)
 
         lifecycleScope.launch {
-            viewModel.schoolSubjectsFlow.collect {
+            viewModel.schoolSubjectsFlow.collect { schoolSubjects ->
                 try {
                     llSchoolSubjectsTeacher.removeViews(1, llSchoolSubjectsTeacher.childCount - 1)
-                } catch (_: Exception) { }
-                it.forEach { schoolSubject ->
+                } catch (_: Exception) {
+                }
+
+                schoolSubjects.forEach { schoolSubject ->
                     val checkboxCounterItem = CheckboxCounterItem(this@MainActivity)
+
                     checkboxCounterItem.tv.text = schoolSubject.name
+                    checkboxCounterItem.ci.et.setText("1")
                     checkboxCounterItem.setOnClickListener {
-                        viewModel.teacherSchoolSubjectsFlow.value =
-                            viewModel.teacherSchoolSubjectsFlow.value.toMutableList().apply {
-                                if (checkboxCounterItem.cb.isChecked) {
-                                    add(schoolSubject)
-                                    return@apply
-                                }
-                                remove(schoolSubject)
+                        viewModel.addOrRemoveSchoolSubjectTeached(schoolSubject, 1)
+                    }
+
+                    checkboxCounterItem.ci.textWatcher = object : TextWatcher {
+                        override fun beforeTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            count: Int,
+                            after: Int
+                        ) {
+                        }
+
+                        override fun onTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            before: Int,
+                            count: Int
+                        ) {
+                            if (s.toString().isNotEmpty() && s.toString().toInt() > 50) {
+                                checkboxCounterItem.ci.et.setText("1")
+                                Snackbar.make(
+                                    findViewById(android.R.id.content),
+                                    "Vous ne pouvez pas avoir plus de 50 ans d'expérience",
+                                    Snackbar.LENGTH_SHORT
+                                ).show()
                             }
+                        }
+
+                        override fun afterTextChanged(s: Editable?) {
+                            viewModel.editSchoolSubjectTeachedExp(
+                                schoolSubject,
+                                s.toString().toInt()
+                            )
+                        }
                     }
                     llSchoolSubjectsTeacher.addView(checkboxCounterItem)
                 }
@@ -429,7 +457,7 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                     email = ciEmailRegister.et.text.toString(),
                     birthdate = NetworkManager.formatDateFRToISOString(
                         ciBirthdateRegister.et.text.toString()
-                    ),
+                    ) ?: "",
                     address = Address(
                         ciCityRegister.et.text.toString(),
                         ciStreetRegister.et.text.toString(),
@@ -453,6 +481,7 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                 onRegisterStudent(data, error)
             }
         } else {
+            Log.d("MainActivity", "Teacher signup request : ${viewModel.teacherSchoolSubjectsTeached}")
             viewModel.updateTeacherRegisterRequest(
                 TeacherSignupDTO(
                     firstName = ciFirstnameRegister.et.text.toString(),
@@ -460,7 +489,7 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                     email = ciEmailRegister.et.text.toString(),
                     birthdate = NetworkManager.formatDateFRToISOString(
                         ciBirthdateRegister.et.text.toString()
-                    ),
+                    ) ?: "",
                     address = Address(
                         ciCityRegister.et.text.toString(),
                         ciStreetRegister.et.text.toString(),
@@ -470,7 +499,7 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                     password = ciPasswordRegister.et.text.toString(),
                     phoneNumber = ciPhoneNumberRegister.et.text.toString(),
                     documents = viewModel.teacherSignupDocumentsFlow.value,
-                    schoolSubjectsTeached = viewModel.teacherSchoolSubjectsFlow.value,
+                    schoolSubjectsTeached = viewModel.teacherSchoolSubjectsTeached,
                     profilePicture = Document(
                         "Photo de profil",
                         null,
