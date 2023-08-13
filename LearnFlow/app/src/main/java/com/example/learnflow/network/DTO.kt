@@ -3,6 +3,8 @@ package com.example.learnflow.network
 import android.os.Parcelable
 import com.example.learnflow.model.Address
 import com.example.learnflow.model.Document
+import com.example.learnflow.model.SchoolSubject
+import com.example.learnflow.model.SchoolSubjectTeached
 import kotlinx.parcelize.Parcelize
 
 data class StudentSignupDTO(
@@ -26,7 +28,8 @@ data class TeacherSignupDTO(
     val phoneNumber: String,
     val profilePicture: Document,
     val documents: MutableList<Document>,
-    val password: String
+    val password: String,
+    val schoolSubjectsTeached: List<SchoolSubjectTeached>
 )
 
 /*

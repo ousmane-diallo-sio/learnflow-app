@@ -1,5 +1,6 @@
 package com.example.learnflow
 
+import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
@@ -7,14 +8,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.learnflow.model.Document
 import com.example.learnflow.model.Jwt
+import com.example.learnflow.model.SchoolSubject
+import com.example.learnflow.model.SchoolSubjectTeached
 import com.example.learnflow.model.User
 import com.example.learnflow.network.NetworkManager
 import com.example.learnflow.network.StudentSignupDTO
 import com.example.learnflow.network.TeacherSignupDTO
 import com.example.learnflow.network.UserLoginDTO
+import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.net.SocketTimeoutException
@@ -22,9 +25,12 @@ import java.net.SocketTimeoutException
 class MainViewModel : ViewModel() {
 
     private val userFlow = MutableStateFlow<User?>(null)
+    val schoolSubjectsFlow = MutableStateFlow<List<SchoolSubject>>(emptyList())
+
     private val studentSignupDTOFlow = MutableStateFlow<StudentSignupDTO?>(null)
     private val teacherSignupDTOFlow = MutableStateFlow<TeacherSignupDTO?>(null)
     val teacherSignupDocumentsFlow = MutableStateFlow<MutableList<Document>>(mutableListOf())
+    val teacherSchoolSubjectsTeached = mutableListOf<SchoolSubjectTeached>()
 
     fun onStart(mainActivity: MainActivity) {
         NetworkManager.observeNetworkConnectivity(mainActivity)
@@ -48,15 +54,70 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    fun getSchoolSubjects(context: Activity) {
+        fun handleRequestFailure() {
+            Snackbar.make(
+                context.findViewById(android.R.id.content),
+                "Erreur lors de la récupération des matières scolaires",
+                Snackbar.LENGTH_LONG
+            )
+                .setAction("Retry") {
+                    getSchoolSubjects(context)
+                }
+                .show()
+        }
+
+        viewModelScope.launch {
+            try {
+                val res = NetworkManager.getSchoolSubjectsAsync(context)?.await()
+
+                res?.let { serverResponse ->
+                    serverResponse.data?.let { data ->
+                        schoolSubjectsFlow.value = data
+                        return@launch
+                    }
+                }
+                Log.e("MainViewModel", "API response data is null !!")
+            } catch (e: HttpException) {
+                val serverResponse = NetworkManager.parseHttpException(e)
+                Log.e("MainViewModel", "Failed to get school subjects: ${serverResponse?.error}")
+                handleRequestFailure()
+            } catch (e: SocketTimeoutException) {
+                Log.e("MainViewModel", "Connection timed out: $e")
+                handleRequestFailure()
+            } catch (e: Exception) {
+                Log.e("MainViewModel", "Failed to get school subjects: ${e.message}")
+                handleRequestFailure()
+            }
+        }
+    }
+
     fun addOrReplaceTeacherDocument(document: Document) {
         val duplicateDocument = teacherSignupDocumentsFlow.value.find { it.name == document.name }
-        duplicateDocument.let { teacherSignupDocumentsFlow.value.remove(it) }
-        teacherSignupDocumentsFlow.value = teacherSignupDocumentsFlow.value.plus(document) as MutableList<Document>
-        Log.d("MainViewModel", "state flow : ${teacherSignupDTOFlow.value?.documents}")
+        duplicateDocument?.let {
+            teacherSignupDocumentsFlow.value =
+                teacherSignupDocumentsFlow.value.minus(it).toMutableList()
+        }
+        teacherSignupDocumentsFlow.value =
+            teacherSignupDocumentsFlow.value.plus(document).toMutableList()
     }
 
     fun removeTeacherDocument(document: Document) {
-        teacherSignupDocumentsFlow.value = teacherSignupDocumentsFlow.value.minus(document) as MutableList<Document>
+        teacherSignupDocumentsFlow.value =
+            teacherSignupDocumentsFlow.value.minus(document).toMutableList()
+    }
+
+    fun addOrRemoveSchoolSubjectTeached(schoolSubject: SchoolSubject, nbYearsExp: Int) {
+        if (!teacherSchoolSubjectsTeached.removeIf {
+                it.schoolSubject.name == schoolSubject.name
+            }) {
+            teacherSchoolSubjectsTeached.add(SchoolSubjectTeached(schoolSubject, nbYearsExp))
+        }
+    }
+
+    fun editSchoolSubjectTeachedExp(schoolSubject: SchoolSubject, nbYearsExp: Int) {
+        teacherSchoolSubjectsTeached.find { it.schoolSubject.name == schoolSubject.name }
+            ?.run { this.nbYearsExp = nbYearsExp }
     }
 
     fun login(
@@ -125,7 +186,10 @@ class MainViewModel : ViewModel() {
                 val serverResponse = NetworkManager.parseHttpException(e)
 
                 Log.e("MainViewModel", "Failed to register: ${serverResponse?.error}")
-                callback(null, serverResponse?.error ?: context.getString(R.string.an_error_occured))
+                callback(
+                    null,
+                    serverResponse?.error ?: context.getString(R.string.an_error_occured)
+                )
             } catch (e: SocketTimeoutException) {
                 Log.e("MainViewModel", "Connection timed out: $e")
                 callback(null, "Le serveur est injoignable")
@@ -163,7 +227,10 @@ class MainViewModel : ViewModel() {
                 val serverResponse = NetworkManager.parseHttpException(e)
 
                 Log.e("MainViewModel", "Failed to register: ${serverResponse?.error}")
-                callback(null, serverResponse?.error ?: context.getString(R.string.an_error_occured))
+                callback(
+                    null,
+                    serverResponse?.error ?: context.getString(R.string.an_error_occured)
+                )
             } catch (e: SocketTimeoutException) {
                 Log.e("MainViewModel", "Connection timed out: $e")
                 callback(null, "Le serveur est injoignable")

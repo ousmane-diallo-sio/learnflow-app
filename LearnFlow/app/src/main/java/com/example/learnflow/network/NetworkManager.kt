@@ -9,6 +9,7 @@ import android.net.NetworkCapabilities
 import android.provider.Settings
 import android.widget.Toast
 import com.example.learnflow.model.LocalDateTypeAdapter
+import com.example.learnflow.model.SchoolSubject
 import com.example.learnflow.model.User
 import com.example.learnflow.model.UserType
 import com.example.learnflow.utils.EnvUtils
@@ -21,6 +22,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.lang.Exception
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -94,11 +96,14 @@ object NetworkManager {
         return serverResponse
     }
 
-    fun formatDateFRToISOString(dateString: String): String {
+    fun formatDateFRToISOString(dateString: String): String? {
         val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-        val localDate = LocalDate.parse(dateString, dateFormatter)
-
-        return localDate.atStartOfDay().toString()
+        return try {
+            val localDate = LocalDate.parse(dateString, dateFormatter)
+            localDate.atStartOfDay().toString()
+        } catch (e: Exception) {
+            null
+        }
     }
 
     fun loginAsync(context: Context, requestBody: UserLoginDTO): Deferred<ServerResponse<User>>? {
@@ -124,5 +129,10 @@ object NetworkManager {
     fun getStudentsAsync(context: Context, query: String): Deferred<ServerResponse<List<User>>>? {
         if (handleMissingNetwork(context)) return null
         return api.getStudentsAsync(query)
+    }
+
+    fun getSchoolSubjectsAsync(context: Context): Deferred<ServerResponse<List<SchoolSubject>>>? {
+        if (handleMissingNetwork(context)) return null
+        return api.getSchoolSubjectsAsync()
     }
 }

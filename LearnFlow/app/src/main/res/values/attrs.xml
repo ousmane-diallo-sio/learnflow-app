@@ -23,6 +23,10 @@
             <enum name="textEmailAddress" value="32" />
             <enum name="textPassword" value="128" />
         </attr>
+        <attr name="radius" format="dimension" />
+        <attr name="inputBackground" format="color" />
+        <attr name="inputColor" format="color" />
+        <attr name="hintColor" format="color" />
         <attr name="isRequired" format="boolean" />
         <attr name="showErrorText" format="boolean" />
     </declare-styleable>
