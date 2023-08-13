@@ -247,76 +247,75 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                     }
                     .show()
                 return@setOnClickListener
-            } else {
-                imgPickerFragment.pickImage { uri: Uri? ->
-                    if (uri == null) return@pickImage
+            }
 
-                    val document = Document(
-                        "document-${UUID.randomUUID()}",
-                        null,
-                        Utils.bitmapToBase64(ipTeacherIdentityCardPicker.ivImage.drawable.toBitmap())
-                            ?: "",
-                        DocumentType.IMAGE
-                    )
+            imgPickerFragment.pickImage { uri: Uri? ->
+                if (uri == null) return@pickImage
 
-                    val customInput = CustomInput(this, null)
-                    customInput.layoutParams = LayoutParams(
+                val ivOverview = ImageView(this).apply {
+                    layoutParams = LayoutParams(
                         LayoutParams.MATCH_PARENT,
                         LayoutParams.WRAP_CONTENT
                     )
-                    customInput.et.hint = "Intitulé du document"
-                    customInput.et.inputType = InputType.TYPE_CLASS_TEXT
-                    customInput.textWatcher = object : TextWatcher {
-                        override fun beforeTextChanged(
-                            s: CharSequence?,
-                            start: Int,
-                            count: Int,
-                            after: Int
-                        ) {
-                        }
+                    setImageURI(uri)
+                    scaleType = ImageView.ScaleType.FIT_CENTER
+                    setPadding(20)
+                }
 
-                        override fun onTextChanged(
-                            s: CharSequence?,
-                            start: Int,
-                            before: Int,
-                            count: Int
-                        ) {
-                        }
+                val document = Document(
+                    "document-${UUID.randomUUID()}",
+                    null,
+                    Utils.bitmapToBase64(ivOverview.drawable.toBitmap()) ?: "",
+                    DocumentType.IMAGE
+                )
 
-                        override fun afterTextChanged(s: Editable?) {
-                            document.name = s.toString()
-                            viewModel.addOrReplaceTeacherDocument(document)
-                        }
-
+                val customInput = CustomInput(this, null)
+                customInput.layoutParams = LayoutParams(
+                    LayoutParams.MATCH_PARENT,
+                    LayoutParams.WRAP_CONTENT
+                )
+                customInput.et.hint = "Intitulé du document"
+                customInput.et.inputType = InputType.TYPE_CLASS_TEXT
+                customInput.textWatcher = object : TextWatcher {
+                    override fun beforeTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        count: Int,
+                        after: Int
+                    ) {
                     }
 
-
-                    val ivOverview = ImageView(this).apply {
-                        layoutParams = LayoutParams(
-                            LayoutParams.MATCH_PARENT,
-                            LayoutParams.WRAP_CONTENT
-                        )
-                        setImageURI(uri)
-                        scaleType = ImageView.ScaleType.FIT_CENTER
-                        setPadding(20)
+                    override fun onTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        before: Int,
+                        count: Int
+                    ) {
                     }
-                    val alertDialog = AlertDialog.Builder(this)
-                    alertDialog
-                        .setPositiveButton(getText(R.string.close)) { dialog, _ ->
-                            dialog.dismiss()
-                            ivOverview.parent?.let { (it as ViewGroup).removeView(ivOverview) }
-                        }
-                        .setNegativeButton(getText(R.string.delete)) { dialog, _ ->
-                            dialog.dismiss()
-                            llTeacherDocuments.removeView(customInput)
-                            viewModel.removeTeacherDocument(document)
-                        }
-                        .setView(ivOverview)
-                        .create()
-                    customInput.setAction({ alertDialog.show() }, uri)
-                    llTeacherDocuments.addView(customInput)
+
+                    override fun afterTextChanged(s: Editable?) {
+                        document.name = s.toString()
+                        viewModel.addOrReplaceTeacherDocument(document)
+                    }
 
                 }
+
+                val alertDialog = AlertDialog.Builder(this)
+                alertDialog
+                    .setPositiveButton(getText(R.string.close)) { dialog, _ ->
+                        dialog.dismiss()
+                        ivOverview.parent?.let { (it as ViewGroup).removeView(ivOverview) }
+                    }
+                    .setNegativeButton(getText(R.string.delete)) { dialog, _ ->
+                        dialog.dismiss()
+                        llTeacherDocuments.removeView(customInput)
+                        viewModel.removeTeacherDocument(document)
+                    }
+                    .setView(ivOverview)
+                    .create()
+                customInput.setAction({ alertDialog.show() }, uri)
+                llTeacherDocuments.addView(customInput)
+
             }
         }
 
