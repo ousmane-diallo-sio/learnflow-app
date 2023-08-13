@@ -13,24 +13,24 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.learnflow.R
 import com.example.learnflow.components.recyclerview.SearchAdapter
-import com.example.learnflow.databinding.FragmentSearchBinding
+import com.example.learnflow.databinding.FragmentSearchTeacherBinding
 import com.example.learnflow.utils.Utils
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class SearchFragment : Fragment() {
+class SearchTeacherFragment : Fragment() {
 
-    private var _binding: FragmentSearchBinding? = null
+    private var _binding: FragmentSearchTeacherBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: SearchViewModel by viewModels()
+    private val viewModel: SearchTeacherViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentSearchBinding.inflate(inflater, container, false)
+        _binding = FragmentSearchTeacherBinding.inflate(inflater, container, false)
         val root: View = binding.root
         return root
     }

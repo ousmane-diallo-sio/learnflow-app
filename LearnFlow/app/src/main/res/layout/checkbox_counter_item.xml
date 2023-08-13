@@ -46,7 +46,6 @@
             android:layout_height="match_parent"
             app:layout_constraintRight_toRightOf="parent"
             app:radius="6dp"
-            app:inputBackground="@color/white"
             app:inputColor="@color/gray"
             app:hintColor="@color/gray"
             app:hint="@string/one"

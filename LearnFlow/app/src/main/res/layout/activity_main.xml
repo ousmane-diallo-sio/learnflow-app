@@ -173,6 +173,17 @@
                                 android:orientation="vertical">
 
                                 <com.example.learnflow.components.CustomInput
+                                    android:id="@+id/ciFirstNameRegisterMain"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="center"
+                                    card_view:hint="@string/first_name"
+                                    card_view:icon="@drawable/baseline_person_24"
+                                    card_view:inputType="text"
+                                    card_view:isRequired="true" />
+
+                                <com.example.learnflow.components.CustomInput
                                     android:id="@+id/ciLastNameRegisterMain"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -183,16 +194,6 @@
                                     card_view:inputType="text"
                                     card_view:isRequired="true" />
 
-                                <com.example.learnflow.components.CustomInput
-                                    android:id="@+id/ciFirstNameRegisterMain"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:gravity="center"
-                                    card_view:hint="@string/first_name"
-                                    card_view:icon="@drawable/baseline_person_24"
-                                    card_view:inputType="text"
-                                    card_view:isRequired="true" />
 
                                 <com.example.learnflow.components.CustomInput
                                     android:id="@+id/ciEmailRegisterMain"

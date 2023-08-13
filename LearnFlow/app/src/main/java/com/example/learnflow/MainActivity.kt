@@ -11,6 +11,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View.*
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.*
 import android.widget.LinearLayout.LayoutParams
 import androidx.activity.viewModels
@@ -184,6 +185,13 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
 
         ciLogin.onInputValidation = { btnLogin.disabled = false }
         ciPassword.onInputValidation = { btnLogin.disabled = false }
+        ciPassword.et.setOnEditorActionListener{ _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                btnLogin.performClick()
+                return@setOnEditorActionListener true
+            }
+            false
+        }
 
         btnLogin.setOnClickListener {
             btnLogin.isLoading = true

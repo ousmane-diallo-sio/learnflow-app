@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.net.SocketTimeoutException
 
-class SearchViewModel : ViewModel() {
+class SearchTeacherViewModel : ViewModel() {
 
     val searchFlow = MutableStateFlow<List<User>>(emptyList())
 
