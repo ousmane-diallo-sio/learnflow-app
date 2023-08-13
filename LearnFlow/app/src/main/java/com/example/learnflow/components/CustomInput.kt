@@ -105,7 +105,7 @@ class CustomInput(context: Context, private val attrs: AttributeSet?) :
             )
         )
         cv.radius = styledAttributes.getDimension(R.styleable.CustomInput_radius, cv.radius)
-        styledAttributes.getColor(R.styleable.CustomInput_inputBackground, 0).let {
+        styledAttributes.getColor(R.styleable.CustomInput_inputBackground, cv.cardBackgroundColor.defaultColor).let {
             cv.setCardBackgroundColor(it)
         }
 
