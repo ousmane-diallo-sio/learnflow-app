@@ -30,12 +30,12 @@ import java.time.format.DateTimeFormatter
 
 object NetworkManager {
     var userType: UserType? = null
-    private var jwtToken: Jwt? = null
+    private var jwt: Jwt? = null
 
     private val okHttpClient = OkHttpClient.Builder()
         .addInterceptor { chain ->
             val request = chain.request().newBuilder()
-                .addHeader("Authorization", "Bearer ${jwtToken?.token}")
+                .addHeader("Authorization", "Bearer ${jwt?.token}")
             chain.proceed(request.build())
         }
         .addInterceptor(HttpLoggingInterceptor().apply {
@@ -57,26 +57,26 @@ object NetworkManager {
         .build()
         .create(NetworkI::class.java)
 
-    fun saveJwtToken(context: Context, jwt: Jwt) {
-        jwtToken = jwt
+    fun saveJwt(context: Context, jwt: Jwt) {
+        this.jwt = jwt
         val sharedPreferences = context.getSharedPreferences(SharedPreferencesKeys.FILE_NAME, Context.MODE_PRIVATE)
-        sharedPreferences.edit().putString(SharedPreferencesKeys.JWT_TOKEN, Gson().toJson(jwt)).apply()
+        sharedPreferences.edit().putString(SharedPreferencesKeys.JWT, Gson().toJson(jwt)).apply()
     }
 
-    fun deleteJwtToken(context: Context) {
-        jwtToken = null
+    fun deleteJwt(context: Context) {
+        jwt = null
         val sharedPreferences = context.getSharedPreferences(SharedPreferencesKeys.FILE_NAME, Context.MODE_PRIVATE)
-        sharedPreferences.edit().remove(SharedPreferencesKeys.JWT_TOKEN).apply()
+        sharedPreferences.edit().remove(SharedPreferencesKeys.JWT).apply()
     }
 
-    fun getJwtToken(context: Context): Jwt? {
+    fun getJwt(context: Context): Jwt? {
         val sharedPreferences = context.getSharedPreferences(SharedPreferencesKeys.FILE_NAME, Context.MODE_PRIVATE)
-        val jwt = Gson().fromJson(
-            sharedPreferences.getString(SharedPreferencesKeys.JWT_TOKEN, null),
+        val savedJwt = Gson().fromJson(
+            sharedPreferences.getString(SharedPreferencesKeys.JWT, null),
             Jwt::class.java
         )
-        jwtToken = jwt
-        return jwt
+        jwt = savedJwt
+        return savedJwt
     }
 
     private fun isNetworkConnected(context: Context): Boolean {

@@ -2,12 +2,10 @@ package com.example.learnflow
 
 import android.app.Activity
 import android.content.Context
-import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.learnflow.model.Document
-import com.example.learnflow.model.Jwt
 import com.example.learnflow.model.SchoolSubject
 import com.example.learnflow.model.SchoolSubjectTeached
 import com.example.learnflow.model.User
@@ -15,9 +13,7 @@ import com.example.learnflow.network.NetworkManager
 import com.example.learnflow.network.StudentSignupDTO
 import com.example.learnflow.network.TeacherSignupDTO
 import com.example.learnflow.network.UserLoginDTO
-import com.example.learnflow.utils.SharedPreferencesKeys
 import com.google.android.material.snackbar.Snackbar
-import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -134,7 +130,7 @@ class MainViewModel : ViewModel() {
                     serverResponse.data?.let { data ->
                         updateUser(data)
                         serverResponse.jwt?.let { jwt ->
-                            NetworkManager.saveJwtToken(
+                            NetworkManager.saveJwt(
                                 context,
                                 jwt
                             )
@@ -172,7 +168,7 @@ class MainViewModel : ViewModel() {
                     serverResponse.data?.let { data ->
                         updateUser(data)
                         serverResponse.jwt?.let { jwt ->
-                            NetworkManager.saveJwtToken(
+                            NetworkManager.saveJwt(
                                 context,
                                 jwt
                             )
@@ -212,7 +208,7 @@ class MainViewModel : ViewModel() {
                 res?.let { serverResponse ->
                     serverResponse.data?.let { data ->
                         updateUser(data)
-                        serverResponse.jwt?.let { jwt -> NetworkManager.saveJwtToken(context, jwt) }
+                        serverResponse.jwt?.let { jwt -> NetworkManager.saveJwt(context, jwt) }
                         callback(data, null)
                         return@launch
                     }

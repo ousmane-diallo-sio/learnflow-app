@@ -3,7 +3,6 @@ package com.example.learnflow.network
 import android.os.Parcelable
 import com.example.learnflow.model.Address
 import com.example.learnflow.model.Document
-import com.example.learnflow.model.SchoolSubject
 import com.example.learnflow.model.SchoolSubjectTeached
 import kotlinx.parcelize.Parcelize
 
@@ -50,5 +49,5 @@ data class TeacherSignupDTO(
 data class UserLoginDTO(
     val email: String?,
     val password: String?,
-    val jwtToken: String?
+    val jwt: String?
 ) : Parcelable
