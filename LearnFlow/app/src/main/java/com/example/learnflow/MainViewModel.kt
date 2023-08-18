@@ -15,6 +15,7 @@ import com.example.learnflow.network.NetworkManager
 import com.example.learnflow.network.StudentSignupDTO
 import com.example.learnflow.network.TeacherSignupDTO
 import com.example.learnflow.network.UserLoginDTO
+import com.example.learnflow.utils.SharedPreferencesKeys
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -133,8 +134,8 @@ class MainViewModel : ViewModel() {
                     serverResponse.data?.let { data ->
                         updateUser(data)
                         serverResponse.jwt?.let { jwt ->
-                            saveJwtToken(
-                                context.getSharedPreferences("jwtToken", Context.MODE_PRIVATE),
+                            NetworkManager.saveJwtToken(
+                                context,
                                 jwt
                             )
                         }
@@ -171,8 +172,8 @@ class MainViewModel : ViewModel() {
                     serverResponse.data?.let { data ->
                         updateUser(data)
                         serverResponse.jwt?.let { jwt ->
-                            saveJwtToken(
-                                context.getSharedPreferences("jwtToken", Context.MODE_PRIVATE),
+                            NetworkManager.saveJwtToken(
+                                context,
                                 jwt
                             )
                         }
@@ -211,12 +212,7 @@ class MainViewModel : ViewModel() {
                 res?.let { serverResponse ->
                     serverResponse.data?.let { data ->
                         updateUser(data)
-                        serverResponse.jwt?.let { jwt ->
-                            saveJwtToken(
-                                context.getSharedPreferences("jwtToken", Context.MODE_PRIVATE),
-                                jwt
-                            )
-                        }
+                        serverResponse.jwt?.let { jwt -> NetworkManager.saveJwtToken(context, jwt) }
                         callback(data, null)
                         return@launch
                     }
@@ -239,21 +235,6 @@ class MainViewModel : ViewModel() {
                 callback(null, defaultErrorMsg)
             }
         }
-    }
-
-    private fun saveJwtToken(sharedPreferences: SharedPreferences, token: Jwt) {
-        sharedPreferences.edit().putString("jwtToken", Gson().toJson(token)).apply()
-    }
-
-    fun deleteJwtToken(sharedPreferences: SharedPreferences) {
-        sharedPreferences.edit().remove("jwtToken").apply()
-    }
-
-    fun getJwtToken(sharedPreferences: SharedPreferences): Jwt? {
-        return Gson().fromJson(
-            sharedPreferences.getString("jwtToken", null),
-            Jwt::class.java
-        )
     }
 
     /*

@@ -7,12 +7,13 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.provider.Settings
-import android.widget.Toast
+import com.example.learnflow.model.Jwt
 import com.example.learnflow.model.LocalDateTypeAdapter
 import com.example.learnflow.model.SchoolSubject
 import com.example.learnflow.model.User
 import com.example.learnflow.model.UserType
 import com.example.learnflow.utils.EnvUtils
+import com.example.learnflow.utils.SharedPreferencesKeys
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
@@ -29,8 +30,14 @@ import java.time.format.DateTimeFormatter
 
 object NetworkManager {
     var userType: UserType? = null
+    private var jwtToken: Jwt? = null
 
     private val okHttpClient = OkHttpClient.Builder()
+        .addInterceptor { chain ->
+            val request = chain.request().newBuilder()
+                .addHeader("Authorization", "Bearer ${jwtToken?.token}")
+            chain.proceed(request.build())
+        }
         .addInterceptor(HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         })
@@ -49,6 +56,28 @@ object NetworkManager {
         .addCallAdapterFactory(CoroutineCallAdapterFactory())
         .build()
         .create(NetworkI::class.java)
+
+    fun saveJwtToken(context: Context, jwt: Jwt) {
+        jwtToken = jwt
+        val sharedPreferences = context.getSharedPreferences(SharedPreferencesKeys.FILE_NAME, Context.MODE_PRIVATE)
+        sharedPreferences.edit().putString(SharedPreferencesKeys.JWT_TOKEN, Gson().toJson(jwt)).apply()
+    }
+
+    fun deleteJwtToken(context: Context) {
+        jwtToken = null
+        val sharedPreferences = context.getSharedPreferences(SharedPreferencesKeys.FILE_NAME, Context.MODE_PRIVATE)
+        sharedPreferences.edit().remove(SharedPreferencesKeys.JWT_TOKEN).apply()
+    }
+
+    fun getJwtToken(context: Context): Jwt? {
+        val sharedPreferences = context.getSharedPreferences(SharedPreferencesKeys.FILE_NAME, Context.MODE_PRIVATE)
+        val jwt = Gson().fromJson(
+            sharedPreferences.getString(SharedPreferencesKeys.JWT_TOKEN, null),
+            Jwt::class.java
+        )
+        jwtToken = jwt
+        return jwt
+    }
 
     private fun isNetworkConnected(context: Context): Boolean {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
