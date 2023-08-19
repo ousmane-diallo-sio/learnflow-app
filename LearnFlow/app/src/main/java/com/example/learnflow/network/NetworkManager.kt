@@ -30,7 +30,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 object NetworkManager {
-    var userType: UserType? = null
     private var jwt: Jwt? = null
 
     private val okHttpClient = OkHttpClient.Builder()
@@ -159,6 +158,11 @@ object NetworkManager {
     fun registerTeacherAsync(context: Context, requestBody: TeacherSignupDTO): Deferred<ServerResponse<User>>? {
         if (handleMissingNetwork(context)) return null
         return api.registerTeacherAsync(requestBody)
+    }
+
+    fun getMeAsync(context: Context): Deferred<ServerResponse<User>>? {
+        if (handleMissingNetwork(context)) return null
+        return api.getMeAsync()
     }
 
     fun getTeachersAsync(context: Context, query: String): Deferred<ServerResponse<List<User>>>? {

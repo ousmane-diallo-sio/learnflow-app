@@ -27,7 +27,6 @@ import com.example.learnflow.model.DocumentType
 import com.example.learnflow.model.User
 import com.example.learnflow.model.UserType
 import com.example.learnflow.network.NetworkManager
-import com.example.learnflow.network.NetworkManager.userType
 import com.example.learnflow.network.StudentSignupDTO
 import com.example.learnflow.network.TeacherSignupDTO
 import com.example.learnflow.network.UserLoginDTO
@@ -226,7 +225,7 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
         iSelectUserType.setOnElementSelected {
             sliderRegisterProcess.btnNext.disabled = false
             if (it.selectorId == "studentSelector") {
-                userType = UserType.STUDENT
+                viewModel.userType = UserType.STUDENT
 
                 sliderRegisterProcess.addItems(siStudentSchoolLevel)
                 sliderRegisterProcess.removeItems(
@@ -235,7 +234,7 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                     siTeacherSchoolSubjectsTeached
                 )
             } else {
-                userType = UserType.TEACHER
+                viewModel.userType = UserType.TEACHER
                 sliderRegisterProcess.addItems(
                     siTeacherIdentityCard,
                     siTeacherDocuments,
@@ -462,7 +461,7 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
             teacherSignupConfirmation.show(supportFragmentManager, "teacherSignupConfirmation")
         }
 
-        if (userType == UserType.STUDENT) {
+        if (viewModel.userType == UserType.STUDENT) {
             viewModel.updateStudentRegisterRequest(
                 StudentSignupDTO(
                     firstName = ciFirstnameRegister.et.text.toString(),

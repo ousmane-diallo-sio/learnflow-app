@@ -9,6 +9,7 @@ import com.example.learnflow.model.Document
 import com.example.learnflow.model.SchoolSubject
 import com.example.learnflow.model.SchoolSubjectTeached
 import com.example.learnflow.model.User
+import com.example.learnflow.model.UserType
 import com.example.learnflow.network.NetworkManager
 import com.example.learnflow.network.StudentSignupDTO
 import com.example.learnflow.network.TeacherSignupDTO
@@ -21,6 +22,7 @@ import java.net.SocketTimeoutException
 
 class MainViewModel : ViewModel() {
 
+    var userType: UserType? = null
     private val userFlow = MutableStateFlow<User?>(null)
     val schoolSubjectsFlow = MutableStateFlow<List<SchoolSubject>>(emptyList())
 
@@ -58,7 +60,7 @@ class MainViewModel : ViewModel() {
                 "Erreur lors de la récupération des matières scolaires",
                 Snackbar.LENGTH_LONG
             )
-                .setAction("Retry") {
+                .setAction(context.getString(R.string.retry)) {
                     getSchoolSubjects(context)
                 }
                 .show()
@@ -80,7 +82,7 @@ class MainViewModel : ViewModel() {
                 Log.e("MainViewModel", "Failed to get school subjects: ${serverResponse?.error}")
                 handleRequestFailure()
             } catch (e: SocketTimeoutException) {
-                Log.e("MainViewModel", "Connection timed out: $e")
+                Log.e("MainViewModel", "Connection timed out: ${e.message}")
                 handleRequestFailure()
             } catch (e: Exception) {
                 Log.e("MainViewModel", "Failed to get school subjects: ${e.message}")

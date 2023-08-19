@@ -21,6 +21,9 @@ interface NetworkI {
     @POST("/register/teacher")
     fun registerTeacherAsync(@Body requestBody: TeacherSignupDTO): Deferred<ServerResponse<User>>
 
+    @GET("/users/me")
+    fun getMeAsync(): Deferred<ServerResponse<User>>
+
     @GET("/teachers/{query}")
     fun getTeachersAsync(@Path("query") query: String): Deferred<ServerResponse<List<User>>>
 
