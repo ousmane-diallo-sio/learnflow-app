@@ -103,6 +103,12 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        NetworkManager.getJwt(this)
+        viewModel.autoLogin(this) {
+            startActivity(Intent(this, HomeActivity::class.java))
+            finish()
+        }
+
         loginPart = findViewById(R.id.loginPartMain)
         registerPart = findViewById(R.id.registerPartMain)
         ciLogin = findViewById(R.id.ciEmailMain)
@@ -207,6 +213,7 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                     return@login
                 }
                 startActivity(Intent(this@MainActivity, HomeActivity::class.java))
+                finish()
             }
         }
 
@@ -442,6 +449,7 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                 Toast.LENGTH_SHORT
             ).show()
             startActivity(Intent(this@MainActivity, HomeActivity::class.java))
+            finish()
         }
 
         fun onRegisterTeacher(data: User?, error: String?) {

@@ -117,6 +117,37 @@ class MainViewModel : ViewModel() {
             ?.run { this.nbYearsExp = nbYearsExp }
     }
 
+    fun autoLogin(context: Context, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            try {
+                val res = NetworkManager.autoLoginAsync(context)?.await()
+
+                res?.let { serverResponse ->
+                    serverResponse.data?.let { data ->
+                        updateUser(data)
+                        serverResponse.jwt?.let { jwt ->
+                            NetworkManager.saveJwt(
+                                context,
+                                jwt
+                            )
+                        }
+                        onSuccess()
+                        return@launch
+                    }
+                }
+                Log.e("MainViewModel", "API response data is null !!")
+            } catch (e: HttpException) {
+                val serverResponse = NetworkManager.parseHttpException(e)
+
+                Log.e("MainViewModel", "Failed to login: ${serverResponse?.error}")
+            } catch (e: SocketTimeoutException) {
+                Log.e("MainViewModel", "Connection timed out: $e")
+            } catch (e: Exception) {
+                Log.e("MainViewModel", "Failed to login: ${e.message}")
+            }
+        }
+    }
+
     fun login(
         context: Context,
         userLoginRequest: UserLoginDTO,

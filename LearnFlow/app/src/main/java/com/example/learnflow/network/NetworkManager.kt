@@ -7,6 +7,7 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.provider.Settings
+import android.util.Log
 import com.example.learnflow.model.Jwt
 import com.example.learnflow.model.LocalDateTypeAdapter
 import com.example.learnflow.model.SchoolSubject
@@ -118,11 +119,16 @@ object NetworkManager {
 
     fun parseHttpException(httpException: HttpException): ServerResponse<*>? {
         val responseBody = httpException.response()?.errorBody()?.string()
-        val serverResponse: ServerResponse<*>? = responseBody?.let {
-            val gson = Gson()
-            gson.fromJson(it, ServerResponse::class.java)
+        try {
+            val serverResponse: ServerResponse<*>? = responseBody?.let {
+                val gson = Gson()
+                gson.fromJson(it, ServerResponse::class.java)
+            }
+            return serverResponse
+        } catch (e: Exception) {
+            Log.e("NetworkManager", "parseHttpException: ${e.message}")
+            return null
         }
-        return serverResponse
     }
 
     fun formatDateFRToISOString(dateString: String): String? {
@@ -133,6 +139,11 @@ object NetworkManager {
         } catch (e: Exception) {
             null
         }
+    }
+
+    fun autoLoginAsync(context: Context): Deferred<ServerResponse<User>>? {
+        if (handleMissingNetwork(context)) return null
+        return api.autoLoginAsync()
     }
 
     fun loginAsync(context: Context, requestBody: UserLoginDTO): Deferred<ServerResponse<User>>? {
