@@ -11,6 +11,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View.*
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.*
 import android.widget.LinearLayout.LayoutParams
 import androidx.activity.viewModels
@@ -26,7 +27,6 @@ import com.example.learnflow.model.DocumentType
 import com.example.learnflow.model.User
 import com.example.learnflow.model.UserType
 import com.example.learnflow.network.NetworkManager
-import com.example.learnflow.network.NetworkManager.userType
 import com.example.learnflow.network.StudentSignupDTO
 import com.example.learnflow.network.TeacherSignupDTO
 import com.example.learnflow.network.UserLoginDTO
@@ -101,6 +101,12 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        NetworkManager.getJwt(this)
+        viewModel.autoLogin(this) {
+            startActivity(Intent(this, HomeActivity::class.java))
+            finish()
+        }
 
         loginPart = findViewById(R.id.loginPartMain)
         registerPart = findViewById(R.id.registerPartMain)
@@ -184,6 +190,13 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
 
         ciLogin.onInputValidation = { btnLogin.disabled = false }
         ciPassword.onInputValidation = { btnLogin.disabled = false }
+        ciPassword.et.setOnEditorActionListener{ _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                btnLogin.performClick()
+                return@setOnEditorActionListener true
+            }
+            false
+        }
 
         btnLogin.setOnClickListener {
             btnLogin.isLoading = true
@@ -199,6 +212,7 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                     return@login
                 }
                 startActivity(Intent(this@MainActivity, HomeActivity::class.java))
+                finish()
             }
         }
 
@@ -211,7 +225,7 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
         iSelectUserType.setOnElementSelected {
             sliderRegisterProcess.btnNext.disabled = false
             if (it.selectorId == "studentSelector") {
-                userType = UserType.STUDENT
+                viewModel.userType = UserType.STUDENT
 
                 sliderRegisterProcess.addItems(siStudentSchoolLevel)
                 sliderRegisterProcess.removeItems(
@@ -220,7 +234,7 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                     siTeacherSchoolSubjectsTeached
                 )
             } else {
-                userType = UserType.TEACHER
+                viewModel.userType = UserType.TEACHER
                 sliderRegisterProcess.addItems(
                     siTeacherIdentityCard,
                     siTeacherDocuments,
@@ -239,76 +253,75 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                     }
                     .show()
                 return@setOnClickListener
-            } else {
-                imgPickerFragment.pickImage { uri: Uri? ->
-                    if (uri == null) return@pickImage
+            }
 
-                    val document = Document(
-                        "document-${UUID.randomUUID()}",
-                        null,
-                        Utils.bitmapToBase64(ipTeacherIdentityCardPicker.ivImage.drawable.toBitmap())
-                            ?: "",
-                        DocumentType.IMAGE
-                    )
+            imgPickerFragment.pickImage { uri: Uri? ->
+                if (uri == null) return@pickImage
 
-                    val customInput = CustomInput(this, null)
-                    customInput.layoutParams = LayoutParams(
+                val ivOverview = ImageView(this).apply {
+                    layoutParams = LayoutParams(
                         LayoutParams.MATCH_PARENT,
                         LayoutParams.WRAP_CONTENT
                     )
-                    customInput.et.hint = "Intitulé du document"
-                    customInput.et.inputType = InputType.TYPE_CLASS_TEXT
-                    customInput.textWatcher = object : TextWatcher {
-                        override fun beforeTextChanged(
-                            s: CharSequence?,
-                            start: Int,
-                            count: Int,
-                            after: Int
-                        ) {
-                        }
+                    setImageURI(uri)
+                    scaleType = ImageView.ScaleType.FIT_CENTER
+                    setPadding(20)
+                }
 
-                        override fun onTextChanged(
-                            s: CharSequence?,
-                            start: Int,
-                            before: Int,
-                            count: Int
-                        ) {
-                        }
+                val document = Document(
+                    "document-${UUID.randomUUID()}",
+                    null,
+                    Utils.bitmapToBase64(ivOverview.drawable.toBitmap()) ?: "",
+                    DocumentType.IMAGE
+                )
 
-                        override fun afterTextChanged(s: Editable?) {
-                            document.name = s.toString()
-                            viewModel.addOrReplaceTeacherDocument(document)
-                        }
-
+                val customInput = CustomInput(this, null)
+                customInput.layoutParams = LayoutParams(
+                    LayoutParams.MATCH_PARENT,
+                    LayoutParams.WRAP_CONTENT
+                )
+                customInput.et.hint = "Intitulé du document"
+                customInput.et.inputType = InputType.TYPE_CLASS_TEXT
+                customInput.textWatcher = object : TextWatcher {
+                    override fun beforeTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        count: Int,
+                        after: Int
+                    ) {
                     }
 
-
-                    val ivOverview = ImageView(this).apply {
-                        layoutParams = LayoutParams(
-                            LayoutParams.MATCH_PARENT,
-                            LayoutParams.WRAP_CONTENT
-                        )
-                        setImageURI(uri)
-                        scaleType = ImageView.ScaleType.FIT_CENTER
-                        setPadding(20)
+                    override fun onTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        before: Int,
+                        count: Int
+                    ) {
                     }
-                    val alertDialog = AlertDialog.Builder(this)
-                    alertDialog
-                        .setPositiveButton(getText(R.string.close)) { dialog, _ ->
-                            dialog.dismiss()
-                            ivOverview.parent?.let { (it as ViewGroup).removeView(ivOverview) }
-                        }
-                        .setNegativeButton(getText(R.string.delete)) { dialog, _ ->
-                            dialog.dismiss()
-                            llTeacherDocuments.removeView(customInput)
-                            viewModel.removeTeacherDocument(document)
-                        }
-                        .setView(ivOverview)
-                        .create()
-                    customInput.setAction({ alertDialog.show() }, uri)
-                    llTeacherDocuments.addView(customInput)
+
+                    override fun afterTextChanged(s: Editable?) {
+                        document.name = s.toString()
+                        viewModel.addOrReplaceTeacherDocument(document)
+                    }
 
                 }
+
+                val alertDialog = AlertDialog.Builder(this)
+                alertDialog
+                    .setPositiveButton(getText(R.string.close)) { dialog, _ ->
+                        dialog.dismiss()
+                        ivOverview.parent?.let { (it as ViewGroup).removeView(ivOverview) }
+                    }
+                    .setNegativeButton(getText(R.string.delete)) { dialog, _ ->
+                        dialog.dismiss()
+                        llTeacherDocuments.removeView(customInput)
+                        viewModel.removeTeacherDocument(document)
+                    }
+                    .setView(ivOverview)
+                    .create()
+                customInput.setAction({ alertDialog.show() }, uri)
+                llTeacherDocuments.addView(customInput)
+
             }
         }
 
@@ -435,6 +448,7 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                 Toast.LENGTH_SHORT
             ).show()
             startActivity(Intent(this@MainActivity, HomeActivity::class.java))
+            finish()
         }
 
         fun onRegisterTeacher(data: User?, error: String?) {
@@ -447,7 +461,7 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
             teacherSignupConfirmation.show(supportFragmentManager, "teacherSignupConfirmation")
         }
 
-        if (userType == UserType.STUDENT) {
+        if (viewModel.userType == UserType.STUDENT) {
             viewModel.updateStudentRegisterRequest(
                 StudentSignupDTO(
                     firstName = ciFirstnameRegister.et.text.toString(),

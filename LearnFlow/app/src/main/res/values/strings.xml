@@ -48,4 +48,6 @@
     <string name="no_result_for_query">Aucun résultat ne correspond à votre recherche</string>
     <string name="signup_teacher_school_subjects">Sélectionnez la ou les matières que vous souhaitez enseigner et indiquez votre nombre d’année d’expérience</string>
     <string name="one">1</string>
+    <string name="profile">Profil</string>
+    <string name="retry">Réessayer</string>
 </resources>

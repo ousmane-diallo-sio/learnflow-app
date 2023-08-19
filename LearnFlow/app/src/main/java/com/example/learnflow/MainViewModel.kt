@@ -2,21 +2,19 @@ package com.example.learnflow
 
 import android.app.Activity
 import android.content.Context
-import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.learnflow.model.Document
-import com.example.learnflow.model.Jwt
 import com.example.learnflow.model.SchoolSubject
 import com.example.learnflow.model.SchoolSubjectTeached
 import com.example.learnflow.model.User
+import com.example.learnflow.model.UserType
 import com.example.learnflow.network.NetworkManager
 import com.example.learnflow.network.StudentSignupDTO
 import com.example.learnflow.network.TeacherSignupDTO
 import com.example.learnflow.network.UserLoginDTO
 import com.google.android.material.snackbar.Snackbar
-import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -24,6 +22,7 @@ import java.net.SocketTimeoutException
 
 class MainViewModel : ViewModel() {
 
+    var userType: UserType? = null
     private val userFlow = MutableStateFlow<User?>(null)
     val schoolSubjectsFlow = MutableStateFlow<List<SchoolSubject>>(emptyList())
 
@@ -61,7 +60,7 @@ class MainViewModel : ViewModel() {
                 "Erreur lors de la récupération des matières scolaires",
                 Snackbar.LENGTH_LONG
             )
-                .setAction("Retry") {
+                .setAction(context.getString(R.string.retry)) {
                     getSchoolSubjects(context)
                 }
                 .show()
@@ -83,7 +82,7 @@ class MainViewModel : ViewModel() {
                 Log.e("MainViewModel", "Failed to get school subjects: ${serverResponse?.error}")
                 handleRequestFailure()
             } catch (e: SocketTimeoutException) {
-                Log.e("MainViewModel", "Connection timed out: $e")
+                Log.e("MainViewModel", "Connection timed out: ${e.message}")
                 handleRequestFailure()
             } catch (e: Exception) {
                 Log.e("MainViewModel", "Failed to get school subjects: ${e.message}")
@@ -120,6 +119,37 @@ class MainViewModel : ViewModel() {
             ?.run { this.nbYearsExp = nbYearsExp }
     }
 
+    fun autoLogin(context: Context, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            try {
+                val res = NetworkManager.autoLoginAsync(context)?.await()
+
+                res?.let { serverResponse ->
+                    serverResponse.data?.let { data ->
+                        updateUser(data)
+                        serverResponse.jwt?.let { jwt ->
+                            NetworkManager.saveJwt(
+                                context,
+                                jwt
+                            )
+                        }
+                        onSuccess()
+                        return@launch
+                    }
+                }
+                Log.e("MainViewModel", "API response data is null !!")
+            } catch (e: HttpException) {
+                val serverResponse = NetworkManager.parseHttpException(e)
+
+                Log.e("MainViewModel", "Failed to login: ${serverResponse?.error}")
+            } catch (e: SocketTimeoutException) {
+                Log.e("MainViewModel", "Connection timed out: $e")
+            } catch (e: Exception) {
+                Log.e("MainViewModel", "Failed to login: ${e.message}")
+            }
+        }
+    }
+
     fun login(
         context: Context,
         userLoginRequest: UserLoginDTO,
@@ -133,8 +163,8 @@ class MainViewModel : ViewModel() {
                     serverResponse.data?.let { data ->
                         updateUser(data)
                         serverResponse.jwt?.let { jwt ->
-                            saveJwtToken(
-                                context.getSharedPreferences("jwtToken", Context.MODE_PRIVATE),
+                            NetworkManager.saveJwt(
+                                context,
                                 jwt
                             )
                         }
@@ -171,8 +201,8 @@ class MainViewModel : ViewModel() {
                     serverResponse.data?.let { data ->
                         updateUser(data)
                         serverResponse.jwt?.let { jwt ->
-                            saveJwtToken(
-                                context.getSharedPreferences("jwtToken", Context.MODE_PRIVATE),
+                            NetworkManager.saveJwt(
+                                context,
                                 jwt
                             )
                         }
@@ -211,12 +241,7 @@ class MainViewModel : ViewModel() {
                 res?.let { serverResponse ->
                     serverResponse.data?.let { data ->
                         updateUser(data)
-                        serverResponse.jwt?.let { jwt ->
-                            saveJwtToken(
-                                context.getSharedPreferences("jwtToken", Context.MODE_PRIVATE),
-                                jwt
-                            )
-                        }
+                        serverResponse.jwt?.let { jwt -> NetworkManager.saveJwt(context, jwt) }
                         callback(data, null)
                         return@launch
                     }
@@ -239,21 +264,6 @@ class MainViewModel : ViewModel() {
                 callback(null, defaultErrorMsg)
             }
         }
-    }
-
-    private fun saveJwtToken(sharedPreferences: SharedPreferences, token: Jwt) {
-        sharedPreferences.edit().putString("jwtToken", Gson().toJson(token)).apply()
-    }
-
-    fun deleteJwtToken(sharedPreferences: SharedPreferences) {
-        sharedPreferences.edit().remove("jwtToken").apply()
-    }
-
-    fun getJwtToken(sharedPreferences: SharedPreferences): Jwt? {
-        return Gson().fromJson(
-            sharedPreferences.getString("jwtToken", null),
-            Jwt::class.java
-        )
     }
 
     /*

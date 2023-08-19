@@ -12,5 +12,4 @@ data class JwtPayload(
     val email: String,
     val role: String,
     val stales: Long
-
 )

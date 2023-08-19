@@ -16,8 +16,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:cardCornerRadius="30dp"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/bright_gray">
+                app:cardElevation="3dp"
+                android:layout_margin="2dp"
+                app:cardBackgroundColor="@color/white">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -52,7 +53,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.3"
-                        android:background="@color/black_alpha_1"
+                        android:background="@color/aquamarine"
                         android:foreground="@drawable/ripple_selector"
                         android:visibility="gone">
 
@@ -63,7 +64,7 @@
                             android:contentDescription="@string/icon"
                             android:scaleType="fitCenter"
                             android:src="@drawable/ic_launcher_background"
-                            app:tint="@color/aquamarine" />
+                            app:tint="@color/white" />
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

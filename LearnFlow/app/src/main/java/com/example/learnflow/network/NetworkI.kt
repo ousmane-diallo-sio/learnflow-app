@@ -9,6 +9,9 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface NetworkI {
+    @POST("/auth/autologin/user")
+    fun autoLoginAsync(): Deferred<ServerResponse<User>>
+
     @POST("/auth/login/user")
     fun loginAsync(@Body requestBody: UserLoginDTO): Deferred<ServerResponse<User>>
 
@@ -17,6 +20,9 @@ interface NetworkI {
 
     @POST("/register/teacher")
     fun registerTeacherAsync(@Body requestBody: TeacherSignupDTO): Deferred<ServerResponse<User>>
+
+    @GET("/users/me")
+    fun getMeAsync(): Deferred<ServerResponse<User>>
 
     @GET("/teachers/{query}")
     fun getTeachersAsync(@Path("query") query: String): Deferred<ServerResponse<List<User>>>
