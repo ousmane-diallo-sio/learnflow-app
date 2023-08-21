@@ -8,12 +8,18 @@
     <fragment
         android:id="@+id/navigation_search"
         android:name="com.example.learnflow.ui.search.SearchTeacherFragment"
-        android:label="@string/title_search"
+        android:label="@string/nav_bar_search"
         tools:layout="@layout/fragment_search_teacher" />
 
     <fragment
         android:id="@+id/navigation_messages"
         android:name="com.example.learnflow.ui.messages.MessagesFragment"
-        android:label="@string/title_messages"
+        android:label="@string/nav_bar_messages"
+        tools:layout="@layout/fragment_messages" />
+
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.example.learnflow.ui.profile.student.StudentProfileFragment"
+        android:label="@string/nav_bar_profile"
         tools:layout="@layout/fragment_messages" />
 </navigation>

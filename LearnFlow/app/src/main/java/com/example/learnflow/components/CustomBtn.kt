@@ -18,9 +18,9 @@ class CustomBtn(context: Context, private val attrs: AttributeSet?) : LinearLayo
 
     private val cv: CardView
     private val ll: FrameLayout
-    private val iconBefore: ImageView
+    val iconBefore: ImageView
     val tv: TextView
-    private val iconAfter: ImageView
+    val iconAfter: ImageView
     private val pb: ProgressBar
     private val llContent: LinearLayout
 
@@ -117,5 +117,9 @@ class CustomBtn(context: Context, private val attrs: AttributeSet?) : LinearLayo
             }
         }
         super.setOnClickListener(onClickWrapper)
+    }
+
+    fun setBtnBackgroundColor(color: Int) {
+        ll.setBackgroundColor(color)
     }
 }

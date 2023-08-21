@@ -14,7 +14,6 @@ class HomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHomeBinding
     private val viewModel: HomeViewModel by viewModels()
-    private val userViewModel: UserViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,12 +23,12 @@ class HomeActivity : AppCompatActivity() {
 
         viewModel.getMe(this) { user ->
             lifecycleScope.launch {
-                userViewModel.userFlow.emit(user)
+                viewModel.userFlow.emit(user)
             }
         }
 
         val navView: BottomNavigationView = binding.navView
-        if (userViewModel.userFlow.value?.teacher != null) {
+        if (viewModel.userFlow.value?.teacher != null) {
             navView.menu.clear()
             navView.inflateMenu(R.menu.bottom_nav_menu_teacher)
         }

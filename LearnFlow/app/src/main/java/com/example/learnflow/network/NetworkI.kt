@@ -4,6 +4,7 @@ import com.example.learnflow.model.User
 import kotlinx.coroutines.Deferred
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -23,6 +24,9 @@ interface NetworkI {
 
     @GET("/users/me")
     fun getMeAsync(): Deferred<ServerResponse<User>>
+
+    @PATCH("/users/me")
+    fun updateUserAsync(@Body requestBody: User): Deferred<ServerResponse<User>>
 
     @GET("/teachers/{query}")
     fun getTeachersAsync(@Path("query") query: String): Deferred<ServerResponse<List<User>>>

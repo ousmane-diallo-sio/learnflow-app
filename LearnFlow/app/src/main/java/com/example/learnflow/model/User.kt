@@ -2,6 +2,7 @@ package com.example.learnflow.model
 
 import android.graphics.Bitmap
 import android.os.Parcelable
+import android.util.Log
 import com.example.learnflow.utils.Utils
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
@@ -52,14 +53,25 @@ data class User(
 
     @IgnoredOnParcel
     var profilePictureBitmap: Bitmap? = null
-    init {
-        profilePictureBitmap = Utils.base64ToBitmap(profilePicture.base64)
-    }
+        get() {
+            if (field == null) {
+                field = Utils.base64ToBitmap(profilePicture.base64)
+            }
+            return field
+        }
+        private set
 }
 
 @Parcelize
 data class Student(
-    var test: String,
+    var schoolLevel: String,
+    var firstName: String,
+    var lastName: String,
+    var birthdate: LocalDateTime,
+    var email: String,
+    var address: Address,
+    var phoneNumber: String,
+    var profilePicture: Document,
 ) : Parcelable
 
 @Parcelize
