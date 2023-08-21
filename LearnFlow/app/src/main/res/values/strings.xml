@@ -50,4 +50,5 @@
     <string name="one">1</string>
     <string name="profile">Profil</string>
     <string name="retry">Réessayer</string>
+    <string name="profile_student_title">Votre profil</string>
 </resources>
