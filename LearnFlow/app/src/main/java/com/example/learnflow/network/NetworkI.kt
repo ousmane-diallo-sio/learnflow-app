@@ -16,6 +16,9 @@ interface NetworkI {
     @POST("/auth/login/user")
     fun loginAsync(@Body requestBody: UserLoginDTO): Deferred<ServerResponse<User>>
 
+    @POST("/auth/logout")
+    fun logoutAsync(): Deferred<ServerResponse<Any>>
+
     @POST("/register/student")
     fun registerStudentAsync(@Body requestBody: StudentSignupDTO): Deferred<ServerResponse<User>>
 

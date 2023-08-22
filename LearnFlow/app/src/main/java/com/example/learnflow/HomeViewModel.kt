@@ -3,6 +3,7 @@ package com.example.learnflow
 import android.app.Activity
 import android.app.ProgressDialog.show
 import android.content.Context
+import android.content.Intent
 import android.net.Network
 import android.util.Log
 import androidx.core.content.res.ResourcesCompat
@@ -22,7 +23,7 @@ class HomeViewModel : ViewModel() {
     private val TAG = "HomeViewModel"
     val userFlow: MutableStateFlow<User?> = MutableStateFlow(null)
 
-    fun getMe(context: Activity, callback: (User?) -> Unit) {
+    fun getMe(context: Activity, callback: (User?) -> Unit = {}) {
         fun handleRequestFailure() {
             Snackbar.make(
                 context.findViewById(android.R.id.content),
@@ -36,7 +37,12 @@ class HomeViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val res = NetworkManager.getMeAsync(context)?.await()
-                res?.let { serverResponse -> serverResponse.data?.let { callback(it) } }
+                res?.let { serverResponse ->
+                    serverResponse.data?.let {
+                        userFlow.emit(it)
+                        callback(it)
+                    }
+                }
             } catch (e: HttpException) {
                 val serverResponse = NetworkManager.parseHttpException(e)
                 Log.e(TAG, "getMe: ${serverResponse?.error}")
@@ -104,4 +110,21 @@ class HomeViewModel : ViewModel() {
         }
     }
 
+    fun logout(context: Activity, callback: () -> Unit) {
+        viewModelScope.launch {
+            try {
+                val res = NetworkManager.logoutAsync(context)?.await()
+                res?.let {
+                    callback()
+                }
+            } catch (e: HttpException) {
+                val serverResponse = NetworkManager.parseHttpException(e)
+                Log.e(TAG, "logout: ${serverResponse?.error}")
+            } catch (e: SocketTimeoutException) {
+                Log.e(TAG, "logout: ${e.message}")
+            } catch (e: Exception) {
+                Log.e(TAG, "logout: ${e.message}")
+            }
+        }
+    }
 }

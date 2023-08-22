@@ -21,11 +21,7 @@ class HomeActivity : AppCompatActivity() {
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel.getMe(this) { user ->
-            lifecycleScope.launch {
-                viewModel.userFlow.emit(user)
-            }
-        }
+        viewModel.getMe(this)
 
         val navView: BottomNavigationView = binding.navView
         if (viewModel.userFlow.value?.teacher != null) {

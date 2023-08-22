@@ -1,5 +1,6 @@
 package com.example.learnflow.network
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -148,6 +149,12 @@ object NetworkManager {
     fun loginAsync(context: Context, requestBody: UserLoginDTO): Deferred<ServerResponse<User>>? {
         if (handleMissingNetwork(context)) return null
         return api.loginAsync(requestBody)
+    }
+
+    fun logoutAsync(context: Activity): Deferred<ServerResponse<Any>>? {
+        if (handleMissingNetwork(context)) return null
+        deleteJwt(context)
+        return api.logoutAsync()
     }
 
     fun registerStudentAsync(context: Context, requestBody: StudentSignupDTO): Deferred<ServerResponse<User>>? {
