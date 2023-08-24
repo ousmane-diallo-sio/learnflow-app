@@ -12,17 +12,18 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.drawToBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.example.learnflow.HomeViewModel
 import com.example.learnflow.R
 import com.example.learnflow.components.CustomBtn
 import com.example.learnflow.databinding.FragmentStudentProfileBinding
+import com.example.learnflow.model.User
 import com.example.learnflow.utils.Utils
 import fr.kameouss.instamemeeditor.components.ImagePickerFragment
 import kotlinx.coroutines.launch
@@ -69,6 +70,21 @@ class StudentProfileFragment : Fragment() {
         val btnEditAddress = binding.btnEditAddressProfileStudent
         val btnLogout = binding.btnLogoutProfileStudent
 
+        val editBtns = listOf(
+            btnEditFirstname,
+            btnEditLastname,
+            btnEditSchoolLevel,
+            btnEditAddress
+        )
+
+        fun handleDuplicateEdit(currentBtn: CustomBtn) {
+            editBtns.forEach { btn ->
+                if (btn != currentBtn && btn.hasEditStyle()) {
+                    btn.performClick()
+                }
+            }
+        }
+
         bindData()
         lifecycleScope.launch {
             homeViewModel.userFlow.collect { bindData() }
@@ -85,20 +101,20 @@ class StudentProfileFragment : Fragment() {
 
 
         btnEditPicture.setOnClickListener {
+            handleDuplicateEdit(btnEditPicture)
+            btnEditPicture.triggerEditOrBaseStyle(true)
             imgPickerFragment.pickImage { uri ->
-                lifecycleScope.launch {
-                    homeViewModel.userFlow.value?.let { userFlow ->
-                        ivPicture.setImageURI(uri)
-                        val newProfilePic = userFlow.profilePicture.copy(
-                            base64 = Utils.bitmapToBase64(ivPicture.drawToBitmap()) ?: ""
-                        )
-                        homeViewModel.updateUser(
-                            requireActivity(),
-                            userFlow.copy(
-                                profilePicture = newProfilePic,
-                                student = userFlow.student?.copy(
-                                    profilePicture = newProfilePic
-                                )
+                homeViewModel.userFlow.value?.let { user ->
+                    btnEditPicture.triggerEditOrBaseStyle(false)
+                    ivPicture.setImageURI(uri)
+                    val newProfilePic = user.profilePicture.copy(
+                        base64 = Utils.bitmapToBase64(ivPicture.drawToBitmap()) ?: ""
+                    )
+                    updateUser {
+                        it.copy(
+                            profilePicture = newProfilePic,
+                            student = it.student?.copy(
+                                profilePicture = newProfilePic
                             )
                         )
                     }
@@ -107,30 +123,60 @@ class StudentProfileFragment : Fragment() {
         }
 
         btnEditFirstname.setOnClickListener {
-            homeViewModel.userFlow.value?.firstName?.toEditable()?.let { firstName ->
-                etFirstname.markEditableOrDisable(firstName)
-            }
-            btnEditFirstname.triggerEditOrBaseStyle(etFirstname.inputType != InputType.TYPE_NULL)
-
-            lifecycleScope.launch {
-                homeViewModel.userFlow.value?.let {
-                    homeViewModel.updateUser(
-                        requireActivity(),
+            handleDuplicateEdit(btnEditFirstname)
+            homeViewModel.userFlow.value?.let { user ->
+                if (etFirstname.isEditable()) {
+                    updateUser {
                         it.copy(
                             firstName = etFirstname.text.toString(),
-                            student = it.student?.copy(
-                                firstName = etFirstname.text.toString()
-                            )
+                            student = it.student?.copy(firstName = etFirstname.text.toString())
                         )
-                    )
+                    }
                 }
+                etFirstname.markEditableOrDisable(user.firstName.toEditable())
+                btnEditFirstname.triggerEditOrBaseStyle(etFirstname.isEditable())
+            }
+        }
+
+        btnEditLastname.setOnClickListener {
+            handleDuplicateEdit(btnEditLastname)
+            homeViewModel.userFlow.value?.let { user ->
+                if (etLastname.isEditable()) {
+                    updateUser {
+                        it.copy(
+                            lastName = etLastname.text.toString(),
+                            student = it.student?.copy(lastName = etLastname.text.toString())
+                        )
+                    }
+                }
+                etLastname.markEditableOrDisable(user.lastName.toEditable())
+                btnEditLastname.triggerEditOrBaseStyle(etLastname.isEditable())
+            }
+        }
+
+        btnEditPhoneNumber.setOnClickListener {
+            handleDuplicateEdit(btnEditPhoneNumber)
+            homeViewModel.userFlow.value?.let { user ->
+                if (etPhoneNumber.isEditable()) {
+                    updateUser {
+                        it.copy(
+                            phoneNumber = etPhoneNumber.text.toString(),
+                            student = it.student?.copy(phoneNumber = etPhoneNumber.text.toString())
+                        )
+                    }
+                }
+                etPhoneNumber.markEditableOrDisable(
+                    user.phoneNumber.toEditable(),
+                    InputType.TYPE_CLASS_NUMBER
+                )
+                btnEditPhoneNumber.triggerEditOrBaseStyle(etPhoneNumber.isEditable())
             }
         }
 
         btnLogout.setOnClickListener {
             lifecycleScope.launch {
                 homeViewModel.logout(requireActivity()) {
-                    requireActivity().runOnUiThread{
+                    requireActivity().runOnUiThread {
                         Toast.makeText(context, "Déconnexion", Toast.LENGTH_SHORT).show()
                         findNavController().navigate(
                             StudentProfileFragmentDirections.actionNavigationProfileToActivityMain()
@@ -177,10 +223,19 @@ class StudentProfileFragment : Fragment() {
         ).toEditable()
     }
 
+    private fun updateUser(newValue: (User) -> User) {
+        homeViewModel.userFlow.value?.let {
+            lifecycleScope.launch {
+                homeViewModel.updateUser(requireActivity(), newValue(it))
+            }
+        }
+    }
+
     private fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)
 
-    private fun CustomBtn.triggerEditOrBaseStyle(editStyle: Boolean): Unit {
-        if (editStyle) {
+    private fun CustomBtn.triggerEditOrBaseStyle(useEditStyle: Boolean) {
+        if (useEditStyle) {
+            tag = "editStyle"
             setBtnBackgroundColor(
                 ResourcesCompat.getColor(resources, R.color.crayola, null)
             )
@@ -193,6 +248,7 @@ class StudentProfileFragment : Fragment() {
             )
             return
         }
+        tag = "notEditStyle"
         setBtnBackgroundColor(
             ResourcesCompat.getColor(resources, R.color.coral, null)
         )
@@ -205,17 +261,29 @@ class StudentProfileFragment : Fragment() {
         )
     }
 
-    private fun EditText.markEditableOrDisable(defaultValue: Editable): Unit {
+    private fun CustomBtn.hasEditStyle(): Boolean {
+        Log.d("hasEdit", "tag : $tag")
+        return tag == "editStyle"
+    }
+
+    private fun EditText.markEditableOrDisable(
+        defaultValue: Editable,
+        newInputType: Int = InputType.TYPE_CLASS_TEXT
+    ) {
+
         if (inputType == InputType.TYPE_NULL) {
             text = defaultValue
-            inputType = InputType.TYPE_CLASS_TEXT
+            inputType = newInputType
             requestFocus()
             return
         }
         val imm = getSystemService(requireContext(), InputMethodManager::class.java)
         imm?.hideSoftInputFromWindow(view?.windowToken, 0)
         inputType = InputType.TYPE_NULL
+        bindData()
     }
+
+    private fun EditText.isEditable() = inputType != InputType.TYPE_NULL
 
     override fun onDestroyView() {
         super.onDestroyView()

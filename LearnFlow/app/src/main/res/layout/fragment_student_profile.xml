@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-    android:id="@+id/swipeRefreshLayoutStudentProfile"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipeRefreshLayoutStudentProfile"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.profile.student.StudentProfileFragment">
@@ -94,7 +93,8 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/baseline_email_24"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/bright_gray"/>
 
             <TextView
                 android:id="@+id/tvEmailProfileStudent"
@@ -110,9 +110,10 @@
                 android:id="@+id/ivIconBirthdateProfileStudent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/baseline_email_24"
+                android:src="@drawable/baseline_cake_24"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:tint="@color/bright_gray"/>
 
             <TextView
                 android:id="@+id/tvBirthdateProfileStudent"

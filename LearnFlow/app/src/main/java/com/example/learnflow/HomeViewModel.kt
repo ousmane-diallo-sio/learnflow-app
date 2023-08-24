@@ -21,7 +21,7 @@ import java.net.SocketTimeoutException
 class HomeViewModel : ViewModel() {
 
     private val TAG = "HomeViewModel"
-    val userFlow: MutableStateFlow<User?> = MutableStateFlow(null)
+    val userFlow = MutableStateFlow<User?>(null)
 
     fun getMe(context: Activity, callback: (User?) -> Unit = {}) {
         fun handleRequestFailure() {
@@ -58,9 +58,8 @@ class HomeViewModel : ViewModel() {
     }
 
     fun updateUser(context: Activity, user: User) {
-        if (user == userFlow.value) return
-
-        val oldUser = userFlow.value?.copy()
+        val oldUser = userFlow.value
+        if (user == oldUser) return
 
         val onSuccess = { data: User ->
             val snackbar = Snackbar.make(
@@ -68,6 +67,7 @@ class HomeViewModel : ViewModel() {
                 "Vos informations ont bien été mises à jour",
                 Snackbar.LENGTH_SHORT
             )
+            snackbar.setAction("OK") { snackbar.dismiss() }
             snackbar.show()
             suspend { userFlow.emit(data) }
         }
