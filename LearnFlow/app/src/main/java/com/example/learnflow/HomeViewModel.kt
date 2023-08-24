@@ -61,7 +61,7 @@ class HomeViewModel : ViewModel() {
         val oldUser = userFlow.value
         if (user == oldUser) return
 
-        val onSuccess = { data: User ->
+        val onSuccess: suspend  (User) -> Unit = { data: User ->
             val snackbar = Snackbar.make(
                 context.findViewById(android.R.id.content),
                 "Vos informations ont bien été mises à jour",
@@ -69,17 +69,18 @@ class HomeViewModel : ViewModel() {
             )
             snackbar.setAction("OK") { snackbar.dismiss() }
             snackbar.show()
-            suspend { userFlow.emit(data) }
+            userFlow.emit(data)
         }
 
-        val onFailure = { errorMsg: String? ->
+        val onFailure: suspend (String?) -> Unit = { errorMsg: String? ->
             Snackbar.make(
                 context.findViewById(android.R.id.content),
                 errorMsg ?: "Erreur lors de la mise à jour de vos informations",
                 Snackbar.LENGTH_LONG
             )
                 .show()
-            suspend { userFlow.emit(oldUser) }
+            Log.d(TAG, "updateUser: ${oldUser?.phoneNumber}")
+            userFlow.emit(oldUser)
         }
 
         viewModelScope.launch {
