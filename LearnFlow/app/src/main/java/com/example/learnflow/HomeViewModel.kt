@@ -22,6 +22,25 @@ class HomeViewModel : ViewModel() {
 
     private val TAG = "HomeViewModel"
     val userFlow = MutableStateFlow<User?>(null)
+    val schoolLevels = listOf(
+        "CP",
+        "CE1",
+        "CE2",
+        "CM1",
+        "CM2",
+        "6ème",
+        "5ème",
+        "4ème",
+        "3ème",
+        "2nde",
+        "1ère",
+        "Terminale",
+        "Bac +1",
+        "Bac +2",
+        "Bac +3",
+        "Bac +4",
+        "Bac +5"
+    )
 
     fun getMe(context: Activity, callback: (User?) -> Unit = {}) {
         fun handleRequestFailure() {
@@ -61,7 +80,7 @@ class HomeViewModel : ViewModel() {
         val oldUser = userFlow.value
         if (user == oldUser) return
 
-        val onSuccess: suspend  (User) -> Unit = { data: User ->
+        val onSuccess: suspend (User) -> Unit = { data: User ->
             val snackbar = Snackbar.make(
                 context.findViewById(android.R.id.content),
                 "Vos informations ont bien été mises à jour",

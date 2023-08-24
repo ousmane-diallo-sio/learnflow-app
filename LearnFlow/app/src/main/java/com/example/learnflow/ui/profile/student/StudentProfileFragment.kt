@@ -8,12 +8,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.Spinner
 import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.drawToBitmap
+import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -54,6 +58,10 @@ class StudentProfileFragment : Fragment() {
             .commit()
 
         val swipeRefreshLayout = binding.swipeRefreshLayoutStudentProfile
+        val clMain = binding.clMainStudentProfile
+        val spinnerSchoolLevel = Spinner(context, Spinner.MODE_DIALOG).apply {
+            visibility = View.INVISIBLE
+        }
 
         val ivPicture = binding.ivPictureProfileStudent
         val etFirstname = binding.etFirstnameProfileStudent
@@ -77,18 +85,8 @@ class StudentProfileFragment : Fragment() {
             btnEditAddress
         )
 
-        fun handleDuplicateEdit(currentBtn: CustomBtn) {
-            editBtns.forEach { btn ->
-                if (btn != currentBtn && btn.hasEditStyle()) {
-                    btn.performClick()
-                }
-            }
-        }
-
-        bindData()
-        lifecycleScope.launch {
-            homeViewModel.userFlow.collect { bindData() }
-        }
+        val editTexts = listOf(etFirstname, etLastname, etSchoolLevel, etPhoneNumber, etAddress)
+        editTexts.forEach { it.inputType = InputType.TYPE_NULL }
 
         swipeRefreshLayout.setOnRefreshListener {
             homeViewModel.getMe(requireActivity()) {
@@ -96,12 +94,43 @@ class StudentProfileFragment : Fragment() {
             }
         }
 
-        val editTexts = listOf(etFirstname, etLastname, etSchoolLevel, etPhoneNumber, etAddress)
-        editTexts.forEach { it.inputType = InputType.TYPE_NULL }
+        bindData()
+        lifecycleScope.launch {
+            homeViewModel.userFlow.collect {
+                bindData()
+                spinnerSchoolLevel.setSelection(
+                    homeViewModel.schoolLevels.indexOf(homeViewModel.userFlow.value?.student?.schoolLevel)
+                )
+            }
+        }
 
+        spinnerSchoolLevel.adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_dropdown_item,
+            homeViewModel.schoolLevels
+        )
+        spinnerSchoolLevel.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                homeViewModel.userFlow.value?.let {
+                    updateUser {
+                        it.copy(
+                            student = it.student?.copy(schoolLevel = homeViewModel.schoolLevels[position])
+                        )
+                    }
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+        clMain.addView(spinnerSchoolLevel)
 
         btnEditPicture.setOnClickListener {
-            handleDuplicateEdit(btnEditPicture)
+            handleDuplicateEdit(editBtns, btnEditPicture)
             btnEditPicture.triggerEditOrBaseStyle(true)
             imgPickerFragment.pickImage { uri ->
                 homeViewModel.userFlow.value?.let { user ->
@@ -123,7 +152,7 @@ class StudentProfileFragment : Fragment() {
         }
 
         btnEditFirstname.setOnClickListener {
-            handleDuplicateEdit(btnEditFirstname)
+            handleDuplicateEdit(editBtns, btnEditFirstname)
             homeViewModel.userFlow.value?.let { user ->
                 if (etFirstname.isEditable()) {
                     updateUser {
@@ -139,7 +168,7 @@ class StudentProfileFragment : Fragment() {
         }
 
         btnEditLastname.setOnClickListener {
-            handleDuplicateEdit(btnEditLastname)
+            handleDuplicateEdit(editBtns, btnEditLastname)
             homeViewModel.userFlow.value?.let { user ->
                 if (etLastname.isEditable()) {
                     updateUser {
@@ -154,8 +183,12 @@ class StudentProfileFragment : Fragment() {
             }
         }
 
+        btnEditSchoolLevel.setOnClickListener {
+            spinnerSchoolLevel.performClick()
+        }
+
         btnEditPhoneNumber.setOnClickListener {
-            handleDuplicateEdit(btnEditPhoneNumber)
+            handleDuplicateEdit(editBtns, btnEditPhoneNumber)
             homeViewModel.userFlow.value?.let { user ->
                 if (etPhoneNumber.isEditable()) {
                     updateUser {
@@ -227,6 +260,14 @@ class StudentProfileFragment : Fragment() {
         homeViewModel.userFlow.value?.let {
             lifecycleScope.launch {
                 homeViewModel.updateUser(requireActivity(), newValue(it))
+            }
+        }
+    }
+
+    private fun handleDuplicateEdit(editBtns: List<CustomBtn>, currentBtn: CustomBtn) {
+        editBtns.forEach { btn ->
+            if (btn != currentBtn && btn.hasEditStyle()) {
+                btn.performClick()
             }
         }
     }
