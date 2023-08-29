@@ -1,5 +1,8 @@
 package com.example.learnflow.ui.profile.student
 
+import android.app.Activity
+import android.content.Intent
+import android.location.Location
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputType
@@ -13,6 +16,8 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.res.ResourcesCompat
@@ -29,11 +34,25 @@ import com.example.learnflow.components.CustomBtn
 import com.example.learnflow.databinding.FragmentStudentProfileBinding
 import com.example.learnflow.model.User
 import com.example.learnflow.utils.Utils
+import com.google.android.gms.common.api.Status
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken
+import com.google.android.libraries.places.api.model.LocationBias
+import com.google.android.libraries.places.api.model.LocationRestriction
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.model.PlaceTypes
+import com.google.android.libraries.places.api.model.TypeFilter
+import com.google.android.libraries.places.widget.Autocomplete
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import fr.kameouss.instamemeeditor.components.ImagePickerFragment
 import kotlinx.coroutines.launch
 
 
 class StudentProfileFragment : Fragment() {
+
+    private val TAG = "StudentProfileFragment"
+    private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
 
     private var _binding: FragmentStudentProfileBinding? = null
     private val binding get() = _binding!!
@@ -41,9 +60,7 @@ class StudentProfileFragment : Fragment() {
     private val homeViewModel: HomeViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentStudentProfileBinding.inflate(inflater, container, false)
         return binding.root
@@ -54,8 +71,7 @@ class StudentProfileFragment : Fragment() {
 
         val imgPickerFragment = ImagePickerFragment()
         requireActivity().supportFragmentManager.beginTransaction()
-            .add(imgPickerFragment, "imgPickerFragmentMain")
-            .commit()
+            .add(imgPickerFragment, "imgPickerFragmentMain").commit()
 
         val swipeRefreshLayout = binding.swipeRefreshLayoutStudentProfile
         val clMain = binding.clMainStudentProfile
@@ -79,10 +95,7 @@ class StudentProfileFragment : Fragment() {
         val btnLogout = binding.btnLogoutProfileStudent
 
         val editBtns = listOf(
-            btnEditFirstname,
-            btnEditLastname,
-            btnEditSchoolLevel,
-            btnEditAddress
+            btnEditFirstname, btnEditLastname, btnEditSchoolLevel, btnEditAddress
         )
 
         val editTexts = listOf(etFirstname, etLastname, etSchoolLevel, etPhoneNumber, etAddress)
@@ -111,10 +124,7 @@ class StudentProfileFragment : Fragment() {
         )
         spinnerSchoolLevel.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
+                parent: AdapterView<*>?, view: View?, position: Int, id: Long
             ) {
                 homeViewModel.userFlow.value?.let {
                     updateUser {
@@ -141,8 +151,7 @@ class StudentProfileFragment : Fragment() {
                     )
                     updateUser {
                         it.copy(
-                            profilePicture = newProfilePic,
-                            student = it.student?.copy(
+                            profilePicture = newProfilePic, student = it.student?.copy(
                                 profilePicture = newProfilePic
                             )
                         )
@@ -199,11 +208,22 @@ class StudentProfileFragment : Fragment() {
                     }
                 }
                 etPhoneNumber.markEditableOrDisable(
-                    user.phoneNumber.toEditable(),
-                    InputType.TYPE_CLASS_NUMBER
+                    user.phoneNumber.toEditable(), InputType.TYPE_CLASS_NUMBER
                 )
                 btnEditPhoneNumber.triggerEditOrBaseStyle(etPhoneNumber.isEditable())
             }
+        }
+
+        btnEditAddress.setOnClickListener {
+            handleDuplicateEdit(editBtns, btnEditAddress)
+            val intent = Autocomplete.IntentBuilder(
+                AutocompleteActivityMode.OVERLAY, listOf(Place.Field.ID, Place.Field.NAME)
+            ).also {
+                it.setCountries(listOf("FR"))
+                it.setTypesFilter(listOf(TypeFilter.ADDRESS.name))
+            }.build(requireContext())
+
+            activityResultLauncher.launch(intent)
         }
 
         btnLogout.setOnClickListener {
@@ -217,6 +237,31 @@ class StudentProfileFragment : Fragment() {
                         requireActivity().finish()
                     }
                 }
+            }
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        activityResultLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            Log.d(TAG, "onActivityResult: $result")
+            if (result.resultCode == Activity.RESULT_OK) {
+                val place = Autocomplete.getPlaceFromIntent(result.data!!)
+                Log.d(TAG, "Place: ${place.name}, ${place.id}, ${place.address}")
+//                    homeViewModel.userFlow.value?.let { user ->
+//                        if (etAddress.isEditable()) {
+//                            updateUser {
+//                                it.copy(
+//                                    address = place.address ?: "",
+//                                    student = it.student?.copy(address = place.address ?: "")
+//                                )
+//                            }
+//                        }
+//                        etAddress.markEditableOrDisable(user.address.toEditable())
+//                        btnEditAddress.triggerEditOrBaseStyle(etAddress.isEditable())
+//                    }
             }
         }
     }
@@ -235,24 +280,19 @@ class StudentProfileFragment : Fragment() {
         tvEmail.text = homeViewModel.userFlow.value?.email
         tvBirthdate.text = homeViewModel.userFlow.value?.birthdate.toString()
         etFirstname.text = getString(
-            R.string.profile_firstname,
-            homeViewModel.userFlow.value?.firstName
+            R.string.profile_firstname, homeViewModel.userFlow.value?.firstName
         ).toEditable()
         etLastname.text = getString(
-            R.string.profile_lastname,
-            homeViewModel.userFlow.value?.lastName
+            R.string.profile_lastname, homeViewModel.userFlow.value?.lastName
         ).toEditable()
         etSchoolLevel.text = getString(
-            R.string.profile_school_level,
-            homeViewModel.userFlow.value?.student?.schoolLevel
+            R.string.profile_school_level, homeViewModel.userFlow.value?.student?.schoolLevel
         ).toEditable()
         etPhoneNumber.text = getString(
-            R.string.profile_phone_number,
-            homeViewModel.userFlow.value?.phoneNumber
+            R.string.profile_phone_number, homeViewModel.userFlow.value?.phoneNumber
         ).toEditable()
         etAddress.text = getString(
-            R.string.profile_address,
-            homeViewModel.userFlow.value?.address.toString()
+            R.string.profile_address, homeViewModel.userFlow.value?.address.toString()
         ).toEditable()
     }
 
@@ -282,9 +322,7 @@ class StudentProfileFragment : Fragment() {
             )
             iconBefore.setImageDrawable(
                 ResourcesCompat.getDrawable(
-                    resources,
-                    R.drawable.baseline_check_24,
-                    null
+                    resources, R.drawable.baseline_check_24, null
                 )
             )
             return
@@ -295,21 +333,15 @@ class StudentProfileFragment : Fragment() {
         )
         iconBefore.setImageDrawable(
             ResourcesCompat.getDrawable(
-                resources,
-                R.drawable.baseline_edit_24,
-                null
+                resources, R.drawable.baseline_edit_24, null
             )
         )
     }
 
-    private fun CustomBtn.hasEditStyle(): Boolean {
-        Log.d("hasEdit", "tag : $tag")
-        return tag == "editStyle"
-    }
+    private fun CustomBtn.hasEditStyle() = tag == "editStyle"
 
     private fun EditText.markEditableOrDisable(
-        defaultValue: Editable,
-        newInputType: Int = InputType.TYPE_CLASS_TEXT
+        defaultValue: Editable, newInputType: Int = InputType.TYPE_CLASS_TEXT
     ) {
 
         if (inputType == InputType.TYPE_NULL) {

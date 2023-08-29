@@ -12,6 +12,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.learnflow.model.User
 import com.example.learnflow.network.NetworkManager
+import com.example.learnflow.utils.EnvUtils
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -41,6 +44,28 @@ class HomeViewModel : ViewModel() {
         "Bac +4",
         "Bac +5"
     )
+    val schoolSubjectsFlow = MutableStateFlow(
+        listOf(
+            "Maths",
+            "Anglais",
+            "Français",
+            "Physique-chimie",
+            "Histoire",
+            "Géographie",
+            "Art",
+            "Informatique",
+            "Economie",
+            "Philosophie",
+            "Biologie"
+        )
+    )
+    lateinit var placesClient: PlacesClient
+
+    fun initPlacesClient(context: Context) {
+        Log.d(TAG, "initPlacesClient: ${EnvUtils.MAPS_API_KEY}")
+        Places.initialize(context, EnvUtils.MAPS_API_KEY)
+        placesClient = Places.createClient(context)
+    }
 
     fun getMe(context: Activity, callback: (User?) -> Unit = {}) {
         fun handleRequestFailure() {

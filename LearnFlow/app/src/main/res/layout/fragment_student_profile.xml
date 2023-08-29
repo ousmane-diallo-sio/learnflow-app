@@ -95,7 +95,7 @@
                 android:src="@drawable/baseline_email_24"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/bright_gray"/>
+                app:tint="@color/chineese_silver"/>
 
             <TextView
                 android:id="@+id/tvEmailProfileStudent"
@@ -114,7 +114,7 @@
                 android:src="@drawable/baseline_cake_24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:tint="@color/bright_gray"/>
+                app:tint="@color/chineese_silver"/>
 
             <TextView
                 android:id="@+id/tvBirthdateProfileStudent"
@@ -238,6 +238,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:hint="12 rue réaumur, 75003 Paris"
+            android:scrollbars="horizontal"
             app:layout_constraintEnd_toStartOf="@id/btnEditAddressProfileStudent"
             app:layout_constraintStart_toStartOf="@id/guidelineStart"
             app:layout_constraintTop_toBottomOf="@id/etPhoneNumberProfileStudent"

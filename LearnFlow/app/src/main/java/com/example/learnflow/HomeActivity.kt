@@ -8,6 +8,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.learnflow.databinding.ActivityHomeBinding
+import com.example.learnflow.utils.EnvUtils
+import com.google.android.gms.common.api.Status
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import kotlinx.coroutines.launch
 
 class HomeActivity : AppCompatActivity() {
@@ -22,6 +28,8 @@ class HomeActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         viewModel.getMe(this)
+        viewModel.initPlacesClient(this)
+
 
         val navView: BottomNavigationView = binding.navView
         if (viewModel.userFlow.value?.teacher != null) {
