@@ -1,5 +1,6 @@
 package com.example.learnflow.network
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -7,11 +8,14 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.provider.Settings
-import android.widget.Toast
+import android.util.Log
+import com.example.learnflow.model.Jwt
 import com.example.learnflow.model.LocalDateTypeAdapter
+import com.example.learnflow.model.SchoolSubject
 import com.example.learnflow.model.User
 import com.example.learnflow.model.UserType
 import com.example.learnflow.utils.EnvUtils
+import com.example.learnflow.utils.SharedPreferencesKeys
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
@@ -21,14 +25,20 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.lang.Exception
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 object NetworkManager {
-    var userType: UserType? = null
+    private var jwt: Jwt? = null
 
     private val okHttpClient = OkHttpClient.Builder()
+        .addInterceptor { chain ->
+            val request = chain.request().newBuilder()
+                .addHeader("Authorization", "Bearer ${jwt?.token}")
+            chain.proceed(request.build())
+        }
         .addInterceptor(HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         })
@@ -47,6 +57,28 @@ object NetworkManager {
         .addCallAdapterFactory(CoroutineCallAdapterFactory())
         .build()
         .create(NetworkI::class.java)
+
+    fun saveJwt(context: Context, jwt: Jwt) {
+        this.jwt = jwt
+        val sharedPreferences = context.getSharedPreferences(SharedPreferencesKeys.FILE_NAME, Context.MODE_PRIVATE)
+        sharedPreferences.edit().putString(SharedPreferencesKeys.JWT, Gson().toJson(jwt)).apply()
+    }
+
+    fun deleteJwt(context: Context) {
+        jwt = null
+        val sharedPreferences = context.getSharedPreferences(SharedPreferencesKeys.FILE_NAME, Context.MODE_PRIVATE)
+        sharedPreferences.edit().remove(SharedPreferencesKeys.JWT).apply()
+    }
+
+    fun getJwt(context: Context): Jwt? {
+        val sharedPreferences = context.getSharedPreferences(SharedPreferencesKeys.FILE_NAME, Context.MODE_PRIVATE)
+        val savedJwt = Gson().fromJson(
+            sharedPreferences.getString(SharedPreferencesKeys.JWT, null),
+            Jwt::class.java
+        )
+        jwt = savedJwt
+        return savedJwt
+    }
 
     private fun isNetworkConnected(context: Context): Boolean {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -87,23 +119,42 @@ object NetworkManager {
 
     fun parseHttpException(httpException: HttpException): ServerResponse<*>? {
         val responseBody = httpException.response()?.errorBody()?.string()
-        val serverResponse: ServerResponse<*>? = responseBody?.let {
-            val gson = Gson()
-            gson.fromJson(it, ServerResponse::class.java)
+        try {
+            val serverResponse: ServerResponse<*>? = responseBody?.let {
+                val gson = Gson()
+                gson.fromJson(it, ServerResponse::class.java)
+            }
+            return serverResponse
+        } catch (e: Exception) {
+            Log.e("NetworkManager", "parseHttpException: ${e.message}")
+            return null
         }
-        return serverResponse
     }
 
-    fun formatDateFRToISOString(dateString: String): String {
+    fun formatDateFRToISOString(dateString: String): String? {
         val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-        val localDate = LocalDate.parse(dateString, dateFormatter)
+        return try {
+            val localDate = LocalDate.parse(dateString, dateFormatter)
+            localDate.atStartOfDay().toString()
+        } catch (e: Exception) {
+            null
+        }
+    }
 
-        return localDate.atStartOfDay().toString()
+    fun autoLoginAsync(context: Context): Deferred<ServerResponse<User>>? {
+        if (handleMissingNetwork(context)) return null
+        return api.autoLoginAsync()
     }
 
     fun loginAsync(context: Context, requestBody: UserLoginDTO): Deferred<ServerResponse<User>>? {
         if (handleMissingNetwork(context)) return null
         return api.loginAsync(requestBody)
+    }
+
+    fun logoutAsync(context: Activity): Deferred<ServerResponse<Any>>? {
+        if (handleMissingNetwork(context)) return null
+        deleteJwt(context)
+        return api.logoutAsync()
     }
 
     fun registerStudentAsync(context: Context, requestBody: StudentSignupDTO): Deferred<ServerResponse<User>>? {
@@ -116,6 +167,16 @@ object NetworkManager {
         return api.registerTeacherAsync(requestBody)
     }
 
+    fun getMeAsync(context: Context): Deferred<ServerResponse<User>>? {
+        if (handleMissingNetwork(context)) return null
+        return api.getMeAsync()
+    }
+
+    fun updateUserAsync(context: Context, requestBody: User): Deferred<ServerResponse<User>>? {
+        if (handleMissingNetwork(context)) return null
+        return api.updateUserAsync(requestBody)
+    }
+
     fun getTeachersAsync(context: Context, query: String): Deferred<ServerResponse<List<User>>>? {
         if (handleMissingNetwork(context)) return null
         return api.getTeachersAsync(query)
@@ -124,5 +185,10 @@ object NetworkManager {
     fun getStudentsAsync(context: Context, query: String): Deferred<ServerResponse<List<User>>>? {
         if (handleMissingNetwork(context)) return null
         return api.getStudentsAsync(query)
+    }
+
+    fun getSchoolSubjectsAsync(context: Context): Deferred<ServerResponse<List<SchoolSubject>>>? {
+        if (handleMissingNetwork(context)) return null
+        return api.getSchoolSubjectsAsync()
     }
 }

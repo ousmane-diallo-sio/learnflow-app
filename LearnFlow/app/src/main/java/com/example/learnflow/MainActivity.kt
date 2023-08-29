@@ -11,6 +11,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View.*
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.*
 import android.widget.LinearLayout.LayoutParams
 import androidx.activity.viewModels
@@ -18,6 +19,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.setPadding
+import androidx.lifecycle.lifecycleScope
 import com.example.learnflow.components.*
 import com.example.learnflow.model.Address
 import com.example.learnflow.model.Document
@@ -25,7 +27,6 @@ import com.example.learnflow.model.DocumentType
 import com.example.learnflow.model.User
 import com.example.learnflow.model.UserType
 import com.example.learnflow.network.NetworkManager
-import com.example.learnflow.network.NetworkManager.userType
 import com.example.learnflow.network.StudentSignupDTO
 import com.example.learnflow.network.TeacherSignupDTO
 import com.example.learnflow.network.UserLoginDTO
@@ -33,6 +34,7 @@ import com.example.learnflow.utils.FieldValidator
 import com.example.learnflow.utils.Utils
 import com.google.android.material.snackbar.Snackbar
 import fr.kameouss.instamemeeditor.components.ImagePickerFragment
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.UUID
 
@@ -89,14 +91,22 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
     // Teacher specific form
     private lateinit var siTeacherIdentityCard: SliderItem
     private lateinit var ipTeacherIdentityCardPicker: ImagePicker
-    private lateinit var siTeacherDocumentsMain: SliderItem
-    private lateinit var llTeacherDocumentsMain: LinearLayout
-    private lateinit var btnTeacherPickDocumentMain: CustomBtn
+    private lateinit var siTeacherDocuments: SliderItem
+    private lateinit var llTeacherDocuments: LinearLayout
+    private lateinit var btnTeacherPickDocument: CustomBtn
+    private lateinit var siTeacherSchoolSubjectsTeached: SliderItem
+    private lateinit var llSchoolSubjectsTeacher: LinearLayout
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        NetworkManager.getJwt(this)
+        viewModel.autoLogin(this) {
+            startActivity(Intent(this, HomeActivity::class.java))
+            finish()
+        }
 
         loginPart = findViewById(R.id.loginPartMain)
         registerPart = findViewById(R.id.registerPartMain)
@@ -111,9 +121,9 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
         iSelectStudentSchoolLevel = findViewById(R.id.iSelectStudentSchoolLevelMain)
         siStudentSchoolLevel = findViewById(R.id.siStudentSchoolLevelMain)
         siTeacherIdentityCard = findViewById(R.id.siTeacherIdentityCardMain)
-        siTeacherDocumentsMain = findViewById(R.id.siTeacherDocumentsMain)
-        llTeacherDocumentsMain = findViewById(R.id.llTeacherDocumentsMain)
-        btnTeacherPickDocumentMain = findViewById(R.id.btnTeacherPickDocumentMain)
+        siTeacherDocuments = findViewById(R.id.siTeacherDocumentsMain)
+        llTeacherDocuments = findViewById(R.id.llTeacherDocumentsMain)
+        btnTeacherPickDocument = findViewById(R.id.btnTeacherPickDocumentMain)
         ciFirstnameRegister = findViewById(R.id.ciFirstNameRegisterMain)
         ciLastnameRegister = findViewById(R.id.ciLastNameRegisterMain)
         ciEmailRegister = findViewById(R.id.ciEmailRegisterMain)
@@ -126,6 +136,8 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
         ciBirthdateRegister = findViewById(R.id.ciBirthdateRegisterMain)
         ipProfilePicRegister = findViewById(R.id.imgPickerProfilePicRegisterMain)
         ipTeacherIdentityCardPicker = findViewById(R.id.imgPickerTeacherIdentityCardMain)
+        siTeacherSchoolSubjectsTeached = findViewById(R.id.siTeacherSchoolSubjectsTeachedMain)
+        llSchoolSubjectsTeacher = findViewById(R.id.llSchoolSubjectsTeacherMain)
 
         imgPickerFragment = ImagePickerFragment()
         supportFragmentManager.beginTransaction().add(imgPickerFragment, "imgPickerFragmentMain")
@@ -136,11 +148,14 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
             Context.MODE_PRIVATE
         )
         setupSchoolLevels()
+        setupSchoolSubjectsTeached()
     }
 
     override fun onStart() {
         super.onStart()
         viewModel.onStart(this)
+        viewModel.getSchoolSubjects(this)
+
         sliderRegisterProcess.validateForm = { sliderItem, index ->
             Utils.getAllNestedChildren(sliderItem)
                 .filter { it is IValidator }
@@ -161,15 +176,27 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                 FieldValidator.zipCode(string)
             }
         }
-        siTeacherDocumentsMain.slideValidator = {
-            if (llTeacherDocumentsMain.childCount < 1) {
-                Snackbar.make(registerPart, "Vous devez ajouter au moins un justificatif", Snackbar.LENGTH_SHORT).show()
+        siTeacherDocuments.slideValidator = {
+            val isValid = llTeacherDocuments.childCount > 0
+            if (!isValid) {
+                Snackbar.make(
+                    registerPart,
+                    "Vous devez ajouter au moins un justificatif",
+                    Snackbar.LENGTH_SHORT
+                ).show()
             }
-            llTeacherDocumentsMain.childCount > 1
+            isValid
         }
 
         ciLogin.onInputValidation = { btnLogin.disabled = false }
         ciPassword.onInputValidation = { btnLogin.disabled = false }
+        ciPassword.et.setOnEditorActionListener{ _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                btnLogin.performClick()
+                return@setOnEditorActionListener true
+            }
+            false
+        }
 
         btnLogin.setOnClickListener {
             btnLogin.isLoading = true
@@ -185,6 +212,7 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                     return@login
                 }
                 startActivity(Intent(this@MainActivity, HomeActivity::class.java))
+                finish()
             }
         }
 
@@ -197,22 +225,26 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
         iSelectUserType.setOnElementSelected {
             sliderRegisterProcess.btnNext.disabled = false
             if (it.selectorId == "studentSelector") {
-                userType = UserType.STUDENT
+                viewModel.userType = UserType.STUDENT
 
                 sliderRegisterProcess.addItems(siStudentSchoolLevel)
-                sliderRegisterProcess.removeItems(siTeacherIdentityCard)
-                sliderRegisterProcess.removeItems(siTeacherDocumentsMain)
+                sliderRegisterProcess.removeItems(
+                    siTeacherIdentityCard,
+                    siTeacherDocuments,
+                    siTeacherSchoolSubjectsTeached
+                )
             } else {
-                userType = UserType.TEACHER
-
-                sliderRegisterProcess.addItems(siTeacherIdentityCard)
-                sliderRegisterProcess.addItems(siTeacherDocumentsMain)
+                viewModel.userType = UserType.TEACHER
+                sliderRegisterProcess.addItems(
+                    siTeacherIdentityCard,
+                    siTeacherDocuments,
+                    siTeacherSchoolSubjectsTeached
+                )
                 sliderRegisterProcess.removeItems(siStudentSchoolLevel)
             }
-            // set currentUser type to selected type
         }
-        btnTeacherPickDocumentMain.setOnClickListener {
-            if (llTeacherDocumentsMain.childCount >= 4) {
+        btnTeacherPickDocument.setOnClickListener {
+            if (llTeacherDocuments.childCount >= 4) {
                 AlertDialog.Builder(this)
                     .setTitle("Vous ne pouvez pas ajouter plus de 4 documents")
                     .setMessage("Veuillez supprimer au moins un document avant d'en ajouter un nouveau")
@@ -221,73 +253,75 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                     }
                     .show()
                 return@setOnClickListener
-            } else {
-                imgPickerFragment.pickImage { uri: Uri? ->
-                    if (uri == null) return@pickImage
+            }
 
-                    val document = Document(
-                        "document-${UUID.randomUUID()}",
-                        null,
-                        Utils.bitmapToBase64(ipTeacherIdentityCardPicker.ivImage.drawable.toBitmap()) ?: "",
-                        DocumentType.IMAGE
-                    )
+            imgPickerFragment.pickImage { uri: Uri? ->
+                if (uri == null) return@pickImage
 
-                    val customInput = CustomInput(this, null)
-                    customInput.layoutParams = LayoutParams(
+                val ivOverview = ImageView(this).apply {
+                    layoutParams = LayoutParams(
                         LayoutParams.MATCH_PARENT,
                         LayoutParams.WRAP_CONTENT
                     )
-                    customInput.et.hint = "Intitulé du document"
-                    customInput.et.inputType = InputType.TYPE_CLASS_TEXT
-                    customInput.textWatcher = object : TextWatcher {
-                        override fun beforeTextChanged(
-                            s: CharSequence?,
-                            start: Int,
-                            count: Int,
-                            after: Int
-                        ) {}
+                    setImageURI(uri)
+                    scaleType = ImageView.ScaleType.FIT_CENTER
+                    setPadding(20)
+                }
 
-                        override fun onTextChanged(
-                            s: CharSequence?,
-                            start: Int,
-                            before: Int,
-                            count: Int
-                        ) {}
+                val document = Document(
+                    "document-${UUID.randomUUID()}",
+                    null,
+                    Utils.bitmapToBase64(ivOverview.drawable.toBitmap()) ?: "",
+                    DocumentType.IMAGE
+                )
 
-                        override fun afterTextChanged(s: Editable?) {
-                            document.name = s.toString()
-                            viewModel.addOrReplaceTeacherDocument(document)
-                        }
-
+                val customInput = CustomInput(this, null)
+                customInput.layoutParams = LayoutParams(
+                    LayoutParams.MATCH_PARENT,
+                    LayoutParams.WRAP_CONTENT
+                )
+                customInput.et.hint = "Intitulé du document"
+                customInput.et.inputType = InputType.TYPE_CLASS_TEXT
+                customInput.textWatcher = object : TextWatcher {
+                    override fun beforeTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        count: Int,
+                        after: Int
+                    ) {
                     }
 
-
-                    val ivOverview = ImageView(this).apply {
-                        layoutParams = LayoutParams(
-                            LayoutParams.MATCH_PARENT,
-                            LayoutParams.WRAP_CONTENT
-                        )
-                        setImageURI(uri)
-                        scaleType = ImageView.ScaleType.FIT_CENTER
-                        setPadding(20)
+                    override fun onTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        before: Int,
+                        count: Int
+                    ) {
                     }
-                    val alertDialog = AlertDialog.Builder(this)
-                    alertDialog
-                        .setPositiveButton(getText(R.string.close)) { dialog, _ ->
-                            dialog.dismiss()
-                            ivOverview.parent?.let { (it as ViewGroup).removeView(ivOverview) }
-                        }
-                        .setNegativeButton(getText(R.string.delete)) { dialog, _ ->
-                            dialog.dismiss()
-                            llTeacherDocumentsMain.removeView(customInput)
-                            viewModel.removeTeacherDocument(document)
-                        }
-                        .setView(ivOverview)
-                        .create()
-                    customInput.setAction({ alertDialog.show() }, uri)
-                    llTeacherDocumentsMain.addView(customInput)
+
+                    override fun afterTextChanged(s: Editable?) {
+                        document.name = s.toString()
+                        viewModel.addOrReplaceTeacherDocument(document)
+                    }
 
                 }
+
+                val alertDialog = AlertDialog.Builder(this)
+                alertDialog
+                    .setPositiveButton(getText(R.string.close)) { dialog, _ ->
+                        dialog.dismiss()
+                        ivOverview.parent?.let { (it as ViewGroup).removeView(ivOverview) }
+                    }
+                    .setNegativeButton(getText(R.string.delete)) { dialog, _ ->
+                        dialog.dismiss()
+                        llTeacherDocuments.removeView(customInput)
+                        viewModel.removeTeacherDocument(document)
+                    }
+                    .setView(ivOverview)
+                    .create()
+                customInput.setAction({ alertDialog.show() }, uri)
+                llTeacherDocuments.addView(customInput)
+
             }
         }
 
@@ -299,7 +333,8 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                     Document(
                         "Pièce d'identité",
                         null,
-                        Utils.bitmapToBase64(ipTeacherIdentityCardPicker.ivImage.drawable.toBitmap()) ?: "",
+                        Utils.bitmapToBase64(ipTeacherIdentityCardPicker.ivImage.drawable.toBitmap())
+                            ?: "",
                         DocumentType.IMAGE
                     ),
                 )
@@ -349,6 +384,56 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
         }
     }
 
+    private fun setupSchoolSubjectsTeached() {
+        lifecycleScope.launch {
+            viewModel.schoolSubjectsFlow.collect { schoolSubjects ->
+                schoolSubjects.forEach { schoolSubject ->
+                    val checkboxCounterItem = CheckboxCounterItem(this@MainActivity)
+
+                    checkboxCounterItem.tv.text = schoolSubject.name
+                    checkboxCounterItem.ci.et.setText("1")
+                    checkboxCounterItem.setOnClickListener {
+                        viewModel.addOrRemoveSchoolSubjectTeached(schoolSubject, 1)
+                    }
+
+                    checkboxCounterItem.ci.textWatcher = object : TextWatcher {
+                        override fun beforeTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            count: Int,
+                            after: Int
+                        ) {
+                        }
+
+                        override fun onTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            before: Int,
+                            count: Int
+                        ) {
+                            if (s.toString().isNotEmpty() && s.toString().toInt() > 50) {
+                                checkboxCounterItem.ci.et.setText("1")
+                                Snackbar.make(
+                                    findViewById(android.R.id.content),
+                                    "Vous ne pouvez pas avoir plus de 50 ans d'expérience",
+                                    Snackbar.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+
+                        override fun afterTextChanged(s: Editable?) {
+                            viewModel.editSchoolSubjectTeachedExp(
+                                schoolSubject,
+                                s.toString().toIntOrNull() ?: 1
+                            )
+                        }
+                    }
+                    llSchoolSubjectsTeacher.addView(checkboxCounterItem)
+                }
+            }
+        }
+    }
+
     private fun handleSignup() {
 
         fun onRegisterStudent(data: User?, error: String?) {
@@ -363,6 +448,7 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                 Toast.LENGTH_SHORT
             ).show()
             startActivity(Intent(this@MainActivity, HomeActivity::class.java))
+            finish()
         }
 
         fun onRegisterTeacher(data: User?, error: String?) {
@@ -375,7 +461,7 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
             teacherSignupConfirmation.show(supportFragmentManager, "teacherSignupConfirmation")
         }
 
-        if (userType == UserType.STUDENT) {
+        if (viewModel.userType == UserType.STUDENT) {
             viewModel.updateStudentRegisterRequest(
                 StudentSignupDTO(
                     firstName = ciFirstnameRegister.et.text.toString(),
@@ -383,7 +469,7 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                     email = ciEmailRegister.et.text.toString(),
                     birthdate = NetworkManager.formatDateFRToISOString(
                         ciBirthdateRegister.et.text.toString()
-                    ),
+                    ) ?: "",
                     address = Address(
                         ciCityRegister.et.text.toString(),
                         ciStreetRegister.et.text.toString(),
@@ -396,7 +482,8 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                     profilePicture = Document(
                         "Photo de profil",
                         null,
-                        Utils.bitmapToBase64(ipProfilePicRegister.ivImage.drawable.toBitmap()) ?: "",
+                        Utils.bitmapToBase64(ipProfilePicRegister.ivImage.drawable.toBitmap())
+                            ?: "",
                         DocumentType.IMAGE
                     )
                 )
@@ -413,7 +500,7 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                     email = ciEmailRegister.et.text.toString(),
                     birthdate = NetworkManager.formatDateFRToISOString(
                         ciBirthdateRegister.et.text.toString()
-                    ),
+                    ) ?: "",
                     address = Address(
                         ciCityRegister.et.text.toString(),
                         ciStreetRegister.et.text.toString(),
@@ -423,10 +510,12 @@ class MainActivity : AppCompatActivity(), TeacherSignupConfirmationListener {
                     password = ciPasswordRegister.et.text.toString(),
                     phoneNumber = ciPhoneNumberRegister.et.text.toString(),
                     documents = viewModel.teacherSignupDocumentsFlow.value,
-                    profilePicture =  Document(
+                    schoolSubjectsTeached = viewModel.teacherSchoolSubjectsTeached,
+                    profilePicture = Document(
                         "Photo de profil",
                         null,
-                        Utils.bitmapToBase64(ipProfilePicRegister.ivImage.drawable.toBitmap()) ?: "",
+                        Utils.bitmapToBase64(ipProfilePicRegister.ivImage.drawable.toBitmap())
+                            ?: "",
                         DocumentType.IMAGE
                     )
                 )

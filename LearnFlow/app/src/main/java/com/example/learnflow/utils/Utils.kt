@@ -42,8 +42,13 @@ object Utils {
     }
 
     fun base64ToBitmap(base64String: String): Bitmap? {
-        val decodedBytes: ByteArray = Base64.decode(base64String, Base64.DEFAULT)
-        return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+        return try {
+            val decodedBytes: ByteArray = Base64.decode(base64String, Base64.DEFAULT)
+            BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+        } catch (e: Exception) {
+            Log.e("Utils", "base64ToBitmap: ", e)
+            null
+        }
     }
 
     fun bitmapToBase64(bitmap: Bitmap): String? {

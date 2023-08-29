@@ -73,6 +73,11 @@ class ItemsSelector(context: Context, private val attrs: AttributeSet): LinearLa
         }
     }
 
+    fun removeAllItems() {
+        items.clear()
+        fblItemsContainer.removeAllViews()
+    }
+
     override fun onFinishInflate() {
         super.onFinishInflate()
         items.forEach { setupItem(it) }

@@ -1,12 +1,14 @@
 package com.example.learnflow.model
 
+import android.graphics.Bitmap
 import android.os.Parcelable
 import android.util.Log
-import com.example.learnflow.network.ServerResponse
+import com.example.learnflow.utils.Utils
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.io.IOException
 import java.time.LocalDateTime
@@ -47,11 +49,29 @@ data class User(
     var profilePicture: Document,
     var student: Student? = null,
     var teacher: Teacher? = null
-) : Parcelable
+) : Parcelable {
+
+    @IgnoredOnParcel
+    var profilePictureBitmap: Bitmap? = null
+        get() {
+            if (field == null) {
+                field = Utils.base64ToBitmap(profilePicture.base64)
+            }
+            return field
+        }
+        private set
+}
 
 @Parcelize
 data class Student(
-    var test: String,
+    var schoolLevel: String,
+    var firstName: String,
+    var lastName: String,
+    var birthdate: LocalDateTime,
+    var email: String,
+    var address: Address,
+    var phoneNumber: String,
+    var profilePicture: Document,
 ) : Parcelable
 
 @Parcelize

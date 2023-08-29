@@ -9,4 +9,9 @@ data class Address(
     var city: String,
     var zipCode: String,
     var complement: String? = null
-) : Parcelable
+) : Parcelable {
+
+    override fun toString(): String {
+        return "$street, $city, $zipCode"
+    }
+}

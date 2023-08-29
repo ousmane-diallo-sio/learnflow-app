@@ -9,7 +9,7 @@ data class Document(
     var name: String,
     var desc: String?,
     var base64: String,
-    var documentType: String
+    var documentType: String,
 ) : Parcelable {
     constructor(
         name: String,

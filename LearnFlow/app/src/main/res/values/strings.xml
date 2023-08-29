@@ -37,8 +37,8 @@
     <string name="register_success">Votre demande d’inscription a bien été prise en compte !</string>
     <string name="validate_register">Veuillez valider votre inscription</string>
     <string name="insert_profile_picture">Insérez une photo de profil qui apparaîtra sur l’application</string>
-    <string name="title_search">Rechercher</string>
-    <string name="title_messages">Messages</string>
+    <string name="nav_bar_search">Rechercher</string>
+    <string name="nav_bar_messages">Messages</string>
     <string name="search_teacher_cta">Recherchez une matière, un professeur...</string>
     <string name="an_error_occured">Une erreur est survenue</string>
     <string name="teacher_signup_confirmation_title">Votre demande d’inscription a bien été prise en compte !</string>
@@ -46,4 +46,15 @@
     <string name="teacher_signup_confirmation_desc">Veuillez attendre que notre équipe de modération valide votre inscription. Nous vous enverrons une notification lorsque la décision aura été prise.</string>
     <string name="cta_search">Recherchez un professeur</string>
     <string name="no_result_for_query">Aucun résultat ne correspond à votre recherche</string>
+    <string name="signup_teacher_school_subjects">Sélectionnez la ou les matières que vous souhaitez enseigner et indiquez votre nombre d’année d’expérience</string>
+    <string name="one">1</string>
+    <string name="profile">Profil</string>
+    <string name="retry">Réessayer</string>
+    <string name="profile_student_title">Votre profil</string>
+    <string name="nav_bar_profile">Profil</string>
+    <string name="profile_firstname">"Prénom : %1$s"</string>
+    <string name="profile_lastname">Nom : %1$s</string>
+    <string name="profile_school_level">Niveau scolaire : %1$s</string>
+    <string name="profile_phone_number">N° de téléphone : %1$s</string>
+    <string name="profile_address">Adresse : %1$s</string>
 </resources>

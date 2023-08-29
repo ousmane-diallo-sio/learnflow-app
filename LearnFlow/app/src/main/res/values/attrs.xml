@@ -5,6 +5,7 @@
         <attr name="textColor" format="reference" />
         <attr name="btnBackgroundColor" format="reference" />
         <attr name="textSize" format="dimension" />
+        <attr name="customWidth" format="dimension" />
         <attr name="customHeight" format="dimension" />
         <attr name="elevation" format="dimension" />
         <attr name="iconBefore" format="reference" />
@@ -23,6 +24,10 @@
             <enum name="textEmailAddress" value="32" />
             <enum name="textPassword" value="128" />
         </attr>
+        <attr name="radius" format="dimension" />
+        <attr name="inputBackground" format="color" />
+        <attr name="inputColor" format="color" />
+        <attr name="hintColor" format="color" />
         <attr name="isRequired" format="boolean" />
         <attr name="showErrorText" format="boolean" />
     </declare-styleable>
