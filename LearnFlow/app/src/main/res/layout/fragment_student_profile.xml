@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipeRefreshLayoutStudentProfile"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.profile.student.StudentProfileFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clMainStudentProfile"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tvTitleProfileStudent"
+            style="@style/tvBoldTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingVertical="10dp"
+            android:text="@string/profile_student_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/vTitleSeparatorProfileStudent"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/cultured"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvTitleProfileStudent" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="15dp" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineEnd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="15dp" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cvIvPictureProfileStudent"
+            android:layout_width="81dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="10dp"
+            app:cardCornerRadius="100dp"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="@id/guidelineStart"
+            app:layout_constraintTop_toBottomOf="@id/vTitleSeparatorProfileStudent">
+
+            <ImageView
+                android:id="@+id/ivPictureProfileStudent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                tools:src="@drawable/ic_launcher_background" />
+        </androidx.cardview.widget.CardView>
+
+        <com.example.learnflow.components.CustomBtn
+            android:id="@+id/btnEditPictureProfileStudent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:btnBackgroundColor="@color/coral"
+            app:customHeight="25dp"
+            app:customWidth="25dp"
+            app:iconBefore="@drawable/baseline_edit_24"
+            app:iconsSize="15dp"
+            app:layout_constraintBottom_toBottomOf="@id/cvIvPictureProfileStudent"
+            app:layout_constraintStart_toEndOf="@id/cvIvPictureProfileStudent"
+            app:textColor="@color/white" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clEmailAndBirthdateProfileStudent"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginVertical="5dp"
+            android:layout_marginStart="15dp"
+            app:layout_constraintBottom_toBottomOf="@id/cvIvPictureProfileStudent"
+            app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
+            app:layout_constraintStart_toEndOf="@id/btnEditPictureProfileStudent"
+            app:layout_constraintTop_toTopOf="@id/cvIvPictureProfileStudent">
+
+            <ImageView
+                android:id="@+id/ivIconEmailProfileStudent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/baseline_email_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/chineese_silver"/>
+
+            <TextView
+                android:id="@+id/tvEmailProfileStudent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                app:layout_constraintBottom_toBottomOf="@id/ivIconEmailProfileStudent"
+                app:layout_constraintStart_toEndOf="@id/ivIconEmailProfileStudent"
+                app:layout_constraintTop_toTopOf="@id/ivIconEmailProfileStudent"
+                tools:text="larry@dupond.com" />
+
+            <ImageView
+                android:id="@+id/ivIconBirthdateProfileStudent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/baseline_cake_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:tint="@color/chineese_silver"/>
+
+            <TextView
+                android:id="@+id/tvBirthdateProfileStudent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                app:layout_constraintBottom_toBottomOf="@id/ivIconBirthdateProfileStudent"
+                app:layout_constraintStart_toEndOf="@id/ivIconBirthdateProfileStudent"
+                app:layout_constraintTop_toTopOf="@id/ivIconBirthdateProfileStudent"
+                tools:text="12/12/1998" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <EditText
+            android:id="@+id/etFirstnameProfileStudent"
+            style="@style/tvBoldTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:hint="@string/first_name"
+            app:layout_constraintStart_toStartOf="@id/guidelineStart"
+            app:layout_constraintTop_toBottomOf="@id/clEmailAndBirthdateProfileStudent"
+            tools:text="Prénom : Dupond" />
+
+        <com.example.learnflow.components.CustomBtn
+            android:id="@+id/btnEditFirstnameProfileStudent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            app:btnBackgroundColor="@color/coral"
+            app:customHeight="25dp"
+            app:customWidth="25dp"
+            app:iconBefore="@drawable/baseline_edit_24"
+            app:iconsSize="15dp"
+            app:layout_constraintBottom_toBottomOf="@id/etFirstnameProfileStudent"
+            app:layout_constraintStart_toEndOf="@id/etFirstnameProfileStudent"
+            app:layout_constraintTop_toTopOf="@id/etFirstnameProfileStudent"
+            app:textColor="@color/white" />
+
+        <EditText
+            android:id="@+id/etLastnameProfileStudent"
+            style="@style/tvBoldTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:hint="@string/last_name"
+            app:layout_constraintStart_toStartOf="@id/guidelineStart"
+            app:layout_constraintTop_toBottomOf="@id/etFirstnameProfileStudent"
+            tools:text="Nom : Larry" />
+
+        <com.example.learnflow.components.CustomBtn
+            android:id="@+id/btnEditLastnameProfileStudent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            app:btnBackgroundColor="@color/coral"
+            app:customHeight="25dp"
+            app:customWidth="25dp"
+            app:iconBefore="@drawable/baseline_edit_24"
+            app:iconsSize="15dp"
+            app:layout_constraintBottom_toBottomOf="@id/etLastnameProfileStudent"
+            app:layout_constraintStart_toEndOf="@id/etLastnameProfileStudent"
+            app:layout_constraintTop_toTopOf="@id/etLastnameProfileStudent"
+            app:textColor="@color/white" />
+
+        <EditText
+            android:id="@+id/etSchoolLevelProfileStudent"
+            style="@style/tvBoldTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:hint="Niveau scolaire"
+            app:layout_constraintStart_toStartOf="@id/guidelineStart"
+            app:layout_constraintTop_toBottomOf="@id/etLastnameProfileStudent"
+            tools:text="Niveau scolaire : BAC +3" />
+
+        <com.example.learnflow.components.CustomBtn
+            android:id="@+id/btnEditSchoolLevelProfileStudent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            app:btnBackgroundColor="@color/coral"
+            app:customHeight="25dp"
+            app:customWidth="25dp"
+            app:iconBefore="@drawable/baseline_edit_24"
+            app:iconsSize="15dp"
+            app:layout_constraintBottom_toBottomOf="@id/etSchoolLevelProfileStudent"
+            app:layout_constraintStart_toEndOf="@id/etSchoolLevelProfileStudent"
+            app:layout_constraintTop_toTopOf="@id/etSchoolLevelProfileStudent"
+            app:textColor="@color/white" />
+
+        <EditText
+            android:id="@+id/etPhoneNumberProfileStudent"
+            style="@style/tvBoldTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:hint="0123456789"
+            app:layout_constraintStart_toStartOf="@id/guidelineStart"
+            app:layout_constraintTop_toBottomOf="@id/etSchoolLevelProfileStudent"
+            tools:text="N° de téléphone : 0123456789" />
+
+        <com.example.learnflow.components.CustomBtn
+            android:id="@+id/btnEditPhoneNumberProfileStudent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            app:btnBackgroundColor="@color/coral"
+            app:customHeight="25dp"
+            app:customWidth="25dp"
+            app:iconBefore="@drawable/baseline_edit_24"
+            app:iconsSize="15dp"
+            app:layout_constraintBottom_toBottomOf="@id/etPhoneNumberProfileStudent"
+            app:layout_constraintStart_toEndOf="@id/etPhoneNumberProfileStudent"
+            app:layout_constraintTop_toTopOf="@id/etPhoneNumberProfileStudent"
+            app:textColor="@color/white" />
+
+        <EditText
+            android:id="@+id/etAddressProfileStudent"
+            style="@style/tvBoldTextStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:hint="12 rue réaumur, 75003 Paris"
+            android:scrollbars="horizontal"
+            app:layout_constraintEnd_toStartOf="@id/btnEditAddressProfileStudent"
+            app:layout_constraintStart_toStartOf="@id/guidelineStart"
+            app:layout_constraintTop_toBottomOf="@id/etPhoneNumberProfileStudent"
+            tools:text="Adresse : 26 rue de champs, 75016 Paris" />
+
+        <com.example.learnflow.components.CustomBtn
+            android:id="@+id/btnEditAddressProfileStudent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            app:btnBackgroundColor="@color/coral"
+            app:customHeight="25dp"
+            app:customWidth="25dp"
+            app:iconBefore="@drawable/baseline_edit_24"
+            app:iconsSize="15dp"
+            app:layout_constraintBottom_toBottomOf="@id/etAddressProfileStudent"
+            app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
+            app:layout_constraintStart_toEndOf="@id/etAddressProfileStudent"
+            app:layout_constraintTop_toTopOf="@id/etAddressProfileStudent"
+            app:textColor="@color/white" />
+
+        <com.example.learnflow.components.CustomBtn
+            android:id="@+id/btnLogoutProfileStudent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
+            app:layout_constraintStart_toStartOf="@id/guidelineStart"
+            app:text="Déconnexion" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

@@ -17,13 +17,24 @@
         android:background="@color/salmon"
         android:padding="10dp">
 
-        <com.example.learnflow.components.CustomInput
-            android:id="@+id/ciSearch"
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
-            app:hint="@string/search_teacher_cta"
-            app:icon="@drawable/baseline_search_24" />
+            app:cardCornerRadius="40dp"
+            android:background="@color/white"
+            android:paddingHorizontal="20dp">
+
+            <AutoCompleteTextView
+                android:id="@+id/autoCompleteTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:background="@android:color/transparent"
+                android:completionThreshold="0"
+                android:hint="@string/search_teacher_cta" />
+        </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

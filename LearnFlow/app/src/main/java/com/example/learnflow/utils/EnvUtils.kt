@@ -12,4 +12,5 @@ object EnvUtils {
     private const val placeholder = "value-not-found"
 
     val API_BASE_URL = dotenv["API_BASE_URL"] ?: placeholder
+    val MAPS_API_KEY = dotenv["MAPS_API_KEY"] ?: placeholder
 }

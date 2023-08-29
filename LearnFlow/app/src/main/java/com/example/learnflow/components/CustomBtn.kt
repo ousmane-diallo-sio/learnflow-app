@@ -18,9 +18,9 @@ class CustomBtn(context: Context, private val attrs: AttributeSet?) : LinearLayo
 
     private val cv: CardView
     private val ll: FrameLayout
-    private val iconBefore: ImageView
+    val iconBefore: ImageView
     val tv: TextView
-    private val iconAfter: ImageView
+    val iconAfter: ImageView
     private val pb: ProgressBar
     private val llContent: LinearLayout
 
@@ -67,6 +67,10 @@ class CustomBtn(context: Context, private val attrs: AttributeSet?) : LinearLayo
             tv.textSize = Utils.textSizeToSp(context, styledAttributes.getDimension(R.styleable.CustomBtn_textSize, tv.textSize))
             ll.setBackgroundColor(context.getColor(styledAttributes.getResourceId(R.styleable.CustomBtn_btnBackgroundColor, R.color.white)))
             tv.setTextColor(context.getColor(styledAttributes.getResourceId(R.styleable.CustomBtn_textColor, R.color.salmon)))
+            val customWidth = styledAttributes.getDimension(R.styleable.CustomBtn_customWidth, 0f)
+            if (customWidth.toInt() != 0) {
+                cv.layoutParams.width = customWidth.toInt()
+            }
             val customHeight = styledAttributes.getDimension(R.styleable.CustomBtn_customHeight, 0f)
             if (customHeight.toInt() != 0) {
                 cv.layoutParams.height = customHeight.toInt()
@@ -113,5 +117,9 @@ class CustomBtn(context: Context, private val attrs: AttributeSet?) : LinearLayo
             }
         }
         super.setOnClickListener(onClickWrapper)
+    }
+
+    fun setBtnBackgroundColor(color: Int) {
+        ll.setBackgroundColor(color)
     }
 }

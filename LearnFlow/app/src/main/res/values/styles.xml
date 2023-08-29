@@ -3,6 +3,7 @@
     <style name="tvNormalTextStyle">
         <item name="android:textSize">@dimen/text_size_md</item>
         <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:textColor">@color/black</item>
     </style>
     <style name="tvBoldTextStyle">
         <item name="android:textSize">@dimen/text_size_xl</item>
@@ -20,8 +21,8 @@
     <style name="etNormalTextStyle" parent="Widget.AppCompat.EditText">
         <item name="fontWeight">400</item>
         <item name="android:textSize">@dimen/text_size_md</item>
-        <item name="android:textColor">@color/aquamarine</item>
-        <item name="android:textColorHint">@color/aquamarine</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textColorHint">@color/gray</item>
         <item name="android:background">@android:color/transparent</item>
     </style>
 </resources>
